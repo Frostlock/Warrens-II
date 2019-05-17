@@ -1,0 +1,14 @@
+key,type,char,name,itemLevel,effect,targeted,effectRadius,effectHitDie,effectDuration,effectElement,bonusAccuracy,bonusDodge,bonusDamage,bonusArmor,bonusBody,bonusMind
+healingvial,Consumable,!,healing vial,1,HealEffect,False,0,3d3,1,HEAL,0,0,0,0,0,0
+healingpotion,Consumable,!,healing potion,5,HealEffect,False,0,6d6,1,HEAL,0,0,0,0,0,0
+healingdraught,Consumable,!,healing draught,9,HealEffect,False,0,9d9,1,HEAL,0,0,0,0,0,0
+lightning,Consumable,s,scroll of lightning bolt,2,DamageEffect,True,0,3d6,1,ELEC,0,0,0,0,0,0
+fireball,Consumable,s,scroll of fireball,5,DamageEffect,True,6,2d10,1,FIRE,0,0,0,0,0,0
+firenova,Consumable,s,scroll of fire nova,4,DamageEffect,False,4,2d10,0,FIRE,0,0,0,0,0,0
+tremor,Consumable,s,scroll of tremor,3,DamageEffect,False,5,2d4,3,EARTH,0,0,0,0,0,0
+confuse,Consumable,s,scroll of confuse,3,ConfuseEffect,True,0,1d6,5,MIND,0,0,0,0,0,0
+dagger,Equipment,I,dagger,1,None,None,0,None,0,None,0,0,4,0,0,0
+shortsword,Equipment,I,short sword,2,None,None,0,None,0,None,0,0,8,0,0,0
+shield,Equipment,O,shield,4,None,None,0,None,0,None,0,0,0,2,0,0
+cloak,Equipment,c,cloak,2,None,None,0,None,0,None,0,1,0,0,0,0
+ring,Equipment,o,ring,2,None,None,0,None,0,None,1,1,1,1,1,1
