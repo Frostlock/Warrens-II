@@ -179,7 +179,7 @@ class GuiApplication(object):
         pygame.init()
         
         # Initialize fonts
-        GuiUtilities.initFonts()
+        GuiUtilities.init_fonts()
         
         # Initialize properties
         self.renderLevel = None
@@ -257,7 +257,8 @@ class GuiApplication(object):
         # GuiUtilities.showMessage(self.surface_display, 'Welcome!', 'Welcome to this bit of python code!\n It sure is not nethack :-).\n Now I only need to find a really really good intro story, maybe something about an evil wizard with a ring and bunch of small guys with hairy feet that are trying to destroy the ring. I bet that would be original. But hey in all seriousness, this is just some text to make sure that the auto wrapping feature works correctly.\n \n-Frost')
         
         options = ['New local game', 'Controls', 'Quit', 'Debug Maps', 'Connect to server']
-        selection = GuiUtilities.showMenu(self.surface_display, 'Main Menu', options)
+        keys = ['n', 'c', 'q', 'd', 's']
+        selection = GuiUtilities.show_menu(self.surface_display, 'Main Menu', options, keys)
         if selection is None:
             return
         elif selection == 0:
@@ -265,7 +266,7 @@ class GuiApplication(object):
             self.new_game()
         elif selection == 1:
             print('Main Menu: ' + options[1])
-            GuiUtilities.showMessageControls(self.surface_display)
+            GuiUtilities.show_message_controls(self.surface_display)
         elif selection == 2:
             print('Main Menu: ' + options[2])
             sys.exit()
@@ -746,13 +747,13 @@ class GuiApplication(object):
             # Current implementation looks at effect targetType to decide on a visualization option.
             if effect.targetType == EffectTarget.SELF:
                 # flash tile on which actor is standing
-                self.animation_flash_tiles(GuiUtilities.getElementColor(effect.effectElement), effect.tiles)
+                self.animation_flash_tiles(GuiUtilities.get_element_color(effect.effectElement), effect.tiles)
             elif effect.targetType == EffectTarget.CHARACTER:
                 # circle around the target character
-                self.animation_nova(GuiUtilities.getElementColor(effect.effectElement), effect.tiles[0], effect.effectRadius)
+                self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.tiles[0], effect.effectRadius)
             elif effect.targetType == EffectTarget.TILE:
                 # circular blast around centerTile
-                self.animation_nova(GuiUtilities.getElementColor(effect.effectElement), effect.centerTile, effect.effectRadius)
+                self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.centerTile, effect.effectRadius)
             else:
                 print('WARNING: Unknown visualization type, skipping.')
                     
@@ -947,7 +948,7 @@ class GuiApplication(object):
             items = self.game.player.inventory.items
             for item in items:
                 options.append(item.name)
-            selection = GuiUtilities.showMenu(self.surface_display, header, options)
+            selection = GuiUtilities.show_menu(self.surface_display, header, options)
             if selection is not None:
                 useItem = items[selection]
                 if useItem.targeted:
@@ -967,7 +968,7 @@ class GuiApplication(object):
             items = self.game.player.inventory.items
             for item in items:
                 options.append(item.name)
-            selection = GuiUtilities.showMenu(self.surface_display, header, options)
+            selection = GuiUtilities.show_menu(self.surface_display, header, options)
             if selection is not None:
                 self.game.player.tryDropItem(items[selection])
 
@@ -996,7 +997,7 @@ class GuiApplication(object):
                 options = []
                 for a in targetTile.actors:
                     options.append(a.name + ' (' + str(a.currentHitPoints) + '/' + str(a.maxHitPoints) + ')')
-                selection = GuiUtilities.showMenu(self.surface_display, header, options)
+                selection = GuiUtilities.show_menu(self.surface_display, header, options)
                 if selection is None: return
                 else: myTarget = targetTile.actors[selection]
 

@@ -1,13 +1,10 @@
 """
-Created on Mar 21,  2014
-
-@author: pi
-
 This module contains all the constants that are used by the application.
 Note that all constants are CAPITAL letters only for clarity.
 """
 
 APPLICATION_NAME = "W@rrens II"
+SPLASH_IMAGE = "./Assets/TitleScreen.png"
 
 # RGB Colors
 COLOR_UNEXPLORED = (0, 0, 0)

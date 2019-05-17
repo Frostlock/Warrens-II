@@ -1,220 +1,220 @@
-'''
-Created on Mar 20, 2014
-
-@author: pi
-
+"""
 This module contains utility functions to show Messages and Menu's on a pygame surface.
-'''
+
+Credit:
+several of these methods where copied from 
+# https://www.pygame.org/wiki/TextWrapping?parent=CookBook
+
+"""
 import sys
-
 import pygame
-
-#import PygameClient.Utilities as Utilities
 from PygameClient import GuiCONSTANTS
 from WarrensGame import CONSTANTS
+from itertools import chain
 
 FONT_PANEL = None
 FONT_HEADER = None
 FONT_NORMAL = None
 
-def initFonts():
-    '''
+
+def init_fonts():
+    """
     This function will initialize the fonts
-    '''
+    """
     global FONT_PANEL, FONT_HEADER, FONT_NORMAL
     FONT_PANEL = pygame.font.Font(None, 20)
     FONT_HEADER = pygame.font.Font(None, 30)
     FONT_NORMAL = pygame.font.Font(None, 20)  
 
-#Thanks to unknow, found following functions at
-#https://www.pygame.org/wiki/TextWrapping?parent=CookBook
-
-from itertools import chain
 
 def truncline(text, font, maxwidth):
-        real=len(text)
-        stext=text
-        l=font.size(text)[0]
-        cut=0
-        a=0
-        done=1
+        real = len(text)
+        stext = text
+        l = font.size(text)[0]
+        cut = 0
+        a = 0
+        done = 1
         old = None
         while l > maxwidth:
-            a=a+1
-            n=text.rsplit(None, a)[0]
+            a = a+1
+            n = text.rsplit(None, a)[0]
             if stext == n:
                 cut += 1
-                stext= n[:-cut]
+                stext = n[:-cut]
             else:
                 stext = n
-            l=font.size(stext)[0]
-            real=len(stext)
-            done=0
+            l = font.size(stext)[0]
+            real = len(stext)
+            done = 0
         return real, done, stext
 
-def wrapline(text, font, maxwidth):
-    done=0
-    wrapped=[]
 
+def wrapline(text, font, maxwidth):
+    done = 0
+    wrapped = []
     while not done:
-        nl, done, stext=truncline(text, font, maxwidth)
+        nl, done, stext = truncline(text, font, maxwidth)
         wrapped.append(stext.strip())
-        text=text[nl:]
+        text = text[nl:]
     return wrapped
 
+
 def wrap_multi_line(text, font, maxwidth):
-    """ returns text taking new lines into account.
+    """
+    Returns text taking new lines into account.
     """
     lines = chain(*(wrapline(line, font, maxwidth) for line in text.splitlines()))
     return list(lines)
 
-#End of functions found at
-#https://www.pygame.org/wiki/TextWrapping?parent=CookBook
 
-def showMessageControls(target):
+def show_message_controls(target):
     header = "Controls"
-    message = "  Movement: keypad or arrowkeys\n" + \
+    message = "  Movement: numpad or arrowkeys\n" + \
               "  Attack: move towards target\n" + \
               "  Portals: > to go down, < to go up.\n" + \
-              "  Pick up item: key pad 0 \n" + \
+              "  Pick up item: numpad 0 \n" + \
               "  View and use inventory: i\n" + \
               "  Drop from inventory: d\n"
-              
-    showMessage(target, header, message)
+    show_message(target, header, message)
     
-def showMessage(target, header, message):
-    '''
+    
+def show_message(target, header, message):
+    """
     This function will show a pop up message in the middle of the target surface.
     It waits for the user to acknowledge the message by hitting enter or escape.
-    '''
+    """
     global FONT_HEADER, FONT_NORMAL
     lines = []
-    msgWidth = int(target.get_width()/2) 
+    msg_width = int(target.get_width()/2)
     
-    #Render the header
+    # Render the header
     line = FONT_HEADER.render(header, 1, GuiCONSTANTS.COLOR_FONT)
     lines.append(line)
-    headerWidth = line.get_rect().size[0]
-    if headerWidth > msgWidth: msgWidth = headerWidth
-    msgHeight = line.get_rect().size[1]
+    header_width = line.get_rect().size[0]
+    if header_width > msg_width:
+        msg_width = header_width
+    msg_height = line.get_rect().size[1]
 
-    #Render the lines of the message
-    split_message = wrap_multi_line(message, FONT_NORMAL, msgWidth)
+    # Render the lines of the message
+    split_message = wrap_multi_line(message, FONT_NORMAL, msg_width)
     for part in split_message:
         line = FONT_NORMAL.render(part, 1, GuiCONSTANTS.COLOR_FONT)
         lines.append(line)
-        lineWidth = line.get_rect().size[0]
-        if lineWidth > msgWidth: msgWidth = lineWidth
-        msgHeight += line.get_rect().size[1]
+        line_width = line.get_rect().size[0]
+        if line_width > msg_width:
+            msg_width = line_width
+        msg_height += line.get_rect().size[1]
 
-    #center message on the screen
-    x = target.get_width() / 2 - msgWidth / 2
-    y = target.get_height() / 2 - msgHeight / 2
-    
-    
-    #take copy of current screen
-    originalSurface = target.copy()
-    
-    #display message background
-    msgBackground = pygame.Surface((msgWidth,msgHeight), pygame.SRCALPHA)
-    msgBackground.fill(GuiCONSTANTS.COLOR_MENU_BG)
-    target.blit(msgBackground, (x,y))
+    # Center message on the screen
+    x = target.get_width() / 2 - msg_width / 2
+    y = target.get_height() / 2 - msg_height / 2
 
-    #display message
-    xOfset = x
-    yOfset = y
+    # Take copy of current screen
+    original_surface = target.copy()
+    
+    # Display message background
+    msg_background = pygame.Surface((msg_width, msg_height), pygame.SRCALPHA)
+    msg_background.fill(GuiCONSTANTS.COLOR_MENU_BG)
+    target.blit(msg_background, (x, y))
+
+    # Display message
+    x_offset = x
+    y_offset = y
     for line in lines:
-        target.blit(line, (xOfset,yOfset))
-        yOfset += line.get_rect().size[1]
-    
-    #refresh display
+        target.blit(line, (x_offset, y_offset))
+        y_offset += line.get_rect().size[1]
     pygame.display.flip()
     
-    #wait for user to acknowledge message
+    # Wait for user to acknowledge message
     loop = True
     while loop:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
                     loop = False
             
-    #restore original screen
-    target.blit(originalSurface, (0,0))
-    #refresh display
+    # Restore original screen
+    target.blit(original_surface, (0, 0))
     pygame.display.flip()        
 
-def showMenu(target, header, items):
-    '''
-    shows a menu with multiple items centered on the target surface
-    returns integer index of selected item or None
-    '''
+
+def show_menu(target, header, items, shortcut_keys=None):
+    """
+    Shows a menu with multiple items centered on the target surface.
+    If shortcut keys are not specified numeric keys will be generated.
+    Returns integer index of selected item or None
+    :param target: Target surface on top of which the menu will be displayed
+    :param header: Header text for the menu
+    :param items: Items to be shown in the menu
+    :param shortcut_keys: Shortcut keys to be used for menu selection
+    :return: Integer index of selected item or None
+    """
     global FONT_HEADER, FONT_NORMAL
     lines = []
-    msgWidth = int(target.get_width()/2)
+    msg_width = int(target.get_width()/2)
     
-    #Render the header
+    # Render the header
     line = FONT_HEADER.render(header, 1, GuiCONSTANTS.COLOR_FONT)
     lines.append(line)
-    headerWidth = line.get_rect().size[0]
-    if headerWidth > msgWidth: msgWidth = headerWidth
-    msgHeight = line.get_rect().size[1]
+    header_width = line.get_rect().size[0]
+    if header_width > msg_width:
+        msg_width = header_width
+    msg_height = line.get_rect().size[1]
 
-    #Render a line for every item
-    selectionCodes = []
+    if shortcut_keys is None:
+        # There is a problem here: This implementation only allows one digit input.
+        # Option 10 and above can not be selected: hitting 1 for 10 will in fact select option 1
+        shortcut_keys = [str(l) for l in range(0, len(items))]
+    # Render a line for every item
     for i in range(0, len(items)):
-        selectionCode = str(i)
-        selectionCodes.append(selectionCode)
-        line = FONT_NORMAL.render(selectionCode + ": " + items[i], 1, GuiCONSTANTS.COLOR_FONT)
+        line = FONT_NORMAL.render(shortcut_keys[i] + ": " + items[i], 1, GuiCONSTANTS.COLOR_FONT)
         lines.append(line)
-        lineWidth = line.get_rect().size[0]
-        if lineWidth > msgWidth: msgWidth = lineWidth
-        msgHeight += line.get_rect().size[1]
+        line_width = line.get_rect().size[0]
+        if line_width > msg_width:
+            msg_width = line_width
+        msg_height += line.get_rect().size[1]
         
-    #center message on the screen
-    x = int(target.get_width() / 2 - msgWidth / 2)
-    y = int(target.get_height() / 2 - msgHeight / 2)
+    # Center message on the screen
+    x = int(target.get_width() / 2 - msg_width / 2)
+    y = int(target.get_height() / 2 - msg_height / 2)
     
-    #take copy of current screen
-    originalSurface = target.copy()
+    # Take copy of current screen
+    original_surface = target.copy()
     
-    #display message background
-    msgBackground = pygame.Surface((msgWidth,msgHeight), pygame.SRCALPHA)
-    msgBackground.fill(GuiCONSTANTS.COLOR_MENU_BG)
-    target.blit(msgBackground, (x,y))
+    # Blit message background
+    msg_background = pygame.Surface((msg_width, msg_height), pygame.SRCALPHA)
+    msg_background.fill(GuiCONSTANTS.COLOR_MENU_BG)
+    target.blit(msg_background, (x, y))
 
-    #display message
-    xOfset = x
-    yOfset = y
+    # Blit message and refresh screen
+    x_offset = x
+    y_offset = y
     for line in lines:
-        target.blit(line, (xOfset,yOfset))
-        yOfset += line.get_rect().size[1]
-    
-    #refresh display
+        target.blit(line, (x_offset, y_offset))
+        y_offset += line.get_rect().size[1]
     pygame.display.flip()
     
-    #wait for the user to choose an option
+    # Wait for the user to choose an option
     loop = True
+    selection = None
     while loop:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.QUIT:
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    selection = None
                     loop = False
-                elif event.unicode in selectionCodes:
-                    # There is a problem here
-                    # This implementation only allows one digit input.
-                    # Therefore option 10 and above can not be selected: hitting 1 for 10 will in fact select option 1
-                    selection = int(event.unicode)
+                elif event.unicode in shortcut_keys:
+                    selection = shortcut_keys.index(event.unicode)
                     loop = False       
             
-    #restore original screen
-    target.blit(originalSurface, (0,0))
-    #refresh display
+    # Restore original screen
+    target.blit(original_surface, (0, 0))
     pygame.display.flip()
     
-    #return selected value 
+    # Return selected value
     return selection
 
 
@@ -229,7 +229,7 @@ def show_splash(target):
     original_surface = target.copy()
 
     # Show the splash screen
-    splash = pygame.image.load("./Assets/TitleScreen.png")
+    splash = pygame.image.load(GuiCONSTANTS.SPLASH_IMAGE)
     target.fill((0, 0, 0))
     x = int(target.get_width() / 2 - splash.get_width() / 2)
     y = int(target.get_height() / 2 - splash.get_height() / 2)
@@ -249,12 +249,13 @@ def show_splash(target):
     target.blit(original_surface, (0, 0))
     pygame.display.flip()
 
-def getElementColor(element):
-    '''
+
+def get_element_color(element):
+    """
     This function looks up the preferred color for the given element
     :param element: Element type
     :return: RGB color tuple
-    '''
+    """
     if element == CONSTANTS.HEAL:
         return GuiCONSTANTS.COLOR_RGB_HEAL
     elif element == CONSTANTS.WATER:
