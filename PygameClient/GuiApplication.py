@@ -256,8 +256,25 @@ class GuiApplication(object):
             print('Main Menu: ' + options[4])
             self.connect_to_server()
         else:
-            print('unknown selection...?')
-    
+            print('Main menu: unknown selection...?')
+
+    def show_game_menu(self):
+        options = ['Controls', 'Quit Game']
+        keys = ['c', 'q']
+        selection = GuiUtilities.show_menu(self.surface_display, 'Game Menu', options, keys)
+        if selection is None:
+            return
+        elif selection == 0:
+            print('Game Menu: ' + options[0])
+            GuiUtilities.show_message_controls(self.surface_display)
+        elif selection == 1:
+            print('Game Menu: ' + options[1])
+            self.surface_display.fill(GuiCONSTANTS.COLOR_PANEL)
+            pygame.display.flip()
+            self.run_game_loop = False
+        else:
+            print('Game Menu: unknown selection...?')
+
     def new_game(self):
         if self._game_server is not None:
             self._game_server.exit()
@@ -267,7 +284,7 @@ class GuiApplication(object):
         # Reset the game
         self.game.resetGame()
         # Show the Game
-        self.main_render_loop()
+        self.main_in_game_loop()
     
     def debug_maps(self):
         self._game_server = LocalServer()
@@ -291,19 +308,19 @@ class GuiApplication(object):
         self.game.resetPlayer()
         
         #Show the Game
-        self.main_render_loop()
+        self.main_in_game_loop()
 
     def connect_to_server(self):
         self._game_server = RemoteServer()
         # Show the Game
         # TODO: Merge the "simplified" versions in to the regular versions
-        self.main_render_loop()
+        self.main_in_game_loop()
 
-    def main_render_loop(self):
+    def main_in_game_loop(self):
         clock = pygame.time.Clock()
-        loop = True
+        self.run_game_loop = True
         self._gamePlayerTookTurn = False
-        while loop:
+        while self.run_game_loop:
             if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
                 start_time = time.time()
 
@@ -392,18 +409,18 @@ class GuiApplication(object):
                     self.event_targeting_stop()
                 else:
                     # Show Menu
-                    self.show_main_menu()
+                    self.show_game_menu()
             elif event.key == pygame.K_f:
                 self.fullscreen = not self.fullscreen
             # keyboard - keys that are active while playing
             if self.game.state == Game.PLAYING:
                 player = self.game.player
                 if player.state == Character.ACTIVE:
-                    #movement
+                    # Movement
                     global MOVEMENT_KEYS
                     if event.key in MOVEMENT_KEYS:
                         player.tryMoveOrAttack(*MOVEMENT_KEYS[event.key])
-                    #portal keys
+                    # Portal keys
                     elif event.key == pygame.K_PERIOD:
                         #check for shift modifier to detect ">" key.
                         mods = pygame.key.get_mods()
@@ -414,12 +431,12 @@ class GuiApplication(object):
                         mods = pygame.key.get_mods()
                         if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
                             player.tryFollowPortalUp()
-                    #inventory
+                    # Inventory
                     elif event.key == pygame.K_i:
                         self.use_inventory()
                     elif event.key == pygame.K_d:
                         self.drop_inventory()
-                    #interact
+                    # Interact
                     elif event.key == pygame.K_KP0:
                         player.tryInteract()
 

@@ -74,7 +74,8 @@ def show_message_controls(target):
               "  Portals: > to go down, < to go up.\n" + \
               "  Pick up item: numpad 0 \n" + \
               "  View and use inventory: i\n" + \
-              "  Drop from inventory: d\n"
+              "  Drop from inventory: d\n" + \
+              "  Toggle fullscreen: f\n"
     show_message(target, header, message)
     
     
