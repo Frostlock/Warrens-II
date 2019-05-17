@@ -1,5 +1,4 @@
 TODO: Add extra features
-Splashscreen
 Should be able to drop equiped gear? or not, might be good to avoid mistakes to not allow it (give message to unequip first)
 Show controls while in game
 Show player stats (see effect of gear)
@@ -12,4 +11,5 @@ TODO: Fix issues
 Scroll of confuse crashes game
 Should not be able to equip everything on top of eachother
 
-
+in the main event handler loop (and all others) check key events on their unicode to be independent of keyboard layout
+see also https://www.pygame.org/docs/ref/key.html

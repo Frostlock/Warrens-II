@@ -1,34 +1,20 @@
 """
-Created on Mar 16, 2014
-
-@author: pi
+This module contains a Pygame GUI implementation for the game.
+The GUI connects to a game server (local or remote) it can visualize and interact with the game.
 """
-
 import os
 import sys
 import time
-
 import pygame
 from pygame.locals import *
-
-from PygameClient import GuiCONSTANTS, GuiUtilities # ,Utilities
+from PygameClient import GuiCONSTANTS, GuiUtilities
 from WarrensGame.Actors import Character
 from WarrensGame.Effects import EffectTarget
 from WarrensGame.Game import Game
 from WarrensGame.GameServer import LocalServer, RemoteServer
 
-#################
-# Movement keys #
-#################
+# TODO: ideally this is refactored to pygame.event.unicode to be independent of keyboard layout.
 MOVEMENT_KEYS = {
-        pygame.K_h: (-1, +0),       # vi keys
-        pygame.K_l: (+1, +0),
-        pygame.K_j: (+0, +1),
-        pygame.K_k: (+0, -1),
-        pygame.K_y: (-1, -1),
-        pygame.K_u: (+1, -1),
-        pygame.K_b: (-1, +1),
-        pygame.K_n: (+1, +1),
         pygame.K_KP4: (-1, +0),     # numerical keypad
         pygame.K_KP6: (+1, +0),
         pygame.K_KP2: (+0, +1),
@@ -37,14 +23,10 @@ MOVEMENT_KEYS = {
         pygame.K_KP9: (+1, -1),
         pygame.K_KP1: (-1, +1),
         pygame.K_KP3: (+1, +1),
-        pygame.K_LEFT: (-1, +0),    # arrows and pgup/dn keys
+        pygame.K_LEFT: (-1, +0),    # arrows
         pygame.K_RIGHT: (+1, +0),
         pygame.K_DOWN: (+0, +1),
-        pygame.K_UP: (+0, -1),
-        pygame.K_HOME: (-1, -1),
-        pygame.K_PAGEUP: (+1, -1),
-        pygame.K_END: (-1, +1),
-        pygame.K_PAGEDOWN: (+1, +1),
+        pygame.K_UP: (+0, -1)
         }
 
 
@@ -127,15 +109,15 @@ class GuiApplication(object):
         return self._zoomFactor
 
     @property
-    def renderLevel(self):
+    def render_level(self):
         """
         Gets the Level object that is currently rendered in the viewport.
         This property helps identifying if the currentLevel in the game changes.
         """
         return self._renderLevel
     
-    @renderLevel.setter
-    def renderLevel(self, newRenderLevel):
+    @render_level.setter
+    def render_level(self, newRenderLevel):
         """
         Sets the Level object that is currently rendered in the viewport.
         This property helps identifying if the currentLevel in the game changes.
@@ -182,7 +164,7 @@ class GuiApplication(object):
         GuiUtilities.init_fonts()
         
         # Initialize properties
-        self.renderLevel = None
+        self.render_level = None
         self._draggingMode = False
         self._targetingMode = False
         self._game_server = None
@@ -253,9 +235,6 @@ class GuiApplication(object):
             self.show_main_menu()
 
     def show_main_menu(self):
-        # Welcome sequence
-        # GuiUtilities.showMessage(self.surface_display, 'Welcome!', 'Welcome to this bit of python code!\n It sure is not nethack :-).\n Now I only need to find a really really good intro story, maybe something about an evil wizard with a ring and bunch of small guys with hairy feet that are trying to destroy the ring. I bet that would be original. But hey in all seriousness, this is just some text to make sure that the auto wrapping feature works correctly.\n \n-Frost')
-        
         options = ['New local game', 'Controls', 'Quit', 'Debug Maps', 'Connect to server']
         keys = ['n', 'c', 'q', 'd', 's']
         selection = GuiUtilities.show_menu(self.surface_display, 'Main Menu', options, keys)
@@ -272,7 +251,7 @@ class GuiApplication(object):
             sys.exit()
         elif selection == 3:
             print('Main Menu: ' + options[3])
-            self.debugMaps()
+            self.debug_maps()
         elif selection == 4:
             print('Main Menu: ' + options[4])
             self.connect_to_server()
@@ -288,9 +267,9 @@ class GuiApplication(object):
         # Reset the game
         self.game.resetGame()
         # Show the Game
-        self.mainRenderLoop()
+        self.main_render_loop()
     
-    def debugMaps(self):
+    def debug_maps(self):
         self._game_server = LocalServer()
         #Create a game
         self.game_server.new_game()
@@ -312,15 +291,15 @@ class GuiApplication(object):
         self.game.resetPlayer()
         
         #Show the Game
-        self.mainRenderLoop()
+        self.main_render_loop()
 
     def connect_to_server(self):
         self._game_server = RemoteServer()
         # Show the Game
         # TODO: Merge the "simplified" versions in to the regular versions
-        self.mainRenderLoop()
+        self.main_render_loop()
 
-    def mainRenderLoop(self):
+    def main_render_loop(self):
         clock = pygame.time.Clock()
         loop = True
         self._gamePlayerTookTurn = False
@@ -455,8 +434,8 @@ class GuiApplication(object):
         # Initialize maximum tile size for current viewport
         vpWidth = self.surface_viewport.get_size()[0]
         vpHeight = self.surface_viewport.get_size()[1]
-        maxTileWidth = int(vpWidth // self.renderLevel.map["width"])
-        maxTileHeight = int(vpHeight // self.renderLevel.map["height"])
+        maxTileWidth = int(vpWidth // self.render_level.map["width"])
+        maxTileHeight = int(vpHeight // self.render_level.map["height"])
         if maxTileWidth < maxTileHeight:
             maxTileSize = maxTileWidth
         else:
@@ -468,8 +447,8 @@ class GuiApplication(object):
         self._viewPortFont = pygame.font.Font(None, int(1.5 * self.tile_size))
 
         # Determine max coords for view port location
-        totalWidth = self.renderLevel.map["width"] * self.tile_size
-        totalHeight = self.renderLevel.map["height"] * self.tile_size
+        totalWidth = self.render_level.map["width"] * self.tile_size
+        totalHeight = self.render_level.map["height"] * self.tile_size
         self._renderViewPortMaxX = totalWidth - self._render_viewport_w
         self._renderViewPortMaxY = totalHeight - self._render_viewport_h
         if self._renderViewPortMaxX < 0:
@@ -486,8 +465,8 @@ class GuiApplication(object):
         Main render function
         """
         # Detect new level loaded
-        if self.renderLevel is not self.game_server.level:
-            self.renderLevel = self.game_server.level
+        if self.render_level is not self.game_server.level:
+            self.render_level = self.game_server.level
             self.render_init()
 
         # Update viewport
@@ -606,8 +585,8 @@ class GuiApplication(object):
             startY = int(self._renderViewPortY // self.tile_size)
             stopX = startX + int(self._render_viewport_w // self.tile_size) + 1
             stopY = startY + int(self._render_viewport_h // self.tile_size) + 1
-            if stopX > self.renderLevel.map["width"]: stopX = self.renderLevel.map["width"]
-            if stopY > self.renderLevel.map["height"]: stopY = self.renderLevel.map["height"]
+            if stopX > self.render_level.map["width"]: stopX = self.render_level.map["width"]
+            if stopY > self.render_level.map["height"]: stopY = self.render_level.map["height"]
         
             # The viewport is not aligned perfectly with the tiles, we need to track the offset.
             self._renderViewPortXOffSet = startX * self.tile_size - self._renderViewPortX
@@ -616,7 +595,7 @@ class GuiApplication(object):
             tileCount = 0
             for curX in range(startX, stopX):
                 for curY in range(startY, stopY):
-                    tile = self.renderLevel.map["tiles"][curX][curY]
+                    tile = self.render_level.map["tiles"][curX][curY]
                     vpX = (tile["x"] - startX) * self.tile_size + self._renderViewPortXOffSet
                     vpY = (tile["y"] - startY) * self.tile_size + self._renderViewPortYOffSet
                     tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
@@ -707,8 +686,8 @@ class GuiApplication(object):
                         self.surface_viewport.blit(self.surface_popup, (tileRect.x - self.surface_popup.get_width(), tileRect.y))
 
             # Show level name in top left hand
-            if self.renderLevel is not None:
-                blitText = GuiUtilities.FONT_PANEL.render(self.renderLevel.name, 1, GuiCONSTANTS.COLOR_PANEL_FONT)
+            if self.render_level is not None:
+                blitText = GuiUtilities.FONT_PANEL.render(self.render_level.name, 1, GuiCONSTANTS.COLOR_PANEL_FONT)
                 self.surface_viewport.blit(blitText, (6, 2))
         
     def render_popup(self, tile):
@@ -798,7 +777,7 @@ class GuiApplication(object):
             frameRateLimit = 5 * flashes
             clock.tick(frameRateLimit)
 
-    def animation_nova(self, color, centerTile, radius=0):
+    def animation_nova(self, color, center_tile, radius=0):
         # R, G, B = color
         if radius == 0: 
             ripples = 1
@@ -807,7 +786,7 @@ class GuiApplication(object):
             ripples = radius * 2
             radius = radius * self.tile_size
         # origin of Nova will be the middle of centerTile
-        displayX, displayY = self.calculate_display_coords(centerTile)
+        displayX, displayY = self.calculate_display_coords(center_tile)
         origX = int(displayX + self.tile_size / 2)
         origY = int(displayY + self.tile_size / 2)
         
