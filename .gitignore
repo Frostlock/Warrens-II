@@ -1,0 +1,8 @@
+# exclude the NonGit subfolder
+non_git/
+
+# exclude compiled python files
+*.py[cod]
+
+# exclude pycharm project information
+.idea/
