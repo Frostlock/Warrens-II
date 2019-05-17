@@ -172,8 +172,8 @@ def showMenu(target, header, items):
         msgHeight += line.get_rect().size[1]
         
     #center message on the screen
-    x = target.get_width() / 2 - msgWidth / 2
-    y = target.get_height() / 2 - msgHeight / 2
+    x = int(target.get_width() / 2 - msgWidth / 2)
+    y = int(target.get_height() / 2 - msgHeight / 2)
     
     #take copy of current screen
     originalSurface = target.copy()
@@ -217,6 +217,37 @@ def showMenu(target, header, items):
     #return selected value 
     return selection
 
+
+def show_splash(target):
+    """
+    shows a menu with multiple items centered on the target surface
+    returns integer index of selected item or None
+    :param target: Surface on which to show the splash screen
+    :return: None
+    """
+    # Keep copy of original surface
+    original_surface = target.copy()
+
+    # Show the splash screen
+    splash = pygame.image.load("./Assets/TitleScreen.png")
+    target.fill((0, 0, 0))
+    x = int(target.get_width() / 2 - splash.get_width() / 2)
+    y = int(target.get_height() / 2 - splash.get_height() / 2)
+    target.blit(splash, (x, y))
+    pygame.display.flip()
+
+    # wait for the user to hit a key
+    loop = True
+    while loop:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                sys.exit()
+            if e.type == pygame.KEYDOWN:
+                loop = False
+
+    # Restore original screen
+    target.blit(original_surface, (0, 0))
+    pygame.display.flip()
 
 def getElementColor(element):
     '''

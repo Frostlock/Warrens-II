@@ -243,7 +243,16 @@ class GuiApplication(object):
         # Initialize rendering parameters
         self.render_init()
 
-    def showMainMenu(self):
+    def show_splash_screen(self):
+        """
+        Show the splash screen followed by and unending loop of the main menu.
+        :return:
+        """
+        GuiUtilities.show_splash(self.surface_display)
+        while True:
+            self.show_main_menu()
+
+    def show_main_menu(self):
         # Welcome sequence
         # GuiUtilities.showMessage(self.surface_display, 'Welcome!', 'Welcome to this bit of python code!\n It sure is not nethack :-).\n Now I only need to find a really really good intro story, maybe something about an evil wizard with a ring and bunch of small guys with hairy feet that are trying to destroy the ring. I bet that would be original. But hey in all seriousness, this is just some text to make sure that the auto wrapping feature works correctly.\n \n-Frost')
         
@@ -403,7 +412,7 @@ class GuiApplication(object):
                     self.event_targeting_stop()
                 else:
                     # Show Menu
-                    self.showMainMenu()
+                    self.show_main_menu()
             elif event.key == pygame.K_f:
                 self.fullscreen = not self.fullscreen
             # keyboard - keys that are active while playing
