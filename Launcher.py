@@ -1,4 +1,4 @@
-from PygameClient.GuiApplication import GuiApplication
+from WarrensClient.GuiApplication import GuiApplication
 
 """
 Launcher script

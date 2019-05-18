@@ -206,7 +206,7 @@ class LocalServer(Server):
         Terminates the server thread.
         :return: None
         """
-        super(Server, self).stop()
+        Server.stop(self)
         self.server_thread.stop()
 
     def new_local_game(self):
@@ -380,7 +380,7 @@ class ServerThread(threading.Thread):
         if self.socket:
             # Since the run loop is blocked waiting for a new connection we force shutdown the socket
             self.socket.shutdown(socket.SHUT_RDWR)
-            self.socket.close_connection()
+            self.socket.close()
             self.socket = None
 
     def __del__(self):
@@ -436,7 +436,7 @@ class ServerClientThread(threading.Thread, Server):
                     # Stop if main server thread has stopped
                     self.stop()
             # Close client socket
-            self.close_connection()
+            self.close()
             print("End of thread for client " + str(self.client_address))
         except Exception as e:
             self.error = e

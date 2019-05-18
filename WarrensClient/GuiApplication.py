@@ -7,7 +7,7 @@ import sys
 import time
 import pygame
 from pygame.locals import *
-from PygameClient import GuiCONSTANTS, GuiUtilities
+from WarrensClient import GuiCONSTANTS, GuiUtilities
 from WarrensGame.Actors import Character
 from WarrensGame.Effects import EffectTarget
 from WarrensGame.Game import Game

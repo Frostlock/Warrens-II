@@ -26,7 +26,7 @@ class TestGame(unittest.TestCase):
         CONSTANTS.SHOW_COMBAT_LOGGING = True
         CONSTANTS.SHOW_GENERATION_LOGGING = False
 
-        self.game = Game.Game()
+        self.game = Game.WarrensGame()
         self.game.setup_new_game()
         
     @classmethod

@@ -24,7 +24,7 @@ class TestGui(unittest.TestCase):
         CONSTANTS.SHOW_GAME_LOGGING = True
         CONSTANTS.SHOW_GENERATION_LOGGING = False
 
-        self.game = Game.Game()
+        self.game = Game.WarrensGame()
         #Force quickstart (so we know where the portals are
         CONSTANTS.QUICKSTART = True
         self.game.setup_new_game()

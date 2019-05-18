@@ -103,7 +103,7 @@ class Game(object):
     def __init__(self):
         """
         Constructor to create a new game
-        :rtype : Game
+        :rtype : WarrensGame
         """
         # Initialize class variables
         self._player = None

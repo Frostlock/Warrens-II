@@ -8,7 +8,7 @@ several of these methods where copied from
 """
 import sys
 import pygame
-from PygameClient import GuiCONSTANTS
+from WarrensClient import GuiCONSTANTS
 from WarrensGame import CONSTANTS
 from itertools import chain
 
