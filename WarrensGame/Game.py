@@ -114,7 +114,25 @@ class Game(object):
         self._monsterLibrary = MonsterLibrary()
         self._itemLibrary = ItemLibrary()
 
-    def resetGame(self):
+    def setup_debug_game(self):
+        """
+        Similar to setup_new_game() but a utility function to enable debugging of new features.
+        :return:
+        """
+        # Create some maps to debug
+        self._levels = []
+
+        # Debug town level
+        level_name = "Debugging Level"
+        level_difficulty = 1
+        debug_level = CaveLevel(self, level_difficulty, level_name)
+        self.levels.append(debug_level)
+        self._currentLevel = debug_level
+
+        # Create player
+        self.resetPlayer()
+
+    def setup_new_game(self):
         """
         Resets this Game class to a play a new game.
         :rtype : None

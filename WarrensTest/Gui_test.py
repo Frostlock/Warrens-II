@@ -27,7 +27,7 @@ class TestGui(unittest.TestCase):
         self.game = Game.Game()
         #Force quickstart (so we know where the portals are
         CONSTANTS.QUICKSTART = True
-        self.game.resetGame()
+        self.game.setup_new_game()
         self.mainWindow = MainWindow()
         self.mainWindow.game = self.game
     

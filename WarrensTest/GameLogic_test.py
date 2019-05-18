@@ -27,7 +27,7 @@ class TestGame(unittest.TestCase):
         CONSTANTS.SHOW_GENERATION_LOGGING = False
 
         self.game = Game.Game()
-        self.game.resetGame()
+        self.game.setup_new_game()
         
     @classmethod
     def tearDownClass(self):

@@ -105,12 +105,22 @@ class LocalServer(Server):
         """
         self.server_thread.stop()
 
-    def new_game(self):
+    def new_local_game(self):
         """
         Setup a new game.
         :return: None
         """
         self._game = Game()
+        self.game.setup_new_game()
+
+    def new_debug_game(self):
+        """
+        Setup a debug game.
+        This allows to create custom game setup to debug new features.
+        :return: None
+        """
+        self._game = Game()
+        self.game.setup_debug_game()
 
     def process(self):
         """

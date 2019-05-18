@@ -125,7 +125,7 @@ class GuiApplication(object):
         self._renderLevel = newRenderLevel
     
     @property
-    def targetingMode(self):
+    def targeting_mode(self):
         """
         Returns boolean indicating whether GUI is in targeting mode or not.
         Targeting mode is used when the game requires the GUI to target something.
@@ -133,7 +133,7 @@ class GuiApplication(object):
         return self._targetingMode
     
     @property 
-    def draggingMode(self):
+    def dragging_mode(self):
         """
         Returns boolean indicating whether a mouse dragging operation is going on at the moment.
         """
@@ -269,51 +269,42 @@ class GuiApplication(object):
             GuiUtilities.show_message_controls(self.surface_display)
         elif selection == 1:
             print('Game Menu: ' + options[1])
-            self.surface_display.fill(GuiCONSTANTS.COLOR_PANEL)
-            pygame.display.flip()
-            self.run_game_loop = False
+            self.stop_game()
         else:
             print('Game Menu: unknown selection...?')
 
-    def new_game(self):
+    def stop_game(self):
         if self._game_server is not None:
             self._game_server.exit()
+        # Clear screen
+        self.surface_display.fill(GuiCONSTANTS.COLOR_PANEL)
+        pygame.display.flip()
+        # Interrupt game loop
+        self.run_game_loop = False
+
+    def new_game(self):
+        # Stop a potential running game
+        self.stop_game()
+        # Setup a new game
+        # TODO: might be able to reuse existing server?
         self._game_server = LocalServer()
-        # Create a game
-        self.game_server.new_game()
-        # Reset the game
-        self.game.resetGame()
+        self.game_server.new_local_game()
         # Show the Game
         self.main_in_game_loop()
     
     def debug_maps(self):
+        # Stop a potential running game
+        self.stop_game()
+        # Setup a local debug game
         self._game_server = LocalServer()
-        #Create a game
-        self.game_server.new_game()
-
-        # TODO: Move this into the game class, not sense messing about here.
-        #Create some maps to debug
-        self.game._levels = []
-        
-        from WarrensGame import Levels
-        
-        #town level
-        levelName = "Debug Map"
-        levelDifficulty = 1
-        town = Levels.CaveLevel(self.game, levelDifficulty, levelName)
-        self.game.levels.append(town)
-        self.game._currentLevel = town
-        
-        #Create player (without a player the rendering loop fails)
-        self.game.resetPlayer()
-        
-        #Show the Game
+        self.game_server.new_debug_game()
+        # Show the Game
         self.main_in_game_loop()
 
     def connect_to_server(self):
+        # Connect to remote server
         self._game_server = RemoteServer()
         # Show the Game
-        # TODO: Merge the "simplified" versions in to the regular versions
         self.main_in_game_loop()
 
     def main_in_game_loop(self):
@@ -329,12 +320,12 @@ class GuiApplication(object):
             if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
                 network_time = time.time() - start_time
 
-            #render the screen
+            # Render the screen
             self.render_screen()
             if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
                 render_time = time.time() - start_time - network_time
 
-            #handle pygame (GUI) events
+            # Handle pygame (GUI) events
             events = pygame.event.get()
             for event in events:
                 self.handle_event(event)
@@ -404,7 +395,7 @@ class GuiApplication(object):
         elif event.type == pygame.KEYDOWN:
             # Keyboard - keys that are always active in gaming mode
             if event.key == pygame.K_ESCAPE:
-                if self.targetingMode:
+                if self.targeting_mode:
                     # get out of targeting mode
                     self.event_targeting_stop()
                 else:
@@ -677,7 +668,7 @@ class GuiApplication(object):
             y = tileRect.y + (tileRect.height / 2 - textImg.get_height() / 2)
             self.surface_viewport.blit(textImg, (x, y))
 
-            if self.targetingMode:
+            if self.targeting_mode:
                 # Indicate we are in targeting mode
                 blitText = GuiUtilities.FONT_PANEL.render("Select target (Escape to cancel)", 1, (255, 0, 0))
                 self.surface_viewport.blit(blitText, (6, 2 + blitText.get_height()))
@@ -850,7 +841,7 @@ class GuiApplication(object):
 
     def event_mouse_movement(self):
         #check for on going drag
-        if self.draggingMode:
+        if self.dragging_mode:
             #get relative distance of mouse since last call to get_rel()
             rel = pygame.mouse.get_rel()
             #calculate new viewport coords
