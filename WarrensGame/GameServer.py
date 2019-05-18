@@ -1,6 +1,7 @@
 import json
 import socket
 import threading
+from queue import Queue
 import WarrensGame.Utilities as Utilities
 from WarrensGame.Game import Game
 
@@ -121,12 +122,21 @@ class Server(object):
             self.socket.close()
             self._socket = None
 
+    def put_game_message(self, header, json_message):
+        """
+        Push a game message for communication.
+        :param header: Message header
+        :param json_message: Message content
+        :return: None
+        """
+        raise NotImplementedError("Implementation for put_game_message() method missing in " + self.__class__.__name__)
+
     def process(self):
         """
         Process communication backlog.
         :return: None
         """
-        raise NotImplementedError("Implementation for processEventQueue() method missing in " + self.__class__.__name__)
+        raise NotImplementedError("Implementation for process() method missing in " + self.__class__.__name__)
 
     def stop(self):
         """
@@ -144,10 +154,20 @@ class Server(object):
 
 
 # TODO: Need to shutdown server when killing application (when restarting immediately port stays blocked)
-class LocalServer(Server):
+class LocalServer(Server, threading.Thread):
     """
-    Server wrapper around a Game.
+    Game server running a local game and enabling remote clients to connect to it.
+    This object will spawn an additional primary server thread that listens for incoming connection requests from clients.
+    A client specific thread is created for every client that connects.
     """
+    @property
+    def client_threads(self):
+        """
+        Running client threads.
+        Client threads that exit or crash remove themselves from this list.
+        :return:
+        """
+        return self._client_threads
 
     @property
     def game(self):
@@ -179,36 +199,6 @@ class LocalServer(Server):
             self._level_proxy = Proxy(self.game.currentLevel.json)
         return self._level_proxy
 
-    @property
-    def server_thread(self):
-        """
-        Simple Socket Server thread.
-        Dedicated thread to handle cllient-server communication.
-        This enables the GameServer to communicate with the GameClient.
-        :return:
-        """
-        return self._server_thread
-
-    def __init__(self):
-        """
-        Constructor to create a new game server.
-        """
-        self._game = None
-        self._player_json = None
-        self._player_proxy = None
-        self._level_json = None
-        self._level_proxy = None
-        self._server_thread = ServerThread("localhost", 8889)
-
-    def stop(self):
-        """
-        Clean exit of the server processes.
-        Terminates the server thread.
-        :return: None
-        """
-        Server.stop(self)
-        self.server_thread.stop()
-
     def new_local_game(self):
         """
         Setup a new game.
@@ -229,32 +219,117 @@ class LocalServer(Server):
     def process(self):
         """
         Process communication backlog.
-        Server will broadcast current event queue to all clients.
+        Server will receive messages from connected clients.
+        Since every client has its own thread there is not much to do here.
+        Processing is handled in the client threads.
         :return: None
         """
-        self.broadcast_event_queue()
+        pass  # self.broadcast_event_queue()
 
-    def broadcast_event_queue(self):
+    # def broadcast_event_queue(self):
+    #     """
+    #     Broadcast backlog of game messages to all gameclients.
+    #     The aim is to send only the relevant information in JSON format.
+    #     :return: None
+    #     """
+    #     if self.game is not None:
+    #         while Utilities.event_queue.qsize() > 0:
+    #             json = Utilities.event_queue.get()
+    #             self.server_thread.broadcast(json)
+
+    # def broadcast(self, data):
+    #     """
+    #     Send the same data to all currently connected clients.
+    #     :param data: JSON object
+    #     :return: None
+    #     """
+    #     for ct in self.client_threads:
+    #         ct.send(data)
+
+    def put_game_message(self, header, json_msg):
         """
-        Broadcast backlog of game messages to all gameclients.
-        The aim is to send only the relevant information in JSON format.
+
+        :param header:
+        :param json_msg:
+        :return:
+        """
+        for ct in self.client_threads:
+            ct.send({header: json_msg})
+
+    def __init__(self, host, port):
+        """
+        Constructor for game server. This will spawn a new thread that accepts incoming client connections.
+        :param host: localhost or IP
+        :param port: port to listen for incoming connections
+        """
+        threading.Thread.__init__(self)
+        self.host = host
+        self.port = port
+        self._socket = socket.socket()
+        self.socket.bind((host, port))
+        self.socket.listen(5)
+        self.running = False
+        self.daemon = True  # This will stop the server thread in case the main thread crashes or ends
+        self.error = None
+        self._client_threads = []
+
+        self._game = None
+        self._player_json = None
+        self._player_proxy = None
+        self._level_json = None
+        self._level_proxy = None
+
+        Utilities.game_server = self
+
+        self.start()  # This kicks of the run() method
+
+    def run(self):
+        """
+        Main loop of the server in which new client connections are established.
+        This is started automatically through the Constructor which starts the thread.
         :return: None
         """
-        # What is needed here?
-        # Send full or delta?
-        #
-        # Full
-        # - Map
-        # - Actors currently visible
-        # - Field of view?
-        # - Player position
-        # Delta
-        # - Actors currently visible
-        # - Player position
-        if self.game is not None:
-            while Utilities.event_queue.qsize() > 0:
-                json = Utilities.event_queue.get()
-                self.server_thread.broadcast(json)
+        try:
+            print("Starting server")
+            self.running = True
+            while self.running:
+                # Wait for a new client connection request
+                client_socket, client_address = self.socket.accept()
+                # Spawn a new thread to handle the client
+                thread = ServerClientThread(self, client_socket, client_address)
+                self.client_threads.append(thread)
+            print("Server stopped")
+        except Exception as e:
+            self.error = e
+            self.stop()
+            print("ERROR: Server crashed")
+            raise e
+
+    def stop(self):
+        """
+        Clean exit of the server processes.
+        Stop waiting for new connections and terminate the server thread.
+        This will also indirectly end the client specific worker threads.
+        (they are dependent daemon threads and they stop running if the server stops running.)
+        :return: None
+        """
+        Server.stop(self)
+        self.running = False
+        if self.socket:
+            # Since the run loop is blocked waiting for a new connection we force shutdown the socket
+            self.socket.shutdown(socket.SHUT_RDWR)
+            self.socket.close()
+            self.socket = None
+
+    def __del__(self):
+        """
+        Destructor, called upon garbage collection.
+        :return: None
+        """
+        self.stop()
+        # if self.socket:
+        #     self.socket.close()
+        #     self.socket = None
 
 
 class RemoteServer(Server):
@@ -281,6 +356,8 @@ class RemoteServer(Server):
         self._player = None
         self._current_level = None
 
+        Utilities.game_server = self
+
     def process(self):
         """
         Process communication backlog.
@@ -290,10 +367,10 @@ class RemoteServer(Server):
         self.receive_from_server()
 
     def receive_from_server(self):
-        json = self.receive()
-        if json is not None:
-            Utilities.message("Received: " + str(json), "NETWORK")
-            for header, json in json.items():
+        message = self.receive()
+        if message is not None:
+            Utilities.message("Received: " + str(message), "NETWORK")
+            for header, json in message.items():
                 if header == "Player":
                     self._player = Proxy(json)
                 elif header == "Level":
@@ -304,94 +381,14 @@ class RemoteServer(Server):
                 else:
                     Utilities.message("WARNING: Missing implementation for header " + header, "NETWORK")
 
-
-class ServerThread(threading.Thread):
-    """
-    Main server thread that listens for incoming connection requests from clients.
-    A client specific thread is created for every client that connects.
-    """
-
-    @property
-    def client_threads(self):
+    def put_game_message(self, header, json_msg):
         """
-        Running client threads.
-        Client threads that exit or crash remove themselves from this list.
+
+        :param header:
+        :param json_msg:
         :return:
         """
-        return self._client_threads
-
-    def __init__(self, host, port):
-        """
-        Constructor which spawns and starts a new thread for the main loop of the server.
-        :param host: localhost or IP
-        :param port: port to listen for incoming connections
-        """
-        threading.Thread.__init__(self)
-        self.host = host
-        self.port = port
-        self.socket = socket.socket()
-        self.socket.bind((host, port))
-        self.socket.listen(5)
-        self.running = False
-        self.daemon = True  # This will stop the server thread in case the main thread crashes or ends
-        self.error = None
-        self._client_threads = []
-        self.start()  # This kicks of the run() method
-
-    def run(self):
-        """
-        Main loop of the server in which new client connections are established.
-        This is started automatically through the Constructor which starts the thread.
-        :return: None
-        """
-        try:
-            print("Starting server")
-            self.running = True
-            while self.running:
-                # Wait for a new client connection request
-                client_socket, client_address = self.socket.accept()
-                # Spawn a new thread to handle the client
-                thread = ServerClientThread(self, client_socket, client_address)
-                self.client_threads.append(thread)
-            print("Server stopped")
-        except Exception as e:
-            self.error = e
-            self.stop()
-            print("ERROR: Server crashed")
-            raise e
-
-    def broadcast(self, data):
-        """
-        Send the same data to all currently connected clients.
-        :param data: JSON object
-        :return: None
-        """
-        for ct in self.client_threads:
-            ct.send(data)
-
-    def stop(self):
-        """
-        Stop waiting for new connections and terminate the server thread.
-        This will also indirectly end the client specific worker threads.
-        (they are dependent daemon threads and they stop running if the server stops running.)
-        :return: None
-        """
-        self.running = False
-        if self.socket:
-            # Since the run loop is blocked waiting for a new connection we force shutdown the socket
-            self.socket.shutdown(socket.SHUT_RDWR)
-            self.socket.close()
-            self.socket = None
-
-    def __del__(self):
-        """
-        Destructor, called upon garbage collection.
-        :return: None
-        """
-        self.stop()
-        # if self.socket:
-        #     self.socket.close()
-        #     self.socket = None
+        print("Warning: put_game_message() not implemented for remoteServer")
 
 
 class ServerClientThread(threading.Thread, Server):
@@ -423,11 +420,14 @@ class ServerClientThread(threading.Thread, Server):
         """
         try:
             print("Starting thread for client " + str(self.client_address))
+            # Send latest known relevant information to client
+            self.send({"Player": self.server_thread._player_json})
+            self.send({"Level": self.server_thread._level_json})
             while self.running:
                 json_data = self.receive()
                 if json_data is not None:
                     print(str(self.socket.getpeername()) + "-> " + str(json_data))
-                    # TODO: Replace this with a callback method or a message queue in the server thread
+                    # TODO: Receive information from client and act on it
                 # Exit criteria
                 if self.socket is None:
                     # Stop if socket is no longer available

@@ -331,11 +331,14 @@ class Game(object):
             # Remove effects that are no longer active
             for effect in toRemove:
                 self.activeEffects.remove(effect)
-            # # Broadcast game state
-            # self.broadcastGameState()
+            # Broadcast game state
+            self.broadcast_game_state()
             return True
         else:
             return False
+
+    def broadcast_game_state(self):
+        Utilities.game_event("Level", self.currentLevel.json)
 
     def getPossibleTargets(self, seeker):
         '''

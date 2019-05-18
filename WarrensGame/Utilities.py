@@ -5,7 +5,6 @@ Module with reusable utility functions
 import math
 import random
 from collections import deque
-from queue import Queue
 
 import WarrensGame.CONSTANTS as CONSTANTS
 
@@ -55,28 +54,33 @@ def randomChoiceIndex(chances):
 
 # Buffer to keep track of game messages
 messageBuffer = deque([])
-# Queue to keep track of game events
-event_queue = Queue(maxsize=CONSTANTS.GAME_EVENT_QUEUE_SIZE)
-# TODO: might be better to have the queue in the server class and even have client specific queues at some point.
+# # Queue to keep track of game events
+# event_queue = Queue(maxsize=CONSTANTS.GAME_EVENT_QUEUE_SIZE)
+game_server = None
+
 
 def reset_utility_queues():
-    global messageBuffer, event_queue
+    global messageBuffer, game_server
     messageBuffer = deque([])
-    event_queue = Queue(maxsize=CONSTANTS.GAME_EVENT_QUEUE_SIZE)
+    # if game_server is not None:
+    #     game_server.reset_queues()
 
-# # The available event headers
-# headers = ["PLAYER", "ACTOR"]
+
 def game_event(header, json):
     """
     Utility function to report game events to the game server.
     This allows game objects to send updates via the game server to game clients
+    :param header: message header
     :param json: json encoded game information
     :return: None
     """
-    global event_queue
-    event_queue.put({header: json})
-    if event_queue.full():
-        raise GameError("event queue full")
+    global game_server
+    if game_server is not None:
+        game_server.put_game_message(header, json)
+    # global event_queue
+    # event_queue.put({header: json})
+    # if event_queue.full():
+    #     raise GameError("event queue full")
 
 
 # TODO: define the categories as CONSTANTS and not as a string passed to the message() method

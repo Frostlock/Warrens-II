@@ -287,7 +287,7 @@ class GuiApplication(object):
         self.stop_game()
         # Setup a new game
         # TODO: might be able to reuse existing server?
-        self._game_server = LocalServer()
+        self._game_server = LocalServer("localhost", 8889)
         self.game_server.new_local_game()
         # Show the Game
         self.main_in_game_loop()
@@ -356,7 +356,6 @@ class GuiApplication(object):
                       "s " + str(len(events)) +
                       " events: " + str(event_time) + "s")
 
-    # TODO: need to check this for RemoteServer compatibility
     def handle_event(self, event):
         """
         Handle a single Pygame event.
@@ -403,33 +402,36 @@ class GuiApplication(object):
                     self.show_game_menu()
             elif event.key == pygame.K_f:
                 self.fullscreen = not self.fullscreen
-            # keyboard - keys that are active while playing
-            if self.game.state == Game.PLAYING:
-                player = self.game.player
-                if player.state == Character.ACTIVE:
-                    # Movement
-                    global MOVEMENT_KEYS
-                    if event.key in MOVEMENT_KEYS:
-                        player.tryMoveOrAttack(*MOVEMENT_KEYS[event.key])
-                    # Portal keys
-                    elif event.key == pygame.K_PERIOD:
-                        #check for shift modifier to detect ">" key.
-                        mods = pygame.key.get_mods()
-                        if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
-                            player.tryFollowPortalDown()
-                    elif event.key == pygame.K_COMMA:
-                        # check for shift modifier to detect "<" key.
-                        mods = pygame.key.get_mods()
-                        if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
-                            player.tryFollowPortalUp()
-                    # Inventory
-                    elif event.key == pygame.K_i:
-                        self.use_inventory()
-                    elif event.key == pygame.K_d:
-                        self.drop_inventory()
-                    # Interact
-                    elif event.key == pygame.K_KP0:
-                        player.tryInteract()
+
+            # TODO: Implement for RemoteServer
+            if isinstance(self.game_server, LocalServer):
+                # keyboard - keys that are active while playing
+                if self.game.state == Game.PLAYING:
+                    player = self.game.player
+                    if player.state == Character.ACTIVE:
+                        # Movement
+                        global MOVEMENT_KEYS
+                        if event.key in MOVEMENT_KEYS:
+                            player.tryMoveOrAttack(*MOVEMENT_KEYS[event.key])
+                        # Portal keys
+                        elif event.key == pygame.K_PERIOD:
+                            #check for shift modifier to detect ">" key.
+                            mods = pygame.key.get_mods()
+                            if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
+                                player.tryFollowPortalDown()
+                        elif event.key == pygame.K_COMMA:
+                            # check for shift modifier to detect "<" key.
+                            mods = pygame.key.get_mods()
+                            if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
+                                player.tryFollowPortalUp()
+                        # Inventory
+                        elif event.key == pygame.K_i:
+                            self.use_inventory()
+                        elif event.key == pygame.K_d:
+                            self.drop_inventory()
+                        # Interact
+                        elif event.key == pygame.K_KP0:
+                            player.tryInteract()
 
     def render_init(self):
         """
@@ -438,7 +440,7 @@ class GuiApplication(object):
         """
         if self.game_server is None:
             return
-
+        print("render init")
         # Initialize maximum tile size for current viewport
         vpWidth = self.surface_viewport.get_size()[0]
         vpHeight = self.surface_viewport.get_size()[1]
@@ -472,14 +474,13 @@ class GuiApplication(object):
         """
         Main render function
         """
-        # Detect new level loaded
-        if self.render_level is not self.game_server.level:
-            self.render_level = self.game_server.level
-            self.render_init()
-
-        # Update viewport
-        # TODO: Implement for RemoteServer
-        if isinstance(self.game_server, LocalServer):
+        if self.game_server.level is not None:
+            # Detect new level loaded
+            if self.render_level is None or (self.render_level.name != self.game_server.level.name):
+                # TODO: get rid of self.render_level, use self.game_server.level instead
+                self.render_level = self.game_server.level
+                self.render_init()
+            # Update viewport
             self.render_viewport()
         
         # Update panel
@@ -588,63 +589,64 @@ class GuiApplication(object):
             # Make sure field of view is up to date
             self.game.currentLevel.map.updateFieldOfView(self.game.player.tile.x, self.game.player.tile.y)
 
+        # Render tiles that are in the viewport area
+        startX = int(self._renderViewPortX // self.tile_size)
+        startY = int(self._renderViewPortY // self.tile_size)
+        stopX = startX + int(self._render_viewport_w // self.tile_size) + 1
+        stopY = startY + int(self._render_viewport_h // self.tile_size) + 1
+        if stopX > self.render_level.map["width"]: stopX = self.render_level.map["width"]
+        if stopY > self.render_level.map["height"]: stopY = self.render_level.map["height"]
+
+        # The viewport is not aligned perfectly with the tiles, we need to track the offset.
+        self._renderViewPortXOffSet = startX * self.tile_size - self._renderViewPortX
+        self._renderViewPortYOffSet = startY * self.tile_size - self._renderViewPortY
+
+        tileCount = 0
+        for curX in range(startX, stopX):
+            for curY in range(startY, stopY):
+                tile = self.render_level.map["tiles"][curX][curY]
+                vpX = (tile["x"] - startX) * self.tile_size + self._renderViewPortXOffSet
+                vpY = (tile["y"] - startY) * self.tile_size + self._renderViewPortYOffSet
+                tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
+                if tile["explored"]:
+                    tileCount += 1
+                    #blit color of tile
+                    self.surface_viewport.fill(tile["color"], tileRect)
+
+                    #TEXTURE BASED: deprecated
+                    #blit empty tile first (empty tile underneath transparant overlay)
+                    #tex = GuiTextures.getTextureSurface(TileType.EMPTY)
+                    #self.surfaceViewPort.blit(tex,tileRect)
+                    #blit possible tile texture (transparant overlay)
+                    #tex = GuiTextures.getTextureSurface(tile.type)
+                    #self.surfaceViewPort.blit(tex,tileRect)
+
+                    #blit rect for tile border (this shows a black border for every tile)
+                    #pygame.draw.rect(self.surfaceViewPort, (0, 0, 0), tileRect, 1)
+
+                    if tile["inView"]:
+                        # draw any actors standing on this tile (monsters, portals, items, ...)
+                        tile_actors = tile["actors"]
+                        for actorId, myActor in tile_actors.items():
+                            if myActor["inView"]:
+                                textImg = self.viewport_font.render(myActor["char"], 1, myActor["color"])
+                                #Center
+                                x = tileRect.x + (tileRect.width / 2 - textImg.get_width() /2)
+                                y = tileRect.y + (tileRect.height / 2 - textImg.get_height() /2)
+                                self.surface_viewport.blit(textImg, (x, y))
+                                #===============================================
+                                # #Change letter color to red based on monster health, it works but I don't think it is pretty enough.
+                                # textImg = self.viewPortFont.render(myActor["char"], 1, (255,0,0))
+                                # factor = myActor.maxHitPoints / myActor.currentHitPoints
+                                # factorRect = (0,0, textImg.get_width(), textImg.get_height() - int(textImg.get_height()/factor))
+                                # self.surfaceViewPort.blit(textImg, (x,y), factorRect)
+                                #===============================================
+                    else:
+                        #tile not in view: apply fog of war
+                        self.surface_viewport.blit(self.fogOfWarTileSurface, tileRect)
+
         # TODO: Implement for RemoteServer
         if isinstance(self.game_server, LocalServer):
-            # Render tiles that are in the viewport area
-            startX = int(self._renderViewPortX // self.tile_size)
-            startY = int(self._renderViewPortY // self.tile_size)
-            stopX = startX + int(self._render_viewport_w // self.tile_size) + 1
-            stopY = startY + int(self._render_viewport_h // self.tile_size) + 1
-            if stopX > self.render_level.map["width"]: stopX = self.render_level.map["width"]
-            if stopY > self.render_level.map["height"]: stopY = self.render_level.map["height"]
-        
-            # The viewport is not aligned perfectly with the tiles, we need to track the offset.
-            self._renderViewPortXOffSet = startX * self.tile_size - self._renderViewPortX
-            self._renderViewPortYOffSet = startY * self.tile_size - self._renderViewPortY
-
-            tileCount = 0
-            for curX in range(startX, stopX):
-                for curY in range(startY, stopY):
-                    tile = self.render_level.map["tiles"][curX][curY]
-                    vpX = (tile["x"] - startX) * self.tile_size + self._renderViewPortXOffSet
-                    vpY = (tile["y"] - startY) * self.tile_size + self._renderViewPortYOffSet
-                    tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
-                    if tile["explored"]:
-                        tileCount += 1
-                        #blit color of tile
-                        self.surface_viewport.fill(tile["color"], tileRect)
-
-                        #TEXTURE BASED: deprecated
-                        #blit empty tile first (empty tile underneath transparant overlay)
-                        #tex = GuiTextures.getTextureSurface(TileType.EMPTY)
-                        #self.surfaceViewPort.blit(tex,tileRect)
-                        #blit possible tile texture (transparant overlay)
-                        #tex = GuiTextures.getTextureSurface(tile.type)
-                        #self.surfaceViewPort.blit(tex,tileRect)
-
-                        #blit rect for tile border (this shows a black border for every tile)
-                        #pygame.draw.rect(self.surfaceViewPort, (0, 0, 0), tileRect, 1)
-
-                        if tile["inView"]:
-                            # draw any actors standing on this tile (monsters, portals, items, ...)
-                            tile_actors = tile["actors"]
-                            for actorId, myActor in tile_actors.items():
-                                if myActor["inView"]:
-                                    textImg = self.viewport_font.render(myActor["char"], 1, myActor["color"])
-                                    #Center
-                                    x = tileRect.x + (tileRect.width / 2 - textImg.get_width() /2)
-                                    y = tileRect.y + (tileRect.height / 2 - textImg.get_height() /2)
-                                    self.surface_viewport.blit(textImg, (x, y))
-                                    #===============================================
-                                    # #Change letter color to red based on monster health, it works but I don't think it is pretty enough.
-                                    # textImg = self.viewPortFont.render(myActor["char"], 1, (255,0,0))
-                                    # factor = myActor.maxHitPoints / myActor.currentHitPoints
-                                    # factorRect = (0,0, textImg.get_width(), textImg.get_height() - int(textImg.get_height()/factor))
-                                    # self.surfaceViewPort.blit(textImg, (x,y), factorRect)
-                                    #===============================================
-                        else:
-                            #tile not in view: apply fog of war
-                            self.surface_viewport.blit(self.fogOfWarTileSurface, tileRect)
 
             # Draw portals on explored tiles (remain visible even when out of view)
             portals = self.game.currentLevel.portals
