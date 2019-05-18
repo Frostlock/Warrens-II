@@ -275,7 +275,7 @@ class GuiApplication(object):
 
     def stop_game(self):
         if self._game_server is not None:
-            self._game_server.exit()
+            self._game_server.stop()
         # Clear screen
         self.surface_display.fill(GuiCONSTANTS.COLOR_PANEL)
         pygame.display.flip()
@@ -367,7 +367,7 @@ class GuiApplication(object):
         # Quit
         if event.type == pygame.QUIT:
             sys.exit()
-            self.game_server.exit()
+            self.game_server.stop()
         
         # Window resize
         elif event.type == VIDEORESIZE:
@@ -478,7 +478,9 @@ class GuiApplication(object):
             self.render_init()
 
         # Update viewport
-        self.render_viewport()
+        # TODO: Implement for RemoteServer
+        if isinstance(self.game_server, LocalServer):
+            self.render_viewport()
         
         # Update panel
         self.render_panel()

@@ -86,9 +86,7 @@ class ServerThread(threading.Thread):
         Destructor, called upon garbage collection.
         :return: None
         """
-        if self.socket:
-            self.socket.close()
-            self.socket = None
+        self.stop()
 
 
 class JsonClient(object):
