@@ -1,15 +1,8 @@
-'''
-Created on Apr 2, 2014
-
-@author: pi
-
-This module runs tests on the game logic.
-'''
 import random
 import unittest
 
 import WarrensGame.CONSTANTS as CONSTANTS
-import WarrensGame.Game as Game
+from WarrensGame.Game import Game
 from WarrensGame.Actors import Character
 from WarrensGame.Utilities import GameError
 
@@ -17,7 +10,7 @@ from WarrensGame.Utilities import GameError
 class TestGame(unittest.TestCase):
     
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         """
         unittest framework will run this once before all the tests in this class.
         """
@@ -26,11 +19,11 @@ class TestGame(unittest.TestCase):
         CONSTANTS.SHOW_COMBAT_LOGGING = True
         CONSTANTS.SHOW_GENERATION_LOGGING = False
 
-        self.game = Game.WarrensGame()
-        self.game.setup_new_game()
+        cls.game = Game()
+        cls.game.setup_new_game()
         
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         """
         unittest framework will run this once after all the tests in this class have been run.
         """

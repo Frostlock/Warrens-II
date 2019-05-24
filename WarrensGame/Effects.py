@@ -4,7 +4,7 @@
 # Magic/Event system #
 ######################
 
-import WarrensGame.AI as AI
+import WarrensGame.AI
 import WarrensGame.Actors
 from WarrensGame.Maps import Tile
 from WarrensGame.Utilities import rollHitDie, GameError, message
@@ -206,7 +206,7 @@ class ConfuseEffect(MagicEffect):
         if not isinstance(target, WarrensGame.Actors.Monster):
             raise GameError("Can not apply confuse effect to " + str(target))
         confusedTurns = self.effectDuration
-        AI.ConfusedMonsterAI(self, target, confusedTurns)
+        WarrensGame.AI.ConfusedMonsterAI(self, target, confusedTurns)
         target.level.game.activeEffects.append(self)
         message(target.name + ' is confused for ' + str(confusedTurns) + ' turns.', "GAME")
 

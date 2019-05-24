@@ -3,8 +3,8 @@ import random
 import WarrensGame.CONSTANTS as CONSTANTS
 from WarrensGame.Interaction import Interaction
 from WarrensGame.Inventory import Inventory
-import WarrensGame.AI as AI  # Used in eval statement
-import WarrensGame.Effects as Effects  # Used in eval statement
+import WarrensGame.AI  # Used in eval statement
+import WarrensGame.Effects  # Used in eval statement
 from WarrensGame.Utilities import message, rollHitDie, GameError, distanceBetween, clamp, game_event
 
 
@@ -1050,7 +1050,7 @@ class Monster(Character):
         #Character components
         self._xpValue = baseMonster.xp
         #gets a class object by name; and instanstiate it if not None
-        ai_class = eval('AI.' + baseMonster.AI)
+        ai_class = eval('WarrensGame.AI.' + baseMonster.AI)
         self._AI = ai_class and ai_class(self) or None
 
 #########
@@ -1381,7 +1381,7 @@ class Consumable(Item):
         """
         if self.stackSize > 0:
             if self.baseItem.effect != '':
-                effect_class = eval("Effects." + self.baseItem.effect)
+                effect_class = eval("WarrensGame.Effects." + self.baseItem.effect)
                 self._effect = effect_class and effect_class(self) or None
                 if self.effect is not None:
                     self.effect.applyTo(target)

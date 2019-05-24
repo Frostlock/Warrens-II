@@ -17,5 +17,6 @@ majorProtection,Equipment,suffix,of major protection,3,None,False,0,0,0,None,3,0
 bear,Equipment,suffix,of the bear,1,None,False,0,0,0,None,0,0,0,1,1,0
 elephant,Equipment,suffix,of the elephant,2,None,False,0,0,0,None,0,0,0,2,2,0
 whale,Equipment,suffix,of the whale,3,None,False,0,0,0,None,0,0,0,3,3,0
-double,Consumable,prefix,double,2,None,False,0,0,1,None,0,0,0,0,0,0
-triple,Consumable,prefix,triple,4,None,False,0,0,2,None,0,0,0,0,0,0
+double,Consumable,prefix,double,2,None,False,0,0,"2
+",None,0,0,0,0,0,0
+triple,Consumable,prefix,triple,4,None,False,0,0,3,None,0,0,0,0,0,0
