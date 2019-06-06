@@ -16,7 +16,7 @@ class TestGame(unittest.TestCase):
         """
         CONSTANTS.SHOW_AI_LOGGING = False
         CONSTANTS.SHOW_GAME_LOGGING = False
-        CONSTANTS.SHOW_COMBAT_LOGGING = True
+        CONSTANTS.SHOW_COMBAT_LOGGING = False
         CONSTANTS.SHOW_GENERATION_LOGGING = False
 
         cls.game = Game()
