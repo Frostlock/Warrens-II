@@ -11,14 +11,14 @@ from WarrensGame.Utilities import GameError
 class TestMonsterLibrary(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         """
         unittest framework will run this once before all the tests in this class.
         """
         pass
 
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         """
         unittest framework will run this once after all the tests in this class have been run.
         """
@@ -43,7 +43,6 @@ class TestMonsterLibrary(unittest.TestCase):
         with self.assertRaises(GameError):
             self.mlib.create_monster('zombie_master')
             self.mlib.create_monster('zombie_master')
-        #print 'Creating unique monster twice raises correct GameError.'
 
     def test_monsterList(self):
         """
@@ -53,53 +52,48 @@ class TestMonsterLibrary(unittest.TestCase):
         monsters = []
         for monster_key in self.mlib.available_monsters:
             monsters.append(self.mlib.create_monster(monster_key))
-        #print 'Created ' + str(len(monsters)) + ' monsters'
-
         # Ensure monsters are being tracked correctly
         self.assertEqual(len(monsters), len(self.mlib.monsters))
         self.assertEqual(len(monsters), len(self.mlib.regular_monsters) + len(self.mlib.unique_monsters))
 
     def test_monsterProperties(self):
         # This test will trigger all properties of a random monster
-        difficulty = random.randint(1,10)
-        aRandomMonster = self.mlib.get_random_monster(difficulty)
-        monsterClass = aRandomMonster.__class__.__name__
-        property_names=[p for p in dir(eval(monsterClass)) if isinstance(getattr(eval(monsterClass),p),property)]
+        difficulty = random.randint(1, 10)
+        a_random_monster = self.mlib.get_random_monster(difficulty)
+        monster_class = a_random_monster.__class__.__name__
+        property_names = [p for p in dir(eval(monster_class)) if isinstance(getattr(eval(monster_class), p), property)]
         for p in property_names:
-            result = getattr(aRandomMonster, p)
-            #print result
+            getattr(a_random_monster, p)
 
     def test_randomMonster(self):
         """
         Test if we can create a random monster.
         """
-        #Create 10 monsters for the first 10 difficulty levels
+        # Create 10 monsters for the first 10 difficulty levels
         for difficulty in range(1, 10):
-            #print "Difficulty " + str(difficulty)
-            for i in range(1,10):
-                monster = self.mlib.get_random_monster(difficulty)
-                #print "   Random monster: " + monster.name + " (CR: " + str(monster.challengeRating) + ")"
-
+            for i in range(1, 10):
+                self.mlib.get_random_monster(difficulty)
+        # Challenge rating 0 should throw a GameError
         with self.assertRaises(GameError):
             self.mlib.get_random_monster(0)
-        #print 'Asking for a monster with challenge rating 0 raises correct GameError.'
 
     def test_generatedMonster(self):
         for difficulty in range(1, 10):
             monster = self.mlib.generate_monster(difficulty)
             self.assertIsInstance(monster, Monster)
 
+
 class TestItemLibrary(unittest.TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         """
         unittest framework will run this once before all the tests in this class.
         """
         pass
 
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         """
         unittest framework will run this once after all the tests in this class have been run.
         """
@@ -127,14 +121,11 @@ class TestItemLibrary(unittest.TestCase):
             item = self.ilib.create_item(item_key)
             items.append(item)
             if item.type == "Consumable":
-                self.assertIsInstance(item,Consumable)
+                self.assertIsInstance(item, Consumable)
             elif item.type == "Equipment":
-                self.assertIsInstance(item,Equipment)
+                self.assertIsInstance(item, Equipment)
             else:
                 raise AssertionError("Unknown item type: " + str(item.type))
-
-        #print 'Created ' + str(len(items)) + ' items'
-
         # Ensure items are being tracked correctly
         self.assertEqual(len(items), len(self.ilib.items))
 
@@ -148,33 +139,28 @@ class TestItemLibrary(unittest.TestCase):
                 item = self.ilib.create_item(item_key, modifier_key)
                 count += 1
                 # Call all properties of the item
-                self.callAllProperties(item)
-        #print '\n   Created ' + str(count) + " items."
-
+                self.call_all_properties(item)
 
     def test_itemProperties(self):
         # This test will trigger all properties of a random item
-        difficulty = random.randint(1,10)
-        aRandomItem = self.ilib.get_random_item(difficulty)
-        self.callAllProperties(aRandomItem)
+        difficulty = random.randint(1, 10)
+        a_random_item = self.ilib.get_random_item(difficulty)
+        self.call_all_properties(a_random_item)
 
-    def callAllProperties(self,obj):
-        objClass = obj.__class__.__name__
-        property_names=[p for p in dir(eval(objClass)) if isinstance(getattr(eval(objClass),p),property)]
+    def call_all_properties(self, obj):
+        obj_class = obj.__class__.__name__
+        property_names = [p for p in dir(eval(obj_class)) if isinstance(getattr(eval(obj_class), p), property)]
         for p in property_names:
-            result = getattr(obj, p)
-            #print "      " + p + ": " + str(result)
+            getattr(obj, p)
 
     def test_randomItem(self):
         """
         Test if we can create a random item.
         """
-        #Create 10 items for the first 10 difficulty levels
+        # Create 10 items for the first 10 difficulty levels
         for difficulty in range(1, 10):
-            #print "Difficulty " + str(difficulty)
-            for i in range(1,10):
-                item = self.ilib.get_random_item(difficulty)
-                #print "   Random item: " + item.name + " (IL: " + str(item.itemLevel) + ")"
+            for i in range(1, 10):
+                self.ilib.get_random_item(difficulty)
 
         with self.assertRaises(GameError):
             self.ilib.get_random_item(0)
@@ -189,11 +175,12 @@ class TestItemLibrary(unittest.TestCase):
         item = self.ilib.create_item("firenova", "double")
         self.assertEqual(item.effectDuration, 2)
 
-        #Incompatible modifiers should raise a GameError
+        # Incompatible modifiers should raise a GameError
         with self.assertRaises(GameError):
             self.ilib.create_item("dagger", "minor")
         with self.assertRaises(GameError):
             self.ilib.create_item("firenova", "soldier")
+
 
 if __name__ == "__main__":
     unittest.main()
