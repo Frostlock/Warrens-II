@@ -46,96 +46,94 @@ class TestGame(unittest.TestCase):
         Create a basic game.
         """
 
-
     def test_healingEffect(self):
         # Note that we recreate the healing item every time because it is potentially used up.
 
         # Healing the player
-        healingItem = self.game.itemLibrary.create_item("healingpotion")
-        healingItem.applyTo(self.game.player)
+        healing_item = self.game.itemLibrary.create_item("healingpotion")
+        healing_item.applyTo(self.game.player)
 
         # Healing a monster
-        healingItem = self.game.itemLibrary.create_item("healingpotion")
-        aMonster = random.choice(self.game.monsterLibrary.monsters)
-        healingItem.applyTo(aMonster)
+        healing_item = self.game.itemLibrary.create_item("healingpotion")
+        a_monster = random.choice(self.game.monsterLibrary.monsters)
+        healing_item.applyTo(a_monster)
 
         # Healing an item
-        healingItem = self.game.itemLibrary.create_item("healingpotion")
-        anItem = random.choice(self.game.itemLibrary.items)
+        healing_item = self.game.itemLibrary.create_item("healingpotion")
+        an_item = random.choice(self.game.itemLibrary.items)
         with self.assertRaises(GameError):
-            healingItem.applyTo(anItem)
+            healing_item.applyTo(an_item)
 
         # Healing a tile
-        healingItem = self.game.itemLibrary.create_item("healingpotion")
-        aTile = self.game.currentLevel.map.getRandomTile()
+        healing_item = self.game.itemLibrary.create_item("healingpotion")
+        a_tile = self.game.currentLevel.map.getRandomTile()
         with self.assertRaises(GameError):
-            healingItem.applyTo(aTile)
+            healing_item.applyTo(a_tile)
 
     def test_damageEffect(self):
         # Note that we recreate the damage item every time because it is potentially used up.
 
         # Damage the player
-        damageItem = self.game.itemLibrary.create_item("fireball")
-        damageItem.applyTo(self.game.player)
+        damage_item = self.game.itemLibrary.create_item("fireball")
+        damage_item.applyTo(self.game.player)
 
         # Damage a monster
-        damageItem = self.game.itemLibrary.create_item("fireball")
-        aMonster = random.choice(self.game.monsterLibrary.monsters)
-        damageItem.applyTo(aMonster)
+        damage_item = self.game.itemLibrary.create_item("fireball")
+        a_monster = random.choice(self.game.monsterLibrary.monsters)
+        damage_item.applyTo(a_monster)
 
         # Damage an item
-        damageItem = self.game.itemLibrary.create_item("fireball")
-        anItem = random.choice(self.game.itemLibrary.items)
-        damageItem.applyTo(anItem)
+        damage_item = self.game.itemLibrary.create_item("fireball")
+        an_item = random.choice(self.game.itemLibrary.items)
+        damage_item.applyTo(an_item)
 
         # Damage a tile
-        damageItem = self.game.itemLibrary.create_item("fireball")
-        aTile = self.game.currentLevel.map.getRandomTile()
-        damageItem.applyTo(aTile)
+        damage_item = self.game.itemLibrary.create_item("fireball")
+        a_tile = self.game.currentLevel.map.getRandomTile()
+        damage_item.applyTo(a_tile)
 
         # Damage a something that does not make sense
-        damageItem = self.game.itemLibrary.create_item("fireball")
+        damage_item = self.game.itemLibrary.create_item("fireball")
         with self.assertRaises(GameError):
-            damageItem.applyTo(self.game)
+            damage_item.applyTo(self.game)
 
     def test_confuseEffect(self):
         # Note that we recreate the confuse item every time because it is potentially used up.
 
         # Confuse the player
-        confuseItem = self.game.itemLibrary.create_item("confuse")
+        confuse_item = self.game.itemLibrary.create_item("confuse")
         with self.assertRaises(GameError):
-            confuseItem.applyTo(self.game.player)
+            confuse_item.applyTo(self.game.player)
 
         # Confuse a monster
-        confuseItem = self.game.itemLibrary.create_item("confuse")
-        aMonster = random.choice(self.game.monsterLibrary.monsters)
-        confuseItem.applyTo(aMonster)
+        confuse_item = self.game.itemLibrary.create_item("confuse")
+        a_monster = random.choice(self.game.monsterLibrary.monsters)
+        confuse_item.applyTo(a_monster)
 
         # Confuse an item
-        confuseItem = self.game.itemLibrary.create_item("confuse")
-        anItem = random.choice(self.game.itemLibrary.items)
+        confuse_item = self.game.itemLibrary.create_item("confuse")
+        an_item = random.choice(self.game.itemLibrary.items)
         with self.assertRaises(GameError):
-            confuseItem.applyTo(anItem)
+            confuse_item.applyTo(an_item)
         
         # Confuse a tile
-        confuseItem = self.game.itemLibrary.create_item("confuse")
-        aTile = self.game.currentLevel.map.getRandomTile()
+        confuse_item = self.game.itemLibrary.create_item("confuse")
+        a_tile = self.game.currentLevel.map.getRandomTile()
         with self.assertRaises(GameError):
-            confuseItem.applyTo(aTile)
+            confuse_item.applyTo(a_tile)
 
         # Confuse a something that does not make sense
-        confuseItem = self.game.itemLibrary.create_item("confuse")
+        confuse_item = self.game.itemLibrary.create_item("confuse")
         with self.assertRaises(GameError):
-            confuseItem.applyTo(self.game)
+            confuse_item.applyTo(self.game)
 
     def test_combat(self):
         player = self.game.player
-        aMonster = random.choice(self.game.monsterLibrary.monsters)
-        while not (player.state == Character.DEAD or aMonster.state == Character.DEAD):
-            #print "Attacker: " + str(player)
-            #print "Target: " + str(aMonster)
-            player.attack(aMonster)
-            aMonster.attack(player)
+        a_monster = random.choice(self.game.monsterLibrary.monsters)
+        while not (player.state == Character.DEAD or a_monster.state == Character.DEAD):
+            player.attack(a_monster)
+            a_monster.attack(player)
+
 
 if __name__ == "__main__":
     TestGame.main()
