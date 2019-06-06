@@ -27,8 +27,6 @@ class Map(object):
         """
         return self._tiles
 
-    _areas = None
-
     @property
     def areas(self):
         """
@@ -110,6 +108,7 @@ class Map(object):
             MapHeight - Map height in tiles
         """
         # Initialize defaults
+        self._areas = None
         self._entryTile = None
         self._exitTile = None
         self._range_of_view = CONSTANTS.TORCH_RADIUS
@@ -117,18 +116,15 @@ class Map(object):
         self._json = {}
         self.json["width"] = map_width
         self.json["height"] = map_height
-        # Create a big empty map
-        self._tiles = [[Tile(map, x, y)
-                        for y in range(map_height)]
-                       for x in range(map_width)]
-        self.generateMap()
-        # Tiles get recreated during map generation so link up the json's afterward
+        # Generate the map
+        self.generate_map()
+        # Tiles get created during map generation so link up the json's afterward
         self.json["tiles"] = [[self.tiles[x][y].json
                                for y in range(map_height)]
                               for x in range(map_width)]
         self.refreshBlockedTileMatrix()
 
-    def generateMap(self):
+    def generate_map(self):
         """
         Place holder function, subclass must provide actual implementation.
         """
@@ -136,12 +132,10 @@ class Map(object):
             
     def refreshBlockedTileMatrix(self):
         """
-        Refresh a 2D matrix of 1's and 0'1 that indicate if a Tile position
-        blocks line of sight.
-        We could have looped over each tile and check this
-        for each player movement, but this way is neater and more efficient.
+        Refresh a 2D matrix of with True/False values indicating if a Tile position blocks line of sight.
+        It is calculated separately for efficiency.
         """
-        self.solidTileMatrix = Utilities.make_matrix(self.width, self.height, 0)
+        self.solidTileMatrix = [[False for y in range(0, self.height)] for x in range(0, self.width)]
         for x, y in self.each_map_position:
             self.solidTileMatrix[x][y] = self.tiles[x][y].blockSight
 
@@ -285,7 +279,7 @@ class DungeonMap(Map):
         # Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
-    def generateMap(self):
+    def generate_map(self):
         """
         generate a randomized dungeon map
         """
@@ -362,6 +356,53 @@ class DungeonMap(Map):
         (exitX, exitY) = self.rooms[len(self.rooms) - 1].center
         self._exitTile = self._tiles[exitX][exitY]
 
+        # Assign texture ID's
+        self._assign_texture_ids()
+
+    def _assign_texture_ids(self):
+        """
+        Helper function that assigns correct tile set texture ID's for every tile in this map
+        :return: None
+        """
+        # Reset all texture ID's
+        for x in range(self.width):
+            for y in range(self.height):
+                t = self.tiles[x][y]
+                t.texture_id = None
+        # Assign new texture ID for every tile
+        for x in range(self.width):
+            for y in range(self.height):
+                # Calculate binary representation of surrounding tiles
+                bits = [1, 1, 1, 1, 1, 1, 1, 1]
+                if 0 <= y - 1:
+                    if 0 <= x-1:
+                        if not self.tiles[x - 1][y - 1].blockSight: bits[0] = 0
+                    if not self.tiles[x][y - 1].blockSight: bits[1] = 0
+                    if x+1 < self.width:
+                        if not self.tiles[x + 1][y - 1].blockSight: bits[2] = 0
+                if 0 <= x - 1:
+                    if not self.tiles[x - 1][y].blockSight: bits[3] = 0
+                if x + 1 < self.width:
+                    if not self.tiles[x + 1][y].blockSight: bits[4] = 0
+                if y + 1 < self.height:
+                    if 0 <= x - 1:
+                        if not self.tiles[x - 1][y + 1].blockSight: bits[5] = 0
+                    if not self.tiles[x][y + 1].blockSight: bits[6] = 0
+                    if x + 1 < self.width:
+                        if not self.tiles[x + 1][y + 1].blockSight: bits[7] = 0
+                # Transform binary to integer hash
+                h = 0
+                for bit in bits:
+                    h = (h << 1) | bit
+                # Map hash to a tileset ID
+                t = self.tiles[x][y]
+                if h in [0, 255]:
+                    t.texture_id = TextureId.PILLAR
+                elif h in [66, 67, 70, 71, 98, 102, 103, 107, 111, 194, 195, 199, 214, 215, 226, 227, 230, 231, 235, 239, 246, 247]:
+                    t.texture_id = TextureId.EW_WALL
+                else:
+                    print ("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
+
     def _create_horizontal_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
             self.tiles[x][y].blocked = False
@@ -389,6 +430,27 @@ class DungeonMap(Map):
             empty_tile = room.getRandomEmptyTile()
         return empty_tile
 
+class TextureId:
+    """
+    Enumerator for textures ID's.
+    Hack: The integer values correspond with tilesheet column numbers.
+    """
+    PILLAR = 10
+    EW_WALL = 15
+    NS_WALL = 12
+    EW_WALL_N_CAP = 14
+    EW_WALL_S_CAP = 64
+    NS_WALL_W_CAP = 11
+    NS_WALL_E_CAP = 13
+    NW_WALL = 17
+    NE_WALL = 18
+    SW_WALL = 19
+    SE_WALL = 20
+    NSEW_WALL = 21
+    SEW_WALL = 22
+    NSW_WALL = 23
+    NSE_WALL = 24
+    NEW_WALL = 25
 
 class TownMap(Map):
     """
@@ -420,7 +482,7 @@ class TownMap(Map):
         #Initialize range of view
         self._rangeOfView = CONSTANTS.TOWN_RADIUS
 
-    def generateMap(self):
+    def generate_map(self):
         """
         Generate a randomized town map
         """
@@ -515,7 +577,7 @@ class SingleRoomMap(Map):
         #Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
-    def generateMap(self):
+    def generate_map(self):
         #Create a new map with empty tiles
         self._tiles = [[Tile(self, x, y)
                for y in range(self. height)]
@@ -554,7 +616,7 @@ class CaveMap(Map):
         #Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
-    def generateMap(self):
+    def generate_map(self):
         #Create a new map with empty tiles
         self._tiles = [[Tile(self, x, y)
                for y in range(self. height)]
@@ -788,7 +850,19 @@ class Tile(object):
     @material.setter
     def material(self, newMaterial):
         self.json["material"] = newMaterial
-        
+
+    @property
+    def texture_id(self):
+        """
+        Property to store the tile set texture id for this tile.
+        The GUI can use this to visualize the tile.
+        """
+        return self.json["texture_id"]
+
+    @texture_id.setter
+    def texture_id(self, new_texture_id):
+        self.json["texture_id"] = new_texture_id
+
     @property
     def color(self):
         """
@@ -811,17 +885,18 @@ class Tile(object):
     def type(self, newType):
         self._type = newType
 
-    @property
-    def sceneObject(self):
-        '''
-        Property used to store the scene object that represents this tile in the GUI.
-        :return: SceneObject
-        '''
-        return self._sceneObject
-
-    @sceneObject.setter
-    def sceneObject(self, sceneObject):
-        self._sceneObject = sceneObject
+    # DEPRECATED
+    # @property
+    # def sceneObject(self):
+    #     '''
+    #     Property used to store the scene object that represents this tile in the GUI.
+    #     :return: SceneObject
+    #     '''
+    #     return self._sceneObject
+    #
+    # @sceneObject.setter
+    # def sceneObject(self, sceneObject):
+    #     self._sceneObject = sceneObject
 
     @property
     def json(self):
@@ -849,14 +924,13 @@ class Tile(object):
         self.json["blocked"] = False
         self.json["blockSight"] = False
         self.json["material"] = MaterialType.NONE
+        self.json["texture_id"] = None
         self.json["inView"] = True
         self.json["color"] = CONSTANTS.TILE_DEFAULT_COLOR
         self._actors = []
         self.json["actors"] = {}
-
-        # TODO: remove sceneObject references? Think this is linked to OpenGl implementation...
-        # or could be a quick reference back to get from GUI click to underlying object?
-        self._sceneObject = None
+        # DEPRECATED
+        # self._sceneObject = None
 
     def __str__(self):
         """

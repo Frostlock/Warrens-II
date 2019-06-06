@@ -154,15 +154,15 @@ def distanceBetweenPoints(x, y, u, v):
     dy = y - v
     return math.sqrt(dx ** 2 + dy ** 2)
 
-
-def make_matrix(width, height, initial_value):
-    """
-    Returns a list of initial values that can be accessed like a 2D array:
-
-        matrix[x][y]
-
-    """
-    return [[initial_value for y in range(0, height)] for x in range(0, width)]
+# DEPRECATED
+# def make_matrix(width, height, initial_value):
+#     """
+#     Returns a list of initial values that can be accessed like a 2D array:
+#
+#         matrix[x][y]
+#
+#     """
+#     return [[initial_value for y in range(0, height)] for x in range(0, width)]
 
 
 def get_line_segments(x1, y1, x2, y2):
