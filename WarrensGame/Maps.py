@@ -54,12 +54,7 @@ class Map(object):
     def each_map_position(self):
         """
         Returns a 2D list that can be used to iterate over each map tile
-        x/y position:
-
-            for x, y in each_map_position():
-                pass
         """
-
         return [(x, y) for x in range(self.width) for y in range(self.height)]
 
     @property
@@ -68,8 +63,6 @@ class Map(object):
         Returns a list of all tiles explored.
         This includes tiles in and out of the visible range.
         """
-
-        # this flattens the 2D tiles list into one list, filtered out.
         return [t for sublist in self.tiles for t in sublist if t.explored]
     
     @property
@@ -77,37 +70,28 @@ class Map(object):
         """
         Returns a list of visible tiles.
         """
-        # this flattens the 2D tiles list into one list, filtered out.
         return [t for sublist in self.tiles for t in sublist if t.inView]
-    
-    #Every map has a Tile object which contains the entry point
-    _entryTile = None
 
     @property
     def entryTile(self):
         """
-        Returns Tile on which entry is located
+        Returns Tile on which entry to this map is located
         """
         return self._entryTile
-
-    #Every map has a Tile object which contains the entry point
-    _exitTile = None
 
     @property
     def exitTile(self):
         """
-        Returns Tile on which exit is located
+        Returns Tile on which exit of this map is located
         """
         return self._exitTile
 
-    _rangeOfView = 10
-
     @property
-    def rangeOfView(self):
+    def range_of_view(self):
         """
         Range of view used to determine field of view on this map.
         """
-        return self._rangeOfView
+        return self._range_of_view
 
     @property
     def json(self):
@@ -118,28 +102,30 @@ class Map(object):
         """
         return self._json
 
-    def __init__(self, MapWidth, MapHeight, level):
+    def __init__(self, map_width, map_height, level):
         """
         Constructor to create a new empty map
         Arguments
             MapWidth - Map width in tiles
             MapHeight - Map height in tiles
         """
-        # Initialize range of view
-        self._rangeOfView = CONSTANTS.TORCH_RADIUS
+        # Initialize defaults
+        self._entryTile = None
+        self._exitTile = None
+        self._range_of_view = CONSTANTS.TORCH_RADIUS
         self._level = level
         self._json = {}
-        self.json["width"] = MapWidth
-        self.json["height"] = MapHeight
+        self.json["width"] = map_width
+        self.json["height"] = map_height
         # Create a big empty map
         self._tiles = [[Tile(map, x, y)
-                        for y in range(MapHeight)]
-                       for x in range(MapWidth)]
+                        for y in range(map_height)]
+                       for x in range(map_width)]
         self.generateMap()
         # Tiles get recreated during map generation so link up the json's afterward
         self.json["tiles"] = [[self.tiles[x][y].json
-                               for y in range(MapHeight)]
-                              for x in range(MapWidth)]
+                               for y in range(map_height)]
+                              for x in range(map_width)]
         self.refreshBlockedTileMatrix()
 
     def generateMap(self):
@@ -152,11 +138,9 @@ class Map(object):
         """
         Refresh a 2D matrix of 1's and 0'1 that indicate if a Tile position
         blocks line of sight.
-
         We could have looped over each tile and check this
         for each player movement, but this way is neater and more efficient.
         """
-
         self.solidTileMatrix = Utilities.make_matrix(self.width, self.height, 0)
         for x, y in self.each_map_position:
             self.solidTileMatrix[x][y] = self.tiles[x][y].blockSight
@@ -166,7 +150,7 @@ class Map(object):
         Update the map tiles with what is in field of view, marking
         those as explored.
         """
-        view_range = self.rangeOfView
+        view_range = self.range_of_view
         for tx, ty in self.each_map_position:
             tile = self.tiles[tx][ty]
             dist = Utilities.distanceBetweenPoints(x, y, tx, ty)
@@ -186,76 +170,74 @@ class Map(object):
         """
         Returns an empty tile on this level, excluding the outermost cells.
         """
-        levelArea = Room(self, 1, 1, self.width - 2, self.height - 2)
-        return levelArea.getRandomEmptyTile()
+        level_area = Room(self, 1, 1, self.width - 2, self.height - 2)
+        return level_area.getRandomEmptyTile()
 
     def getRandomTile(self):
-        '''
+        """
         Returns a random Tile in this map.
         :return: Tile object
-        '''
+        """
         x = random.randrange(self.width)
         y = random.randrange(self.height)
         return self.tiles[x][y]
 
-    def getCircleTiles(self, x, y, radius, fullCircle=False, excludeBlockedTiles=False):
+    def getCircleTiles(self, x, y, radius, full_circle=False, exclude_blocked_tiles=False):
         """
-        Frost: This utility function returns an array of tiles that 
-        approximates a circle on the map.
+        This utility function returns an array of tiles that approximates a circle on the map.
         Arguments
             x - the x coordinate of the center of the circle
             y - the y coordinate of the center of the circle
             radius - the radius of the circle
-            fullCircle - when false only the tiles on the border of the 
-                circle are returned, when true all tiles inside.
-            excludeBlockedTiles - excludes blocked tiles
+            full_circle - when false only the tiles on the border of the circle are returned
+                       - when true all tiles inside.
+            exclude_blocked_tiles - excludes blocked tiles
         """
-        #prepare variables
-        circleTiles = []
-        maxX = self.width - 1
-        maxY = self.height - 1
-        #maxI is a relevant sample size, if it is to small it will lead to gaps in the circle.
-        #the following works for reasonably sized circles.
-        maxI = 6 * radius
-        halfMaxI = maxI / 2
-        if fullCircle:
-            #add center
-            circleTiles.append(self.tiles[x][y])
-        #go around the edge of the circle in maxI samples
-        for i in range(0, maxI):
-            #for each edge sample calculate the coordinates
-            xPos = int(round(x + radius * math.cos((math.pi/halfMaxI)*i)))
-            yPos = int(round(y + radius * math.sin((math.pi/halfMaxI)*i)))
-            #add relevant tiles between the found circle edge and the circle center
-            while xPos != x or yPos != y:
-                #tile has to be on the map
-                if xPos >= 0 and yPos >= 0 and xPos <= maxX and yPos <= maxY:
-                    #avoid adding duplicates
-                    if self.tiles[xPos][yPos] not in circleTiles:
-                        possibleTile = self.tiles[xPos][yPos]
-                        if excludeBlockedTiles:
-                            #exclude blocked tiles
-                            if not possibleTile.blocked:
-                                circleTiles.append(possibleTile)
+        # Prepare variables
+        circle_tiles = []
+        max_x = self.width - 1
+        max_y = self.height - 1
+        # max_i is a relevant sample size, if it is to small it will lead to gaps in the circle.
+        # the following works for reasonably sized circles.
+        max_i = 6 * radius
+        half_max_i = max_i / 2
+        if full_circle:
+            # add center
+            circle_tiles.append(self.tiles[x][y])
+        # go around the edge of the circle in max_i samples
+        for i in range(0, max_i):
+            # for each edge sample calculate the coordinates
+            x_pos = int(round(x + radius * math.cos((math.pi/half_max_i)*i)))
+            y_pos = int(round(y + radius * math.sin((math.pi/half_max_i)*i)))
+            # add relevant tiles between the found circle edge and the circle center
+            while x_pos != x or y_pos != y:
+                # tile has to be on the map
+                if x_pos >= 0 and y_pos >= 0 and x_pos <= max_x and y_pos <= max_y:
+                    # avoid adding duplicates
+                    if self.tiles[x_pos][y_pos] not in circle_tiles:
+                        possible_tile = self.tiles[x_pos][y_pos]
+                        if exclude_blocked_tiles:
+                            # exclude blocked tiles
+                            if not possible_tile.blocked:
+                                circle_tiles.append(possible_tile)
                         else:
-                            #include all tiles
-                            circleTiles.append(possibleTile)
-                if fullCircle:
-                    #move towards interior
-                    if xPos > x:
-                        xPos -= 1
-                    elif xPos < x:
-                        xPos += 1
-                    elif xPos == x:
-                        if yPos > y:
-                            yPos -= 1
-                        elif yPos < y:
-                            yPos += 1
+                            # include all tiles
+                            circle_tiles.append(possible_tile)
+                if full_circle:
+                    # move towards interior
+                    if x_pos > x:
+                        x_pos -= 1
+                    elif x_pos < x:
+                        x_pos += 1
+                    elif x_pos == x:
+                        if y_pos > y:
+                            y_pos -= 1
+                        elif y_pos < y:
+                            y_pos += 1
                 else:
-                    #adding only the edge is enough
-                    break        
-        #return the found tiles that make up the circle   
-        return circleTiles
+                    # adding only the edge is enough
+                    break
+        return circle_tiles
     
     def __str__(self):
         """
@@ -286,62 +268,63 @@ class DungeonMap(Map):
         """
         return self._areas
 
-    def clearRooms(self):
+    def clear_rooms(self):
         """
-        Clears the list of houses.
+        Clears the list of rooms in this dungeon.
         """
         self._areas = []
 
-    def __init__(self, MapWidth, MapHeight, level=None):
+    def __init__(self, map_width, map_height, level=None):
         """
         Constructor to create a new dungeon map
         Arguments
             MapWidth - Map width in tiles
             MapHeight - Map height in tiles
         """
-        super(DungeonMap, self).__init__(MapWidth, MapHeight, level)
-        #Initialize range of view
+        super(DungeonMap, self).__init__(map_width, map_height, level)
+        # Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
     def generateMap(self):
         """
         generate a randomized dungeon map
         """
-        #clear existing rooms
-        self.clearRooms()
+        # Clear existing rooms
+        self.clear_rooms()
 
-        #Constants used to generate map
-        ROOM_MAX_SIZE = CONSTANTS.DUNGEON_ROOM_MAX_SIZE
-        ROOM_MIN_SIZE = CONSTANTS.DUNGEON_ROOM_MIN_SIZE
-        MAX_ROOMS = CONSTANTS.DUNGEON_MAX_ROOMS
+        # Constants used to generate map
+        room_max_size = CONSTANTS.DUNGEON_ROOM_MAX_SIZE
+        room_min_size = CONSTANTS.DUNGEON_ROOM_MIN_SIZE
+        max_rooms = CONSTANTS.DUNGEON_MAX_ROOMS
 
-        #Create a new map with empty tiles
-        self._tiles = [[Tile(self, x, y)
-               for y in range(self. height)]
-           for x in range(self. width)]
+        if self.width < room_max_size or self.height < room_max_size:
+            raise Utilities.GameError("Requested size is too small, can't generate dungeon.")
 
-        #Block all tiles
+        # Create a new map with empty tiles
+        self._tiles = [[Tile(self, x, y) for y in range(self. height)] for x in range(self. width)]
+
+        # Block all tiles
         for y in range(self.height):
             for x in range(self.width):
-                myTile = self.tiles[x][y]
-                myTile.blocked = True
-                myTile.blockSight = True
-                myTile.color = CONSTANTS.DUNGEON_COLOR_WALL
-                myTile.material = MaterialType.STONE
+                t = self.tiles[x][y]
+                t.blocked = True
+                t.blockSight = True
+                t.color = CONSTANTS.DUNGEON_COLOR_WALL
+                t.material = MaterialType.STONE
 
-        #cut out rooms
+        # Cut out rooms
         num_rooms = 0
-        for r in range(MAX_ROOMS):
-            #random width and height
-            w = random.randrange(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
-            h = random.randrange(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
-            #random position without going out of the boundaries of the map
+        for r in range(max_rooms):
+            # Random width and height
+            w = random.randrange(room_min_size, room_max_size)
+            h = random.randrange(room_min_size, room_max_size)
+            # Random position without going out of the boundaries of the map
             x = random.randrange(0, self.width - w - 1)
             y = random.randrange(0, self.height - h - 1)
-            #create a new room
+            # Create a new room
             new_room = Room(self, x, y, w, h)
 
-            #abort if room intersects with existing room
+            # Abort if room intersects with existing room
             intersects = False
             for other_room in self.rooms:
                 if new_room.intersect(other_room):
@@ -350,50 +333,43 @@ class DungeonMap(Map):
             if intersects is True:
                 break
 
-            #cut it out of the map
-            #go through the tiles in the room and make them passable
+            # Cut it out of the map, go through the tiles in the room and make them passable
             for x in range(new_room.x1 + 1, new_room.x2):
                 for y in range(new_room.y1 + 1, new_room.y2):
                     self.tiles[x][y].blocked = False
                     self.tiles[x][y].blockSight = False
                     self.tiles[x][y].color = CONSTANTS.DUNGEON_COLOR_FLOOR
                     self.tiles[x][y].material = MaterialType.DIRT
-                 
+
+            # Create corridor towards previous room
             (new_x, new_y) = new_room.center
-
-            #create corridor towards previous room
+            # All rooms, after the first room, connect to the previous room
             if num_rooms > 0:
-                #all rooms after the first: connect to the previous room
-
-                #center coordinates of previous room
+                # Center coordinates of previous room
                 prev_room = self.rooms[num_rooms - 1]
                 (prev_x, prev_y) = prev_room.center
+                # Create a corridor: First move horizontally, then vertically
+                self._create_horizontal_tunnel(prev_x, new_x, new_y)
+                self._create_vertical_tunnel(prev_y, new_y, prev_x)
 
-                #create a corridor               
-                #first move horizontally, then vertically
-                self._createHorizontalTunnel(prev_x, new_x, new_y)
-                self._createVerticalTunnel(prev_y, new_y, prev_x)
-
-            #finally, append the new room to the list
+            # Finally, append the new room to the list
             self.rooms.append(new_room)
             num_rooms += 1
 
-        #Set entry and exit tiles
+        # Set entry and exit tiles
         (entryX, entryY) = self.rooms[0].center
         self._entryTile = self._tiles[entryX][entryY]
         (exitX, exitY) = self.rooms[len(self.rooms) - 1].center
         self._exitTile = self._tiles[exitX][exitY]
 
-    def _createHorizontalTunnel(self, x1, x2, y):
-        #horizontal tunnel. min() and max() are used in case x1>x2
+    def _create_horizontal_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
             self.tiles[x][y].blocked = False
             self.tiles[x][y].blockSight = False
             self.tiles[x][y].color = CONSTANTS.DUNGEON_COLOR_FLOOR
             self.tiles[x][y].material = MaterialType.DIRT
 
-    def _createVerticalTunnel(self, y1, y2, x):
-        #vertical tunnel
+    def _create_vertical_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
             self.tiles[x][y].blocked = False
             self.tiles[x][y].blockSight = False
@@ -404,13 +380,14 @@ class DungeonMap(Map):
         """
         finds a random empty tile on the map of this level
         """
-        emptyTile = None
-        while emptyTile is None:
-            #pick a random room of the map
+        empty_tile = None
+        # TODO: Issue here, if all tiles of the map are occupied this will be an infinite loop.
+        while empty_tile is None:
+            # Pick a random room of the map
             room = random.choice(self.rooms)
-            #find an empty tile in the room
-            emptyTile = room.getRandomEmptyTile()
-        return emptyTile
+            # Find an empty tile in the room
+            empty_tile = room.getRandomEmptyTile()
+        return empty_tile
 
 
 class TownMap(Map):
@@ -432,14 +409,14 @@ class TownMap(Map):
         """
         self._areas = []
 
-    def __init__(self, MapWidth, MapHeight, level=None):
+    def __init__(self, map_width, map_height, level=None):
         """
         Constructor to create a new town map
         Arguments
             MapWidth - Map width in tiles
             MapHeight - Map height in tiles
         """
-        super(TownMap, self).__init__(MapWidth, MapHeight, level)
+        super(TownMap, self).__init__(map_width, map_height, level)
         #Initialize range of view
         self._rangeOfView = CONSTANTS.TOWN_RADIUS
 
@@ -525,7 +502,7 @@ class SingleRoomMap(Map):
         """
         return self._room
 
-    def __init__(self, MapWidth, MapHeight, level, myRoom):
+    def __init__(self, map_width, map_height, level, myRoom):
         """
         Constructor to create a new empty map
         Arguments
@@ -534,7 +511,7 @@ class SingleRoomMap(Map):
         """
         #Register room
         self._room = myRoom
-        super(SingleRoomMap, self).__init__(MapWidth, MapHeight, level)
+        super(SingleRoomMap, self).__init__(map_width, map_height, level)
         #Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
@@ -566,14 +543,14 @@ class CaveMap(Map):
     This class represents a randomized cave system map.
     """
     
-    def __init__(self, MapWidth, MapHeight, level=None):
+    def __init__(self, map_width, map_height, level=None):
         """
         Constructor to create a new cave system map
         Arguments
             MapWidth - Map width in tiles
             MapHeight - Map height in tiles
         """
-        super(CaveMap, self).__init__(MapWidth, MapHeight, level)
+        super(CaveMap, self).__init__(map_width, map_height, level)
         #Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
