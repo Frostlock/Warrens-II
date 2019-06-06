@@ -435,12 +435,12 @@ class GuiApplication(object):
 
     def render_init(self):
         """
-        Initializes rendering parameters.
+        Initializes rendering parameters
+        Prepares and scales tileset.
         This function should be called on window resizing, loading a new level and changing zoom levels.
         """
         if self.game_server is None:
             return
-        print("render init")
         # Initialize maximum tile size for current viewport
         vpWidth = self.surface_viewport.get_size()[0]
         vpHeight = self.surface_viewport.get_size()[1]
@@ -469,6 +469,31 @@ class GuiApplication(object):
         # Prepare fog of war tile (used as overlay later)
         self.fogOfWarTileSurface = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA)
         self.fogOfWarTileSurface.fill((0, 0, 0, 180))
+
+        # Load tileset
+        self.tileset_row = 8
+        tile_image = pygame.image.load('./Assets/tiles.bin').convert()
+        tile_image.set_colorkey((0, 0, 0))
+        # Resize to match up with current zoomlevel (tiles.bin has 24 by 24 tiles)
+        tileset_size = 24
+        tileset_margin = 0
+        factor = self.tile_size / tileset_size
+        image_width, image_height = tile_image.get_size()
+        tile_image = pygame.transform.scale(tile_image, (int(image_width * factor), int(image_height * factor)))
+        image_width, image_height = tile_image.get_size()
+        tileset_size = int(tileset_size * factor)
+        tileset_margin = int(tileset_margin * factor)
+        max_x = int(image_width // (tileset_size + tileset_margin))
+        max_y = int(image_height // (tileset_size + tileset_margin))
+        self.tileset = []
+        for tile_x in range(0, max_x):
+            row = []
+            for tile_y in range(0, max_y):
+                x = tile_x * (tileset_size + tileset_margin)
+                y = tile_y * (tileset_size + tileset_margin)
+                rect = (x, y, tileset_size, tileset_size)
+                row.append(tile_image.subsurface(rect))
+            self.tileset.append(row)
 
     def render_screen(self):
         """
@@ -610,19 +635,13 @@ class GuiApplication(object):
                 tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
                 if tile["explored"]:
                     tileCount += 1
-                    #blit color of tile
-                    self.surface_viewport.fill(tile["color"], tileRect)
-
-                    #TEXTURE BASED: deprecated
-                    #blit empty tile first (empty tile underneath transparant overlay)
-                    #tex = GuiTextures.getTextureSurface(TileType.EMPTY)
-                    #self.surfaceViewPort.blit(tex,tileRect)
-                    #blit possible tile texture (transparant overlay)
-                    #tex = GuiTextures.getTextureSurface(tile.type)
-                    #self.surfaceViewPort.blit(tex,tileRect)
-
-                    #blit rect for tile border (this shows a black border for every tile)
-                    #pygame.draw.rect(self.surfaceViewPort, (0, 0, 0), tileRect, 1)
+                    if tile["texture_id"] is None:
+                        # No texture specified: Blit tile color
+                        self.surface_viewport.fill(tile["color"], tileRect)
+                    else:
+                        # Blit texture based on provided id
+                        # TODO: Get tileset_row from the game data instead of hardcoded in render_init()
+                        self.surface_viewport.blit(self.tileset[tile["texture_id"]][self.tileset_row], tileRect)
 
                     if tile["inView"]:
                         # draw any actors standing on this tile (monsters, portals, items, ...)
