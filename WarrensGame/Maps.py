@@ -397,6 +397,7 @@ class DungeonMap(Map):
                     h = (h << 1) | bit
                 # Map hash to a tileset ID
                 t = self.tiles[x][y]
+                t.texture_set = TextureSet.GRAVEYARD
                 if not self.tiles[x][y].blockSight:
                     t.texture_id = TextureId.TILE_EMPTY
                     if random.random() < 0.05:
@@ -467,6 +468,19 @@ class DungeonMap(Map):
             empty_tile = room.getRandomEmptyTile()
         return empty_tile
 
+
+class TextureSet:
+    """
+    Enumerator for textures ID's.
+    Hack: The integer values correspond with tilesheet column numbers.
+    """
+    STONE = 1
+    STONE_WITHERED = 1
+    SANDSTONE = 1
+    MARBLE_BLUE = 8
+    GRAVEYARD = 17
+
+
 class TextureId:
     """
     Enumerator for textures ID's.
@@ -476,6 +490,8 @@ class TextureId:
     TILE_LINED = 5
     TILE_CRACKED = 6
     TILE_SUBTILES = 7
+    PORTAL_UP = 8
+    PORTAL_DOWN = 9
     PILLAR = 10
     EW_WALL = 15
     NS_WALL = 12
@@ -891,6 +907,18 @@ class Tile(object):
     @material.setter
     def material(self, newMaterial):
         self.json["material"] = newMaterial
+
+    @property
+    def texture_set(self):
+        """
+        Property to store the texture set id for this tile.
+        The GUI can use this to visualize the tile.
+        """
+        return self.json["texture_set"]
+
+    @texture_set.setter
+    def texture_set(self, new_texture_set):
+        self.json["texture_set"] = new_texture_set
 
     @property
     def texture_id(self):

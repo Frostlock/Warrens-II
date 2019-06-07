@@ -471,7 +471,6 @@ class GuiApplication(object):
         self.fogOfWarTileSurface.fill((0, 0, 0, 180))
 
         # Load tileset
-        self.tileset_row = 8
         tile_image = pygame.image.load('./Assets/tiles.bin').convert()
         tile_image.set_colorkey((0, 0, 0))
         # Resize to match up with current zoomlevel (tiles.bin has 24 by 24 tiles)
@@ -640,8 +639,7 @@ class GuiApplication(object):
                         self.surface_viewport.fill(tile["color"], tileRect)
                     else:
                         # Blit texture based on provided id
-                        # TODO: Get tileset_row from the game data instead of hardcoded in render_init()
-                        self.surface_viewport.blit(self.tileset[tile["texture_id"]][self.tileset_row], tileRect)
+                        self.surface_viewport.blit(self.tileset[tile["texture_id"]][tile["texture_set"]], tileRect)
 
                     if tile["inView"]:
                         # draw any actors standing on this tile (monsters, portals, items, ...)
