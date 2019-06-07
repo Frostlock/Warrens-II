@@ -373,7 +373,7 @@ class DungeonMap(Map):
         for x in range(self.width):
             for y in range(self.height):
                 # Calculate binary representation of surrounding tiles
-                bits = [1, 1, 1, 1, 1, 1, 1, 1]
+                bits = [1, 1, 1, 1, 1, 1, 1, 1, 1]
                 if 0 <= y - 1:
                     if 0 <= x-1:
                         if not self.tiles[x - 1][y - 1].blockSight: bits[0] = 0
@@ -382,24 +382,61 @@ class DungeonMap(Map):
                         if not self.tiles[x + 1][y - 1].blockSight: bits[2] = 0
                 if 0 <= x - 1:
                     if not self.tiles[x - 1][y].blockSight: bits[3] = 0
+                if not self.tiles[x][y].blockSight: bits[4] = 0
                 if x + 1 < self.width:
-                    if not self.tiles[x + 1][y].blockSight: bits[4] = 0
+                    if not self.tiles[x + 1][y].blockSight: bits[5] = 0
                 if y + 1 < self.height:
                     if 0 <= x - 1:
-                        if not self.tiles[x - 1][y + 1].blockSight: bits[5] = 0
-                    if not self.tiles[x][y + 1].blockSight: bits[6] = 0
+                        if not self.tiles[x - 1][y + 1].blockSight: bits[6] = 0
+                    if not self.tiles[x][y + 1].blockSight: bits[7] = 0
                     if x + 1 < self.width:
-                        if not self.tiles[x + 1][y + 1].blockSight: bits[7] = 0
+                        if not self.tiles[x + 1][y + 1].blockSight: bits[8] = 0
                 # Transform binary to integer hash
                 h = 0
                 for bit in bits:
                     h = (h << 1) | bit
                 # Map hash to a tileset ID
                 t = self.tiles[x][y]
-                if h in [0, 255]:
+                if not self.tiles[x][y].blockSight:
+                    t.texture_id = TextureId.TILE_EMPTY
+                    if random.random() < 0.05:
+                        t.texture_id = TextureId.TILE_SUBTILES
+                    if random.random() < 0.05:
+                        t.texture_id = TextureId.TILE_LINED
+                    if random.random() < 0.05:
+                        t.texture_id = TextureId.TILE_CRACKED
+                elif h in [16, 511]:
                     t.texture_id = TextureId.PILLAR
-                elif h in [66, 67, 70, 71, 98, 102, 103, 107, 111, 194, 195, 199, 214, 215, 226, 227, 230, 231, 235, 239, 246, 247]:
+                elif h in [24, 89]:
+                    t.texture_id = TextureId.NS_WALL_W_CAP
+                elif h in [56, 57, 60, 63, 120, 121, 124, 125, 127, 312, 313, 316, 317, 319, 377, 380, 381, 383, 504, 505, 508, 509]:
+                    t.texture_id = TextureId.NS_WALL
+                elif h in [48, 308]:
+                    t.texture_id = TextureId.NS_WALL_E_CAP
+                elif h in [18, 23]:
+                    t.texture_id = TextureId.EW_WALL_N_CAP
+                elif h in [146, 147, 150, 151, 210, 214, 215, 219, 223, 402, 403, 407, 438, 439, 466, 467, 470, 471, 475, 479, 502, 503]:
                     t.texture_id = TextureId.EW_WALL
+                elif h in [144, 464]:
+                    t.texture_id = TextureId.EW_WALL_S_CAP
+                elif h in [27, 31, 91, 95, 510]:
+                    t.texture_id = TextureId.NW_WALL
+                elif h in [54, 55, 310, 311, 507]:
+                    t.texture_id = TextureId.NE_WALL
+                elif h in [216, 217, 447, 472, 473]:
+                    t.texture_id = TextureId.SW_WALL
+                elif h in [255, 432, 436, 496, 500]:
+                    t.texture_id = TextureId.SE_WALL
+                elif h in [186]:
+                    t.texture_id = TextureId.NSEW_WALL
+                elif h in [58]:
+                    t.texture_id = TextureId.SEW_WALL
+                elif h in [178]:
+                    t.texture_id = TextureId.NSW_WALL
+                elif h in [154]:
+                    t.texture_id = TextureId.NSE_WALL
+                elif h in [184]:
+                    t.texture_id = TextureId.NEW_WALL
                 else:
                     print ("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
 
@@ -435,6 +472,10 @@ class TextureId:
     Enumerator for textures ID's.
     Hack: The integer values correspond with tilesheet column numbers.
     """
+    TILE_EMPTY = 4
+    TILE_LINED = 5
+    TILE_CRACKED = 6
+    TILE_SUBTILES = 7
     PILLAR = 10
     EW_WALL = 15
     NS_WALL = 12
