@@ -369,35 +369,15 @@ class DungeonMap(Map):
             for y in range(self.height):
                 t = self.tiles[x][y]
                 t.texture_id = None
-        # Assign new texture ID for every tile
+        # Assign texture ID based on texture hash
         for x in range(self.width):
             for y in range(self.height):
-                # Calculate binary representation of surrounding tiles
-                bits = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-                if 0 <= y - 1:
-                    if 0 <= x-1:
-                        if not self.tiles[x - 1][y - 1].blockSight: bits[0] = 0
-                    if not self.tiles[x][y - 1].blockSight: bits[1] = 0
-                    if x+1 < self.width:
-                        if not self.tiles[x + 1][y - 1].blockSight: bits[2] = 0
-                if 0 <= x - 1:
-                    if not self.tiles[x - 1][y].blockSight: bits[3] = 0
-                if not self.tiles[x][y].blockSight: bits[4] = 0
-                if x + 1 < self.width:
-                    if not self.tiles[x + 1][y].blockSight: bits[5] = 0
-                if y + 1 < self.height:
-                    if 0 <= x - 1:
-                        if not self.tiles[x - 1][y + 1].blockSight: bits[6] = 0
-                    if not self.tiles[x][y + 1].blockSight: bits[7] = 0
-                    if x + 1 < self.width:
-                        if not self.tiles[x + 1][y + 1].blockSight: bits[8] = 0
-                # Transform binary to integer hash
-                h = 0
-                for bit in bits:
-                    h = (h << 1) | bit
-                # Map hash to a tileset ID
                 t = self.tiles[x][y]
-                t.texture_set = TextureSet.GRAVEYARD
+                h = t.texture_hash
+                #TODO: Push into Map base class based on sub class property?
+                t.texture_set = TextureSet.SANDSTONE
+                #TODO: The tileset encoding should be done in the GUI
+                # Map hash to a tileset ID
                 if not self.tiles[x][y].blockSight:
                     t.texture_id = TextureId.TILE_EMPTY
                     if random.random() < 0.05:
@@ -420,26 +400,26 @@ class DungeonMap(Map):
                     t.texture_id = TextureId.EW_WALL
                 elif h in [144, 464]:
                     t.texture_id = TextureId.EW_WALL_S_CAP
-                elif h in [27, 31, 91, 95, 510]:
+                elif h in [27, 30, 31, 90, 91, 94, 95, 510]:
                     t.texture_id = TextureId.NW_WALL
-                elif h in [54, 55, 310, 311, 507]:
+                elif h in [51, 54, 55, 306, 307, 310, 311, 507]:
                     t.texture_id = TextureId.NE_WALL
-                elif h in [216, 217, 447, 472, 473]:
+                elif h in [153, 216, 217, 408, 409, 447, 472, 473]:
                     t.texture_id = TextureId.SW_WALL
-                elif h in [255, 432, 436, 496, 500]:
+                elif h in [180, 240, 244, 255, 432, 436, 496, 500]:
                     t.texture_id = TextureId.SE_WALL
                 elif h in [186]:
-                    t.texture_id = TextureId.NSEW_WALL
-                elif h in [58]:
-                    t.texture_id = TextureId.SEW_WALL
-                elif h in [178]:
-                    t.texture_id = TextureId.NSW_WALL
-                elif h in [154]:
-                    t.texture_id = TextureId.NSE_WALL
-                elif h in [184]:
-                    t.texture_id = TextureId.NEW_WALL
+                    t.texture_id = TextureId.CROSS
+                elif h in [58, 59, 62, 122, 123, 126, 314, 318, 378, 379, 382]:
+                    t.texture_id = TextureId.T_SOUTH
+                elif h in [178, 179, 182, 183, 242, 243, 246, 247, 434, 435, 498]:
+                    t.texture_id = TextureId.T_WEST
+                elif h in [154, 155, 158, 159, 218, 222, 410, 411, 414, 415, 474]:
+                    t.texture_id = TextureId.T_EAST
+                elif h in [184, 185, 188, 189, 248, 249, 252, 253, 440, 441, 444]:
+                    t.texture_id = TextureId.T_NORTH
                 else:
-                    print ("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
+                    print("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
 
     def _create_horizontal_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
@@ -478,7 +458,7 @@ class TextureSet:
     STONE_WITHERED = 1
     SANDSTONE = 1
     MARBLE_BLUE = 8
-    GRAVEYARD = 17
+    FENCE = 17
 
 
 class TextureId:
@@ -503,11 +483,11 @@ class TextureId:
     NE_WALL = 18
     SW_WALL = 19
     SE_WALL = 20
-    NSEW_WALL = 21
-    SEW_WALL = 22
-    NSW_WALL = 23
-    NSE_WALL = 24
-    NEW_WALL = 25
+    CROSS = 21
+    T_SOUTH = 22
+    T_WEST = 23
+    T_EAST = 24
+    T_NORTH = 25
 
 class TownMap(Map):
     """
@@ -909,6 +889,41 @@ class Tile(object):
         self.json["material"] = newMaterial
 
     @property
+    def texture_hash(self):
+        """
+        Integer hash representing the tile and the surrounding tiles.
+        This hash can be used to decide which texture to use for the tile.
+        """
+        if self.json["texture_hash"] is None:
+            x = self.x
+            y = self.y
+            # Take binary representation of surrounding tiles
+            bits = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+            if 0 <= y - 1:
+                if 0 <= x - 1:
+                    if not self.map.tiles[x - 1][y - 1].blockSight: bits[0] = 0
+                if not self.map.tiles[x][y - 1].blockSight: bits[1] = 0
+                if x + 1 < self.map.width:
+                    if not self.map.tiles[x + 1][y - 1].blockSight: bits[2] = 0
+            if 0 <= x - 1:
+                if not self.map.tiles[x - 1][y].blockSight: bits[3] = 0
+            if not self.map.tiles[x][y].blockSight: bits[4] = 0
+            if x + 1 < self.map.width:
+                if not self.map.tiles[x + 1][y].blockSight: bits[5] = 0
+            if y + 1 < self.map.height:
+                if 0 <= x - 1:
+                    if not self.map.tiles[x - 1][y + 1].blockSight: bits[6] = 0
+                if not self.map.tiles[x][y + 1].blockSight: bits[7] = 0
+                if x + 1 < self.map.width:
+                    if not self.map.tiles[x + 1][y + 1].blockSight: bits[8] = 0
+            # Transform binary to integer hash
+            h = 0
+            for bit in bits:
+                h = (h << 1) | bit
+            self.json["texture_hash"] = h
+        return self.json["texture_hash"]
+
+    @property
     def texture_set(self):
         """
         Property to store the texture set id for this tile.
@@ -993,6 +1008,8 @@ class Tile(object):
         self.json["blocked"] = False
         self.json["blockSight"] = False
         self.json["material"] = MaterialType.NONE
+        self.json["texture_hash"] = None
+        self.json["texture_set"] = None
         self.json["texture_id"] = None
         self.json["inView"] = True
         self.json["color"] = CONSTANTS.TILE_DEFAULT_COLOR
