@@ -260,10 +260,7 @@ class TownLevel(Level):
         doorTile.blockSight = False
         doorTile.material = Maps.MaterialType.DOOR
         #Create the door that leads into the house
-        doorIn = Actors.Portal()
-        doorIn._char = '>'
-        doorIn._name = 'door'
-        doorIn._message = 'You enter the house.'
+        doorIn = Actors.Portal('>', 'door', 'You enter the house.')
         doorIn.moveToLevel(self, doorTile)
         #Generate the level that represents the interior of the house
         houseLevel = SingleRoomLevel(self.game, self.difficulty, 'house', house)
@@ -274,10 +271,7 @@ class TownLevel(Level):
         doorTile.blockSight = False
         doorTile.material = Maps.MaterialType.DOOR
         #Create the door that leads out of the house
-        doorOut = Actors.Portal()
-        doorOut._char = '<'
-        doorOut._name = 'door'
-        doorOut._message = 'You leave the house.'
+        doorOut = Actors.Portal('<', 'door', 'You leave the house.')
         doorOut.moveToLevel(houseLevel, doorTile)
         #Connect the two doors
         doorIn.connectTo(doorOut)

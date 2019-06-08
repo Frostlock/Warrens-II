@@ -184,16 +184,12 @@ class Game(object):
         self._levels.append(dungeonLevel)
         for lvl in connectedLevels:
             # Add portal in previous level to current level
-            downPortal = Portal()
-            downPortal.char = '>'
-            downPortal.name = 'stairs down'
-            downPortal.message = 'You follow the stairs down, looking for more adventure.'
+            downPortal = Portal('>', 'stairs down', 'You follow the stairs down, looking for more adventure.')
+            downPortal.sprite_id = SPRITES.STAIRS_DOWN
             downPortal.moveToLevel(lvl, lvl.getRandomEmptyTile())
             # Add portal in current level to previous level
-            upPortal = Portal()
-            upPortal.char = '<'
-            upPortal.name = 'stairs up'
-            upPortal.message = 'You follow the stairs up, hoping to find the exit.'
+            upPortal = Portal('<', 'stairs up', 'You follow the stairs up, hoping to find the exit.')
+            upPortal.sprite_id = SPRITES.STAIRS_UP
             upPortal.moveToLevel(dungeonLevel, dungeonLevel.getRandomEmptyTile())
             # Connect the two portals
             downPortal.connectTo(upPortal)
@@ -214,19 +210,15 @@ class Game(object):
         # For each connected level
         for lvl in connectedLevels:
             # create a portal in the connected level that leads to the new cave
-            downPortal = Portal()
-            downPortal.char = '>'
-            downPortal.name = 'Pit'
-            downPortal.message = 'You jump into the pit. As you fall deeper and deeper, you realize you didn\'t ' \
-                                  'think about how to get back out afterward...'
+            message = 'You jump into the pit. As you fall deeper and deeper, you realize you didn\'t ' \
+                      'think about how to get back out afterward...'
+            downPortal = Portal('>', 'Pit', message)
             downPortal.moveToLevel(lvl, lvl.getRandomEmptyTile())
             # create a portal in the new cave that leads back
-            upPortal = Portal()
-            upPortal.char = '<'
-            upPortal.name = 'Opening above'
-            upPortal.message = 'After great difficulties you manage to get out of the pit.'
+            upPortal = Portal('<', 'Opening above', 'After great difficulties you manage to get out of the pit.')
             upPortal.moveToLevel(caveLevel, caveLevel.getRandomEmptyTile())
             # connect the two portals
+            # TODO: Ideally it should not be possible to climb back up :)
             downPortal.connectTo(upPortal)
 
     def resetPlayer(self):

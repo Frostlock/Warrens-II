@@ -22,12 +22,14 @@ class Actor(object):
         The current amount of hitpoints
         """
         return self.json["currentHitPoints"]
+
     @currentHitPoints.setter
     def currentHitPoints(self, hitPoints):
         if hitPoints > self.maxHitPoints:
             self.json["currentHitPoints"] = self.maxHitPoints
         else:
             self.json["currentHitPoints"] = hitPoints
+
     @property
     def maxHitPoints(self):
         return self.json["maxHitPoints"]
@@ -47,8 +49,8 @@ class Actor(object):
         return self.json["name"]
 
     @name.setter
-    def name(self, newName):
-        self.json["name"] = newName
+    def name(self, new_name):
+        self.json["name"] = new_name
 
     @property
     def flavorText(self):
@@ -71,6 +73,18 @@ class Actor(object):
     @char.setter
     def char(self, newChar):
         self.json["char"] = newChar
+
+    @property
+    def sprite_id(self):
+        """
+        Property to store the sprite ID for this Actor.
+        This can be used by the GUI to visualize the Actor.
+        """
+        return self.json["sprite_id"]
+
+    @sprite_id.setter
+    def sprite_id(self, new_id):
+        self.json["sprite_id"] = new_id
 
     @property
     def tile(self):
@@ -142,17 +156,18 @@ class Actor(object):
         """
         return self.json["color"]
 
-    @property
-    def sceneObject(self):
-        '''
-        Property used to store the scene object that represents this actor in the GUI.
-        :return: SceneObject
-        '''
-        return self._sceneObject
-
-    @sceneObject.setter
-    def sceneObject(self, sceneObject):
-        self._sceneObject = sceneObject
+    #DEPRECATED
+    # @property
+    # def sceneObject(self):
+    #     '''
+    #     Property used to store the scene object that represents this actor in the GUI.
+    #     :return: SceneObject
+    #     '''
+    #     return self._sceneObject
+    #
+    # @sceneObject.setter
+    # def sceneObject(self, sceneObject):
+    #     self._sceneObject = sceneObject
 
     @property
     def json(self):
@@ -179,6 +194,7 @@ class Actor(object):
         self.json["inView"] = False
         self.json["maxHitPoints"] = 1
         self.json["currentHitPoints"] = self.maxHitPoints
+        self.json["sprite_id"] = None
         self._tile = None
         self._level = None
         self._sceneObject = None
@@ -296,14 +312,17 @@ class Portal(Actor):
         """
         return self._destination
 
-    def __init__(self):
+    def __init__(self, char, name, message=""):
         """
         Constructor to create a new portal
         """
         super(Portal, self).__init__()
-        #portals are purple
-        self.json["message"] = ""
+        self.char = char
+        self.name = name
+        self.sprite_id = CONSTANTS.SPRITES.PORTAL
+        self.json["message"] = message
         self._destination = None
+        # portals are purple
         self.json["color"] = (150, 0, 255)
 
     def connectTo(self, otherPortal):

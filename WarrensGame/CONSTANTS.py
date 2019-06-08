@@ -72,3 +72,12 @@ GAME_PLAYER_HITPOINT_FACTOR = 5
 
 GAME_MESSAGE_BUFFER_LENGTH = 5
 GAME_EVENT_QUEUE_SIZE = 20
+
+
+class SPRITES:
+    """
+    Enumerator providing sprite ID's
+    """
+    PORTAL = 0
+    STAIRS_DOWN = 1
+    STAIRS_UP = 2

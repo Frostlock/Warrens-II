@@ -8,6 +8,7 @@ import time
 import pygame
 from pygame.locals import *
 from WarrensClient import GuiCONSTANTS, GuiUtilities
+from WarrensClient.GuiGraphics import initialize_sprites, get_sprite_surface
 from WarrensGame.Actors import Character
 from WarrensGame.Effects import EffectTarget
 from WarrensGame.Game import Game
@@ -470,6 +471,10 @@ class GuiApplication(object):
         self.fogOfWarTileSurface = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA)
         self.fogOfWarTileSurface.fill((0, 0, 0, 180))
 
+        # Re-initialize sprites
+        initialize_sprites(self.tile_size)
+
+        # TODO: move into GuiApplication, need to load some sprites from the wall tileset...
         # Load tileset
         tile_image = pygame.image.load('./Assets/tiles.bin').convert()
         tile_image.set_colorkey((0, 0, 0))
@@ -646,11 +651,16 @@ class GuiApplication(object):
                         tile_actors = tile["actors"]
                         for actorId, myActor in tile_actors.items():
                             if myActor["inView"]:
-                                textImg = self.viewport_font.render(myActor["char"], 1, myActor["color"])
-                                #Center
-                                x = tileRect.x + (tileRect.width / 2 - textImg.get_width() /2)
-                                y = tileRect.y + (tileRect.height / 2 - textImg.get_height() /2)
-                                self.surface_viewport.blit(textImg, (x, y))
+                                # Get sprite for Actor
+                                sprite = get_sprite_surface(myActor["sprite_id"])
+                                if sprite is not None: print("sprite for you sirreee")
+                                # If not found, fallback to char representation
+                                if sprite is None:
+                                    sprite = self.viewport_font.render(myActor["char"], 1, myActor["color"])
+                                # Center sprite on tile
+                                x = tileRect.x + (tileRect.width / 2 - sprite.get_width() /2)
+                                y = tileRect.y + (tileRect.height / 2 - sprite.get_height() /2)
+                                self.surface_viewport.blit(sprite, (x, y))
                                 #===============================================
                                 # #Change letter color to red based on monster health, it works but I don't think it is pretty enough.
                                 # textImg = self.viewPortFont.render(myActor["char"], 1, (255,0,0))
