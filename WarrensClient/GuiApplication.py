@@ -653,7 +653,6 @@ class GuiApplication(object):
                             if myActor["inView"]:
                                 # Get sprite for Actor
                                 sprite = get_sprite_surface(myActor["sprite_id"])
-                                if sprite is not None: print("sprite for you sirreee")
                                 # If not found, fallback to char representation
                                 if sprite is None:
                                     sprite = self.viewport_font.render(myActor["char"], 1, myActor["color"])
