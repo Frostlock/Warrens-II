@@ -92,6 +92,19 @@ class Map(object):
         return self._range_of_view
 
     @property
+    def texture_set(self):
+        return self.json["texture_set"]
+
+    @texture_set.setter
+    def texture_set(self, new_texture_set):
+        self.json["texture_set"] = new_texture_set
+        # propagate texture set to all tiles in this map
+        for x in range(self.width):
+            for y in range(self.height):
+                t = self.tiles[x][y]
+                t.texture_set = new_texture_set
+
+    @property
     def json(self):
         """
         Json dictionary representation of the map.
@@ -116,6 +129,7 @@ class Map(object):
         self._json = {}
         self.json["width"] = map_width
         self.json["height"] = map_height
+        self.json["texture_set"] = None
         # Generate the map
         self.generate_map()
         # Tiles get created during map generation so link up the json's afterward
@@ -276,6 +290,7 @@ class DungeonMap(Map):
             MapHeight - Map height in tiles
         """
         super(DungeonMap, self).__init__(map_width, map_height, level)
+        self.texture_set = TextureSet.STONE
         # Initialize range of view
         self._rangeOfView = CONSTANTS.TORCH_RADIUS
 
@@ -356,27 +371,11 @@ class DungeonMap(Map):
         (exitX, exitY) = self.rooms[len(self.rooms) - 1].center
         self._exitTile = self._tiles[exitX][exitY]
 
-        # Assign texture ID's
-        self._assign_texture_ids()
-
-    def _assign_texture_ids(self):
-        """
-        Helper function that assigns correct tile set texture ID's for every tile in this map
-        :return: None
-        """
-        # Reset all texture ID's
-        for x in range(self.width):
-            for y in range(self.height):
-                t = self.tiles[x][y]
-                t.texture_id = None
         # Assign texture ID based on texture hash
         for x in range(self.width):
             for y in range(self.height):
                 t = self.tiles[x][y]
                 h = t.texture_hash
-                #TODO: Push into Map base class based on sub class property?
-                t.texture_set = TextureSet.SANDSTONE
-                #TODO: The tileset encoding should be done in the GUI
                 # Map hash to a tileset ID
                 if not self.tiles[x][y].blockSight:
                     t.texture_id = TextureId.TILE_EMPTY
@@ -401,13 +400,13 @@ class DungeonMap(Map):
                 elif h in [144, 464]:
                     t.texture_id = TextureId.EW_WALL_S_CAP
                 elif h in [27, 30, 31, 90, 91, 94, 95, 510]:
-                    t.texture_id = TextureId.NW_WALL
+                    t.texture_id = TextureId.NW_CORNER
                 elif h in [51, 54, 55, 306, 307, 310, 311, 507]:
-                    t.texture_id = TextureId.NE_WALL
+                    t.texture_id = TextureId.NE_CORNER
                 elif h in [153, 216, 217, 408, 409, 447, 472, 473]:
-                    t.texture_id = TextureId.SW_WALL
+                    t.texture_id = TextureId.SW_CORNER
                 elif h in [180, 240, 244, 255, 432, 436, 496, 500]:
-                    t.texture_id = TextureId.SE_WALL
+                    t.texture_id = TextureId.SE_CORNER
                 elif h in [186]:
                     t.texture_id = TextureId.CROSS
                 elif h in [58, 59, 62, 122, 123, 126, 314, 318, 378, 379, 382]:
@@ -451,11 +450,12 @@ class DungeonMap(Map):
 
 class TextureSet:
     """
-    Enumerator for textures ID's.
-    Hack: The integer values correspond with tilesheet column numbers.
+    Enumerator for texture set ID's.
+    Hack: The integer values correspond with tilesheet row numbers.
+    This can be seen as an environment type deciding the feel of the place: a dark cave, a mossy cave, a dungeon, ...
     """
     STONE = 1
-    STONE_WITHERED = 1
+    STONE_WITHERED = 2
     SANDSTONE = 1
     MARBLE_BLUE = 8
     FENCE = 17
@@ -465,6 +465,8 @@ class TextureId:
     """
     Enumerator for textures ID's.
     Hack: The integer values correspond with tilesheet column numbers.
+    TODO: The actual mapping to tilesheet column numbers should be done in the GUI. Making this implementation
+    independent of the actual tilesheet being used.
     """
     TILE_EMPTY = 4
     TILE_LINED = 5
@@ -479,10 +481,10 @@ class TextureId:
     EW_WALL_S_CAP = 64
     NS_WALL_W_CAP = 11
     NS_WALL_E_CAP = 13
-    NW_WALL = 17
-    NE_WALL = 18
-    SW_WALL = 19
-    SE_WALL = 20
+    NW_CORNER = 17
+    NE_CORNER = 18
+    SW_CORNER = 19
+    SE_CORNER = 20
     CROSS = 21
     T_SOUTH = 22
     T_WEST = 23
