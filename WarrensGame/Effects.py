@@ -7,7 +7,7 @@
 import WarrensGame.AI
 import WarrensGame.Actors
 from WarrensGame.Maps import Tile
-from WarrensGame.Utilities import rollHitDie, GameError, message
+from WarrensGame.Utilities import roll_hit_die, GameError, message
 
 
 class EffectTarget:
@@ -181,7 +181,7 @@ class HealEffect(MagicEffect):
         self.effectDuration -= 1
         # Apply healing
         for target in self.actors:
-            healAmount = rollHitDie(self.effectHitDie)
+            healAmount = roll_hit_die(self.effectHitDie)
             target.takeHeal(healAmount, self.source)
 
 class ConfuseEffect(MagicEffect):
@@ -296,7 +296,7 @@ class DamageEffect(MagicEffect):
             for actor in tile.actors:
                 self.actors.append(actor)
         #apply damage to every target
-        damageAmount = rollHitDie(self.effectHitDie)
+        damageAmount = roll_hit_die(self.effectHitDie)
         for target in self.actors:
             message(self.source.name.capitalize() + ' hits '
                     + target.name + ' for ' + str(damageAmount) + ' Damage.', "GAME")

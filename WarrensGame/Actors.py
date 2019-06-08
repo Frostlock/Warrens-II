@@ -5,7 +5,7 @@ from WarrensGame.Interaction import Interaction
 from WarrensGame.Inventory import Inventory
 import WarrensGame.AI  # Used in eval statement
 import WarrensGame.Effects  # Used in eval statement
-from WarrensGame.Utilities import message, rollHitDie, GameError, distanceBetween, clamp, game_event
+from WarrensGame.Utilities import message, roll_hit_die, GameError, distance_between_actors, clamp, game_event
 
 
 ##########
@@ -251,7 +251,7 @@ class Actor(object):
         dx = targetActor.tile.x - self.tile.x
         dy = targetActor.tile.y - self.tile.y
         # distance towards the target
-        distance = distanceBetween(self, targetActor)
+        distance = distance_between_actors(self, targetActor)
         # normalize it to length 1 (preserving direction), then round it and
         # convert to integer so the movement is restricted to the map grid
         dx = int(round(dx / distance))
@@ -595,7 +595,7 @@ class Character(Actor):
             target - the Character to be attacked
         """
         # Check if the attack hits
-        hitRoll = rollHitDie("1d100")
+        hitRoll = roll_hit_die("1d100")
         # In case of an equal accuracy and dodge rating there is a 50% chance to hit
         toHit = 100 - (50 + self.accuracy - target.dodge)
         message(self.name.capitalize() + ' attacks ' + target.name + ': ' + str(hitRoll) + ' vs ' + str(toHit), "COMBAT")
@@ -1041,7 +1041,7 @@ class Monster(Character):
         #Actor components
         self.json["key"] = baseMonster.key
         self.json["char"] = baseMonster.char
-        self.json["maxHitPoints"] = rollHitDie(baseMonster.hitdie)
+        self.json["maxHitPoints"] = roll_hit_die(baseMonster.hitdie)
         self.json["currentHitPoints"] = self.json["maxHitPoints"]
         self.json["name"] = baseMonster.name
         self.json["flavorText"] = baseMonster.flavor

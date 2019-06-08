@@ -89,7 +89,7 @@ class BasicMonsterAI(AI):
         #new class variable in Character class
         RoS = 8  # Range of Sight
         RoA = 2  # Range of Attack
-        distance = Utilities.distanceBetween(self.character, player)
+        distance = Utilities.distance_between_actors(self.character, player)
         #message('   Player ' + self.player.name + ' found at ' + \
         #        str(self.player.tile) + ' distance: ' + str(distance), "AI")
 

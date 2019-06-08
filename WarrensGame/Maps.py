@@ -161,7 +161,7 @@ class Map(object):
         view_range = self.range_of_view
         for tx, ty in self.each_map_position:
             tile = self.tiles[tx][ty]
-            dist = Utilities.distanceBetweenPoints(x, y, tx, ty)
+            dist = Utilities.distance_between_points(x, y, tx, ty)
             visible = dist <= view_range
             line_of_sight = Utilities.line_of_sight(
                 self.solidTileMatrix, x, y, tx, ty)

@@ -9,7 +9,7 @@ from collections import deque
 import WarrensGame.CONSTANTS as CONSTANTS
 
 
-def rollHitDie(hitdie):
+def roll_hit_die(hitdie):
     """
     this function simulates rolling hit dies and returns the resulting
     nbr of hitpoints. Hit dies are specified in the format xdy where
@@ -33,7 +33,7 @@ def rollHitDie(hitdie):
     return hitpoints
 
 
-def randomChoiceIndex(chances):
+def random_choice_index(chances):
     """
     Returns the index of a random choice based on a list of chances.
     """
@@ -54,16 +54,14 @@ def randomChoiceIndex(chances):
 
 # Buffer to keep track of game messages
 messageBuffer = deque([])
-# # Queue to keep track of game events
-# event_queue = Queue(maxsize=CONSTANTS.GAME_EVENT_QUEUE_SIZE)
-game_server = None
 
 
 def reset_utility_queues():
     global messageBuffer, game_server
     messageBuffer = deque([])
-    # if game_server is not None:
-    #     game_server.reset_queues()
+
+
+game_server = None
 
 
 def game_event(header, json):
@@ -83,7 +81,6 @@ def game_event(header, json):
     #     raise GameError("event queue full")
 
 
-# TODO: define the categories as CONSTANTS and not as a string passed to the message() method
 def message(text, category=None):
     """
     Utility function to deal with in game messages.
@@ -124,28 +121,31 @@ def message(text, category=None):
         messageBuffer.popleft()
 
 
-def clamp(n, minn, maxn):
+def clamp(n, minimum, maximum):
     """
     This function returns the number n limited to the range min-max.
-    It is meant to be used to keep coordinates withing the limites of the map.
+    This is for example used to keep coordinates within the limits of the map.
+    :param n: number to clamp
+    :param minimum: smallest allowed value
+    :param maximum: largest allowed value
+    :return: clamped number
     """
-    # Hurray for readability ;-)
-    return max(min(maxn, n), minn)
+    return max(min(maximum, n), minimum)
 
 
-def distanceBetween(actor1, actor2):
+def distance_between_actors(actor1, actor2):
     """
-    Calculate the euclidian distance (straightline) between two actors.
-    Arguments
-        actor1 - First actor
-        actor2 - Second actor
+    Calculate the Euclidean distance (straight line) between two actors.
+    :param actor1: First actor
+    :param actor2: Second actor
+    :return: Distance between the two actors
     """
     dx = actor1.tile.x - actor2.tile.x
     dy = actor1.tile.y - actor2.tile.y
     return math.sqrt(dx ** 2 + dy ** 2)
 
 
-def distanceBetweenPoints(x, y, u, v):
+def distance_between_points(x, y, u, v):
     """
     Return the distance between two points (x, y) and (u, v).
     """
@@ -153,16 +153,6 @@ def distanceBetweenPoints(x, y, u, v):
     dx = x - u
     dy = y - v
     return math.sqrt(dx ** 2 + dy ** 2)
-
-# DEPRECATED
-# def make_matrix(width, height, initial_value):
-#     """
-#     Returns a list of initial values that can be accessed like a 2D array:
-#
-#         matrix[x][y]
-#
-#     """
-#     return [[initial_value for y in range(0, height)] for x in range(0, width)]
 
 
 def get_line_segments(x1, y1, x2, y2):
@@ -212,10 +202,9 @@ def line_of_sight(matrix, x1, y1, x2, y2):
     Uses the matrix data to rely on blocking tiles.
     This is a matrix created with make_matrix().
     matrix values of 0 or False are not solid, 1 or True are solid.
-
     """
-    segs = get_line_segments(x1, y1, x2, y2)
-    hits = [matrix[x][y] for x, y in segs]
+    segments = get_line_segments(x1, y1, x2, y2)
+    hits = [matrix[x][y] for x, y in segments]
     amt = hits.count(True)
     # allow 1 case: if the final destination position is blocking
     return amt == 0 or (amt == 1 and matrix[x2][y2])
