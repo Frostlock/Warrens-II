@@ -668,7 +668,7 @@ class GuiApplication(object):
                                 # self.surfaceViewPort.blit(textImg, (x,y), factorRect)
                                 #===============================================
                     else:
-                        #tile not in view: apply fog of war
+                        # tile not in view: apply fog of war
                         self.surface_viewport.blit(self.fogOfWarTileSurface, tileRect)
 
         # TODO: Implement for RemoteServer
@@ -780,40 +780,40 @@ class GuiApplication(object):
         color is an RGB tuple
         """
         R, G, B = color
-        flashOnSurface = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA, 32)
-        flashOnSurface.fill((R, G, B, 125))
+        flash_on_surface = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA, 32)
+        flash_on_surface.fill((R, G, B, 125))
         clock = pygame.time.Clock()
         # nbr of flashes per second
         flashes = 2
         # run an effectLoop
         for i in range (0,flashes):
-            #flash on
+            # flash on
             dirtyRects = []
             for tile in tiles:
                 # translate to coords in the display
-                displayX, displayY = self.calculate_display_coords(tile)
-                dirty = self.surface_display.blit(flashOnSurface, (displayX, displayY))
+                display_x, display_y = self.calculate_display_coords(tile)
+                dirty = self.surface_display.blit(flash_on_surface, (display_x, display_y))
                 dirtyRects.append(dirty)
             # render
             pygame.display.update(dirtyRects)
             # limit framerate
-            frameRateLimit = 5 * flashes
-            clock.tick(frameRateLimit)
+            frame_rate_limit = 5 * flashes
+            clock.tick(frame_rate_limit)
             # flash of
             dirtyRects = []
             for tile in tiles:
                 # translate to coords in the display
-                viewPortX, viewPortY = self.calculate_viewport_coords(tile)
-                displayX, displayY = self.calculate_display_coords(tile)
+                view_port_x, view_port_y = self.calculate_viewport_coords(tile)
+                display_x, display_y = self.calculate_display_coords(tile)
                 # restore original tile from viewport surface
-                vpRect = (viewPortX, viewPortY, self.tile_size, self.tile_size)
-                dirty = self.surface_display.blit(self.surface_viewport, (displayX, displayY), vpRect)
+                vp_rect = (view_port_x, view_port_y, self.tile_size, self.tile_size)
+                dirty = self.surface_display.blit(self.surface_viewport, (display_x, display_y), vp_rect)
                 dirtyRects.append(dirty)
             # render
             pygame.display.update(dirtyRects)
             # limit framerate
-            frameRateLimit = 5 * flashes
-            clock.tick(frameRateLimit)
+            frame_rate_limit = 5 * flashes
+            clock.tick(frame_rate_limit)
 
     def animation_nova(self, color, center_tile, radius=0):
         # R, G, B = color
@@ -824,25 +824,25 @@ class GuiApplication(object):
             ripples = radius * 2
             radius = radius * self.tile_size
         # origin of Nova will be the middle of centerTile
-        displayX, displayY = self.calculate_display_coords(center_tile)
-        origX = int(displayX + self.tile_size / 2)
-        origY = int(displayY + self.tile_size / 2)
+        display_x, display_y = self.calculate_display_coords(center_tile)
+        orig_x = int(display_x + self.tile_size / 2)
+        orig_y = int(display_y + self.tile_size / 2)
         
         clock = pygame.time.Clock()
-        rippleRadius = 0
-        radiusIncrement = int(radius/ripples)
+        ripple_radius = 0
+        radius_increment = int(radius/ripples)
         # run an effectLoop
         for i in range(0, ripples):
-            rippleRadius += radiusIncrement
-            #render circle
-            dirtyRects = []
-            dirtyRect = pygame.draw.circle(self.surface_display, color, (origX, origY), rippleRadius, 3)
-            dirtyRects.append(dirtyRect)
-            #render
-            pygame.display.update(dirtyRects)
-            #limit framerate
-            frameRateLimit = 5*ripples
-            clock.tick(frameRateLimit)
+            ripple_radius += radius_increment
+            # render circle
+            dirty_rects = []
+            dirty_rect = pygame.draw.circle(self.surface_display, color, (orig_x, orig_y), ripple_radius, 3)
+            dirty_rects.append(dirty_rect)
+            # render
+            pygame.display.update(dirty_rects)
+            # limit frame rate
+            frame_rate_limit = 5*ripples
+            clock.tick(frame_rate_limit)
 
     def calculate_viewport_coords(self, tile):
         """
@@ -850,42 +850,42 @@ class GuiApplication(object):
         """
         x = tile.x * self.tile_size - self._renderViewPortX
         y = tile.y * self.tile_size - self._renderViewPortY
-        return (x, y)
+        return x, y
 
     def calculate_display_coords(self, tile):
         """
         calculates the (x, y) coordinate of the given tile on the surfaceDisplay
         """
-        viewPortX, viewPortY = self.calculate_viewport_coords(tile)
-        x = viewPortX + self._viewPortOffset[0]
-        y = viewPortY + self._viewPortOffset[1]
-        return (x, y) 
+        view_port_x, view_port_y = self.calculate_viewport_coords(tile)
+        x = view_port_x + self._viewPortOffset[0]
+        y = view_port_y + self._viewPortOffset[1]
+        return x, y
 
     def event_dragging_start(self):
         self._draggingMode = True
-        #call pygame.mouse.get_rel() to make pygame correctly register the starting point of the drag
+        # call pygame.mouse.get_rel() to make pygame correctly register the starting point of the drag
         pygame.mouse.get_rel()
 
     def event_dragging_stop(self):
         self._draggingMode = False
 
     def event_mouse_movement(self):
-        #check for on going drag
+        # check for on going drag
         if self.dragging_mode:
-            #get relative distance of mouse since last call to get_rel()
+            # get relative distance of mouse since last call to get_rel()
             rel = pygame.mouse.get_rel()
-            #calculate new viewport coords
+            # calculate new viewport coords
             self._renderViewPortX = self._renderViewPortX - rel[0]
             self._renderViewPortY = self._renderViewPortY - rel[1]
         else:
             pos = pygame.mouse.get_pos()
-            #Coords relevant to viewport
+            # Coords relevant to viewport
             mouseX = pos[0]
             mouseY = pos[1]
-            #Coords relevant to entire map
+            # Coords relevant to entire map
             mapX = self._renderViewPortX + mouseX
             mapY = self._renderViewPortY + mouseY
-            #Determine Tile
+            # Determine Tile
             gameMap = self.game.currentLevel.map
             tileX = int(mapX / self.tile_size)
             tileY = int(mapY / self.tile_size)
@@ -898,47 +898,50 @@ class GuiApplication(object):
         """
         Zoom in while centering on current mouse position.
         """
-        #zoom in limit
-        if self.zoom_factor == GuiCONSTANTS.MAX_ZOOM_FACTOR: return
-        ZoomMultiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
-        #change zoom factor
-        self._zoomFactor = self.zoom_factor * ZoomMultiplier
-        #Center viewport on mouse location
+        # zoom in limit
+        if self.zoom_factor == GuiCONSTANTS.MAX_ZOOM_FACTOR:
+            return
+        zoom_multiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
+        # change zoom factor
+        self._zoomFactor = self.zoom_factor * zoom_multiplier
+        # Center viewport on mouse location
         pos = pygame.mouse.get_pos()
-        #Coords relevant to viewport
-        mouseX = pos[0]
-        mouseY = pos[1]
-        #Coords relevant to entire map
-        mapX = self._renderViewPortX + mouseX
-        mapY = self._renderViewPortY + mouseY
-        #viewport coords after zoom operation (center viewport on map coords)
-        self._renderViewPortX = mapX*ZoomMultiplier - (self._render_viewport_w / 2)
-        self._renderViewPortY = mapY*ZoomMultiplier - (self._render_viewport_h / 2)
-        #Reset rendering parameters
+        # Coords relevant to viewport
+        mouse_x = pos[0]
+        mouse_y = pos[1]
+        # Coords relevant to entire map
+        map_x = self._renderViewPortX + mouse_x
+        map_y = self._renderViewPortY + mouse_y
+        # viewport coords after zoom operation (center viewport on map coords)
+        self._renderViewPortX = map_x*zoom_multiplier - (self._render_viewport_w / 2)
+        self._renderViewPortY = map_y*zoom_multiplier - (self._render_viewport_h / 2)
+        # Reset rendering parameters
         self.render_init()
 
     def event_zoom_out(self):
         """
         Zoom out while centering on current mouse position.
         """
-        #zoom out limit
-        if self.zoom_factor == 1: return
-        ZoomMultiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
-        #change zoom factor
-        self._zoomFactor = self.zoom_factor / ZoomMultiplier
-        if self.zoom_factor < 1: self._zoomFactor = 1
-        #Center viewport on mouse location
+        # zoom out limit
+        if self.zoom_factor == 1:
+            return
+        zoom_multiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
+        # change zoom factor
+        self._zoomFactor = self.zoom_factor / zoom_multiplier
+        if self.zoom_factor < 1:
+            self._zoomFactor = 1
+        # Center viewport on mouse location
         pos = pygame.mouse.get_pos()
-        #Coords relevant to viewport
-        mouseX = pos[0]
-        mouseY = pos[1]
-        #Coords relevant to entire map
-        mapX = self._renderViewPortX + mouseX
-        mapY = self._renderViewPortY + mouseY
-        #viewport coords after zoom operation (center viewport on map coords)
-        self._renderViewPortX = mapX/ZoomMultiplier - (self._render_viewport_w / 2)
-        self._renderViewPortY = mapY/ZoomMultiplier - (self._render_viewport_h / 2)
-        #Reset rendering parameters
+        # Coords relevant to viewport
+        mouse_x = pos[0]
+        mouse_y = pos[1]
+        # Coords relevant to entire map
+        map_x = self._renderViewPortX + mouse_x
+        map_y = self._renderViewPortY + mouse_y
+        # viewport coords after zoom operation (center viewport on map coords)
+        self._renderViewPortX = map_x/zoom_multiplier - (self._render_viewport_w / 2)
+        self._renderViewPortY = map_y/zoom_multiplier - (self._render_viewport_h / 2)
+        # Reset rendering parameters
         self.render_init()
 
     def event_zoom_on_tile(self, tile):
@@ -946,13 +949,13 @@ class GuiApplication(object):
         zooms in on provided tile
         """
         if self.zoom_factor == GuiCONSTANTS.MAX_ZOOM_FACTOR: return
-        ZoomMultiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
-        #change zoom factor
-        self._zoomFactor = self.zoom_factor * ZoomMultiplier
-        #set new viewport coords
-        self._renderViewPortX = tile.x * self.tile_size * ZoomMultiplier - (self._render_viewport_w / 2)
-        self._renderViewPortY = tile.y * self.tile_size * ZoomMultiplier - (self._render_viewport_h / 2)
-        #Reset rendering parameters
+        zoom_multiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
+        # change zoom factor
+        self._zoomFactor = self.zoom_factor * zoom_multiplier
+        # set new viewport coords
+        self._renderViewPortX = tile.x * self.tile_size * zoom_multiplier - (self._render_viewport_w / 2)
+        self._renderViewPortY = tile.y * self.tile_size * zoom_multiplier - (self._render_viewport_h / 2)
+        # Reset rendering parameters
         self.render_init()
         
     def use_inventory(self):
@@ -967,13 +970,13 @@ class GuiApplication(object):
                 options.append(item.name)
             selection = GuiUtilities.show_menu(self.surface_display, header, options)
             if selection is not None:
-                useItem = items[selection]
-                if useItem.targeted:
-                    #ask player for target
-                    self.event_targeting_start(useItem)
+                use_item = items[selection]
+                if use_item.targeted:
+                    # ask player for target
+                    self.event_targeting_start(use_item)
                 else:
-                    #try to use the item
-                    self.game.player.tryUseItem(useItem)
+                    # try to use the item
+                    self.game.player.tryUseItem(use_item)
 
     def drop_inventory(self):
         """
@@ -995,32 +998,33 @@ class GuiApplication(object):
         self._targetType = item.effect.targetType
     
     def event_targeting_acquire(self):
-        #targeted tile is currently selected
-        targetTile = self._renderSelectedTile
-        #hack to avoid lingering selection tile 
+        # targeted tile is currently selected
+        target_tile = self._renderSelectedTile
+        # hack to avoid lingering selection tile
         self._renderSelectedTile = None
-        #find target based on targetType
+        # find target based on targetType
         if self._targetType == EffectTarget.TILE:
-            myTarget = targetTile
+            my_target = target_tile
         elif self._targetType == EffectTarget.CHARACTER:
-            #Currently this finds all ACTORS, not limited to CHARACTERS
-            #find target actor on tile
-            if len(targetTile.actors) == 0: return
-            if len(targetTile.actors) == 1: 
-                myTarget = targetTile.actors[0]
+            # Currently this finds all ACTORS, not limited to CHARACTERS
+            # find target actor on tile
+            if len(target_tile.actors) == 0: return
+            if len(target_tile.actors) == 1:
+                my_target = target_tile.actors[0]
             else:
-                #show menu with options to target
+                # show menu with options to target
                 header = 'Select target (escape to cancel)'
                 options = []
-                for a in targetTile.actors:
+                for a in target_tile.actors:
                     options.append(a.name + ' (' + str(a.currentHitPoints) + '/' + str(a.maxHitPoints) + ')')
                 selection = GuiUtilities.show_menu(self.surface_display, header, options)
                 if selection is None: return
-                else: myTarget = targetTile.actors[selection]
+                else:
+                    my_target = target_tile.actors[selection]
 
-        #use target item on target
-        self.game.player.tryUseItem(self._targetingItem, myTarget)
-        #Leave targeting mode
+        # use target item on target
+        self.game.player.tryUseItem(self._targetingItem, my_target)
+        # Leave targeting mode
         self.event_targeting_stop()
     
     def event_targeting_stop(self):
