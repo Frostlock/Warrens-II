@@ -221,8 +221,7 @@ def show_menu(target, header, items, shortcut_keys=None):
 
 def show_splash(target):
     """
-    shows a menu with multiple items centered on the target surface
-    returns integer index of selected item or None
+    shows a splash screen and waits for user keypress.
     :param target: Surface on which to show the splash screen
     :return: None
     """
