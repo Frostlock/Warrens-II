@@ -119,12 +119,12 @@ class GuiApplication(object):
         return self._renderLevel
     
     @render_level.setter
-    def render_level(self, newRenderLevel):
+    def render_level(self, new_render_level):
         """
         Sets the Level object that is currently rendered in the viewport.
         This property helps identifying if the currentLevel in the game changes.
         """
-        self._renderLevel = newRenderLevel
+        self._renderLevel = new_render_level
     
     @property
     def targeting_mode(self):
@@ -371,29 +371,30 @@ class GuiApplication(object):
             self.game_server.stop()
         
         # Window resize
-        elif event.type == VIDEORESIZE:
+        if event.type == VIDEORESIZE:
             self.setup_surfaces(event.dict['size'])
 
-        # # TODO: Implement for RemoteServer
-        # # mouse
-        # elif event.type == MOUSEBUTTONDOWN:
-        #     if event.button == 1:
-        #         if self.targetingMode:
-        #             self.eventTargetingAcquire()
-        #     elif event.button == 2:
-        #         self.eventDraggingStart()
-        #     elif event.button == 4:
-        #         self.eventZoomIn()
-        #     elif event.button == 5:
-        #         self.eventZoomOut()
-        # elif event.type == MOUSEMOTION:
-        #     self.eventMouseMovement()
-        # elif event.type == MOUSEBUTTONUP:
-        #     if event.button == 2:
-        #         self.eventDraggingStop()
+        # TODO: Implement for RemoteServer
+        if isinstance(self.game_server, LocalServer):
+            # mouse
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if self.targeting_mode:
+                        self.event_targeting_acquire()
+                elif event.button == 2:
+                    self.event_dragging_start()
+                elif event.button == 4:
+                    self.event_zoom_in()
+                elif event.button == 5:
+                    self.event_zoom_out()
+            elif event.type == MOUSEMOTION:
+                self.event_mouse_movement()
+            elif event.type == MOUSEBUTTONUP:
+                if event.button == 2:
+                    self.event_dragging_stop()
 
         # keyboard
-        elif event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN:
             # Keyboard - keys that are always active in gaming mode
             if event.key == pygame.K_ESCAPE:
                 if self.targeting_mode:
@@ -417,7 +418,7 @@ class GuiApplication(object):
                             player.tryMoveOrAttack(*MOVEMENT_KEYS[event.key])
                         # Portal keys
                         elif event.key == pygame.K_PERIOD:
-                            #check for shift modifier to detect ">" key.
+                            # check for shift modifier to detect ">" key.
                             mods = pygame.key.get_mods()
                             if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
                                 player.tryFollowPortalDown()
