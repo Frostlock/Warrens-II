@@ -7,7 +7,8 @@ import sys
 import time
 import pygame
 from pygame.locals import *
-from WarrensClient import GuiCONSTANTS, GuiUtilities
+from WarrensClient import GuiUtilities
+from WarrensClient.GuiCONSTANTS import *
 from WarrensClient.GuiGraphics import initialize_sprites, get_sprite_surface
 from WarrensGame.Actors import Character
 from WarrensGame.Effects import EffectTarget
@@ -191,7 +192,7 @@ class GuiApplication(object):
         pygame.mouse.set_cursor(*pygame.cursors.tri_left)
         
         # Initialize window title
-        pygame.display.set_caption(GuiCONSTANTS.APPLICATION_NAME)
+        pygame.display.set_caption(APPLICATION_NAME)
 
     def setup_surfaces(self, display_size):
         """
@@ -211,7 +212,7 @@ class GuiApplication(object):
         width = display_size[0]
         height = int(display_size[1] / 6)
         self._surface_panel = pygame.Surface((width, height))
-        self.surface_panel.fill(GuiCONSTANTS.COLOR_PANEL)
+        self.surface_panel.fill(COLORS.PANEL_BG)
         
         # Viewport for the map gets remaining space above the panel
         width = display_size[0]
@@ -278,7 +279,7 @@ class GuiApplication(object):
         if self._game_server is not None:
             self._game_server.stop()
         # Clear screen
-        self.surface_display.fill(GuiCONSTANTS.COLOR_PANEL)
+        self.surface_display.fill(COLORS.PANEL_BG)
         pygame.display.flip()
         # Interrupt game loop
         self.run_game_loop = False
@@ -313,17 +314,17 @@ class GuiApplication(object):
         self.run_game_loop = True
         self._gamePlayerTookTurn = False
         while self.run_game_loop:
-            if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
+            if SHOW_PERFORMANCE_LOGGING:
                 start_time = time.time()
 
             # Network communication messages
             self.game_server.process()
-            if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
+            if SHOW_PERFORMANCE_LOGGING:
                 network_time = time.time() - start_time
 
             # Render the screen
             self.render_screen()
-            if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
+            if SHOW_PERFORMANCE_LOGGING:
                 render_time = time.time() - start_time - network_time
 
             # Handle pygame (GUI) events
@@ -338,7 +339,7 @@ class GuiApplication(object):
                     #zoom in on player corpse
                     self.event_zoom_on_tile(self.game.player.tile)
 
-            if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
+            if SHOW_PERFORMANCE_LOGGING:
                 event_time = time.time() - start_time - network_time - render_time
 
             # TODO: Implement for RemoteServer
@@ -350,7 +351,7 @@ class GuiApplication(object):
             frameRateLimit = 30
             clock.tick(frameRateLimit)
             
-            if GuiCONSTANTS.SHOW_PERFORMANCE_LOGGING:
+            if SHOW_PERFORMANCE_LOGGING:
                 print("LOOP! FrameRateLimit: " + str(frameRateLimit) +
                       " Network: " + str(network_time) +
                       " Rendering: " + str(render_time) +
@@ -535,66 +536,68 @@ class GuiApplication(object):
         Update the content of the Panel surface
         """
         # Erase panel
-        self.surface_panel.fill(GuiCONSTANTS.COLOR_PANEL)
+        self.surface_panel.fill(COLORS.PANEL_BG)
         
         # Left side (1/3) is used for player information, right side (2/3) is used for game messages
-        widthOffset = int(self.surface_panel.get_width() // 3)
-        heightOffset = self.surface_panel.get_height()
+        width_offset = int(self.surface_panel.get_width() // 3)
+        height_offset = self.surface_panel.get_height()
         
         # Left side: render player information
-        availableWidth = widthOffset
-        xOffset = int(availableWidth // 10)
-        yOffset = 0
+        available_width = width_offset
+        x_offset = int(available_width // 10)
+        y_offset = 0
         spacer = 5
 
         if self.game_server.player is not None:
             # Player name
             player_name = self.game_server.player.name + " (Lvl " + str(self.game_server.player.playerLevel) + ")"
-            blitText = GuiUtilities.FONT_PANEL.render(player_name, 1, GuiCONSTANTS.COLOR_PANEL_FONT)
-            self.surface_panel.blit(blitText, (int(xOffset / 2), 2))
-            yOffset += spacer
+            blit_text = GuiUtilities.FONT_PANEL.render(player_name, 1, COLORS.PANEL_FONT)
+            self.surface_panel.blit(blit_text, (int(x_offset / 2), 2))
+            y_offset += spacer
             # Determine bar width & height
-            barWidth = availableWidth - 2 * xOffset
-            barHeight = GuiUtilities.FONT_PANEL.size("HP")[1]
+            bar_width = available_width - 2 * x_offset
+            bar_height = GuiUtilities.FONT_PANEL.size("HP")[1]
             # Health bar
-            yOffset += barHeight
+            y_offset += bar_height
             current_hp = self.game_server.player.currentHitPoints
             maximum_hp = self.game_server.player.maxHitPoints
-            pygame.draw.rect(self.surface_panel, GuiCONSTANTS.COLOR_BAR_HEALTH_BG, (xOffset, yOffset, barWidth, barHeight))
+            pygame.draw.rect(self.surface_panel, COLORS.BAR_HEALTH_BG, (x_offset, y_offset, bar_width, bar_height))
             if current_hp > 0:
-                filWidth = int((current_hp * barWidth) // maximum_hp)
-                pygame.draw.rect(self.surface_panel, GuiCONSTANTS.COLOR_BAR_HEALTH, (xOffset, yOffset, filWidth, barHeight))
-            blitText = GuiUtilities.FONT_PANEL.render("HP: " + str(current_hp) + "/" + str(maximum_hp), 1, GuiCONSTANTS.COLOR_PANEL_FONT)
-            self.surface_panel.blit(blitText, (xOffset, yOffset))
-            yOffset += barHeight + spacer
+                fil_width = int((current_hp * bar_width) // maximum_hp)
+                pygame.draw.rect(self.surface_panel, COLORS.BAR_HEALTH, (x_offset, y_offset, fil_width, bar_height))
+            text = "HP: " + str(current_hp) + "/" + str(maximum_hp)
+            blit_text = GuiUtilities.FONT_PANEL.render(text, 1, COLORS.PANEL_FONT)
+            self.surface_panel.blit(blit_text, (x_offset, y_offset))
+            y_offset += bar_height + spacer
             # XP bar
             current_hp = self.game_server.player.xp
             maximum_hp = self.game_server.player.nextLevelXp
-            pygame.draw.rect(self.surface_panel, GuiCONSTANTS.COLOR_BAR_XP_BG, (xOffset, yOffset, barWidth, barHeight))
+            pygame.draw.rect(self.surface_panel, COLORS.BAR_XP_BG, (x_offset, y_offset, bar_width, bar_height))
             if current_hp > 0:
-                filWidth = int((current_hp*barWidth) // maximum_hp)
-                pygame.draw.rect(self.surface_panel, GuiCONSTANTS.COLOR_BAR_XP, (xOffset, yOffset, filWidth, barHeight))
-            blitText = GuiUtilities.FONT_PANEL.render("XP: " + str(current_hp) + "/" + str(maximum_hp), 1, GuiCONSTANTS.COLOR_PANEL_FONT)
-            self.surface_panel.blit(blitText, (xOffset, yOffset))
+                fil_width = int((current_hp*bar_width) // maximum_hp)
+                pygame.draw.rect(self.surface_panel, COLORS.BAR_XP, (x_offset, y_offset, fil_width, bar_height))
+            text = "XP: " + str(current_hp) + "/" + str(maximum_hp)
+            blit_text = GuiUtilities.FONT_PANEL.render(text, 1, COLORS.PANEL_FONT)
+            self.surface_panel.blit(blit_text, (x_offset, y_offset))
 
         # Right side: render game messages
-        messageCounter = 1
-        nbrOfMessages = len (self.game_server.messageBuffer)
-        while heightOffset > 0:
-            if messageCounter > nbrOfMessages: break
+        message_counter = 1
+        nbr_of_messages = len(self.game_server.messageBuffer)
+        while height_offset > 0:
+            if message_counter > nbr_of_messages: break
             # Get messages from game message buffer, starting from the back
-            message = self.game_server.messageBuffer[nbrOfMessages - messageCounter]
-            # Create textLines for message
-            textLines = GuiUtilities.wrap_multi_line(message, GuiUtilities.FONT_PANEL, self.surface_panel.get_width() - widthOffset)
-            nbrOfLines = len(textLines)
+            message = self.game_server.messageBuffer[nbr_of_messages - message_counter]
+            # Create text lines for message
+            text_lines = GuiUtilities.wrap_multi_line(message, GuiUtilities.FONT_PANEL, self.surface_panel.get_width() - width_offset)
+            nbr_of_lines = len(text_lines)
             # Blit the lines
-            for l in range(1,nbrOfLines+1):
-                blitLine = GuiUtilities.FONT_PANEL.render(textLines[nbrOfLines - l], 1, GuiCONSTANTS.COLOR_PANEL_FONT)
-                heightOffset = heightOffset - blitLine.get_height()
+            for l in range(1, nbr_of_lines+1):
+                blit_line = GuiUtilities.FONT_PANEL.render(text_lines[nbr_of_lines - l], 1, COLORS.PANEL_FONT)
+                height_offset = height_offset - blit_line.get_height()
                 # Only blit the line if there is enough remaining space to show it completely
-                if heightOffset > blitLine.get_height():
-                    self.surface_panel.blit(blitLine, (widthOffset, heightOffset))
-            messageCounter += 1
+                if height_offset > blit_line.get_height():
+                    self.surface_panel.blit(blit_line, (width_offset, height_offset))
+            message_counter += 1
             
     def render_viewport(self):
         """
@@ -611,7 +614,7 @@ class GuiApplication(object):
             self._renderViewPortY = 0
         
         # Clear viewport
-        self.surface_viewport.fill(GuiCONSTANTS.COLOR_UNEXPLORED)
+        self.surface_viewport.fill(COLORS.VP_UNEXPLORED)
 
         # TODO: Implement for RemoteServer
         if isinstance(self.game_server, LocalServer):
@@ -619,32 +622,34 @@ class GuiApplication(object):
             self.game.currentLevel.map.updateFieldOfView(self.game.player.tile.x, self.game.player.tile.y)
 
         # Render tiles that are in the viewport area
-        startX = int(self._renderViewPortX // self.tile_size)
-        startY = int(self._renderViewPortY // self.tile_size)
-        stopX = startX + int(self._render_viewport_w // self.tile_size) + 1
-        stopY = startY + int(self._render_viewport_h // self.tile_size) + 1
-        if stopX > self.render_level.map["width"]: stopX = self.render_level.map["width"]
-        if stopY > self.render_level.map["height"]: stopY = self.render_level.map["height"]
+        start_x = int(self._renderViewPortX // self.tile_size)
+        start_y = int(self._renderViewPortY // self.tile_size)
+        stop_x = start_x + int(self._render_viewport_w // self.tile_size) + 1
+        stop_y = start_y + int(self._render_viewport_h // self.tile_size) + 1
+        if stop_x > self.render_level.map["width"]:
+            stop_x = self.render_level.map["width"]
+        if stop_y > self.render_level.map["height"]:
+            stop_y = self.render_level.map["height"]
 
         # The viewport is not aligned perfectly with the tiles, we need to track the offset.
-        self._renderViewPortXOffSet = startX * self.tile_size - self._renderViewPortX
-        self._renderViewPortYOffSet = startY * self.tile_size - self._renderViewPortY
+        self._renderViewPortXOffSet = start_x * self.tile_size - self._renderViewPortX
+        self._renderViewPortYOffSet = start_y * self.tile_size - self._renderViewPortY
 
-        tileCount = 0
-        for curX in range(startX, stopX):
-            for curY in range(startY, stopY):
+        tile_count = 0
+        for curX in range(start_x, stop_x):
+            for curY in range(start_y, stop_y):
                 tile = self.render_level.map["tiles"][curX][curY]
-                vpX = (tile["x"] - startX) * self.tile_size + self._renderViewPortXOffSet
-                vpY = (tile["y"] - startY) * self.tile_size + self._renderViewPortYOffSet
-                tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
+                vp_x = (tile["x"] - start_x) * self.tile_size + self._renderViewPortXOffSet
+                vp_y = (tile["y"] - start_y) * self.tile_size + self._renderViewPortYOffSet
+                tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
                 if tile["explored"]:
-                    tileCount += 1
+                    tile_count += 1
                     if tile["texture_id"] is None:
                         # No texture specified: Blit tile color
-                        self.surface_viewport.fill(tile["color"], tileRect)
+                        self.surface_viewport.fill(tile["color"], tile_rect)
                     else:
                         # Blit texture based on provided id
-                        self.surface_viewport.blit(self.tileset[tile["texture_id"]][tile["texture_set"]], tileRect)
+                        self.surface_viewport.blit(self.tileset[tile["texture_id"]][tile["texture_set"]], tile_rect)
 
                     if tile["inView"]:
                         # draw any actors standing on this tile (monsters, portals, items, ...)
@@ -657,19 +662,12 @@ class GuiApplication(object):
                                 if sprite is None:
                                     sprite = self.viewport_font.render(myActor["char"], 1, myActor["color"])
                                 # Center sprite on tile
-                                x = tileRect.x + (tileRect.width / 2 - sprite.get_width() /2)
-                                y = tileRect.y + (tileRect.height / 2 - sprite.get_height() /2)
+                                x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() /2)
+                                y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() /2)
                                 self.surface_viewport.blit(sprite, (x, y))
-                                #===============================================
-                                # #Change letter color to red based on monster health, it works but I don't think it is pretty enough.
-                                # textImg = self.viewPortFont.render(myActor["char"], 1, (255,0,0))
-                                # factor = myActor.maxHitPoints / myActor.currentHitPoints
-                                # factorRect = (0,0, textImg.get_width(), textImg.get_height() - int(textImg.get_height()/factor))
-                                # self.surfaceViewPort.blit(textImg, (x,y), factorRect)
-                                #===============================================
                     else:
                         # tile not in view: apply fog of war
-                        self.surface_viewport.blit(self.fogOfWarTileSurface, tileRect)
+                        self.surface_viewport.blit(self.fogOfWarTileSurface, tile_rect)
 
         # TODO: Implement for RemoteServer
         if isinstance(self.game_server, LocalServer):
@@ -678,74 +676,75 @@ class GuiApplication(object):
             portals = self.game.currentLevel.portals
             for portal in portals:
                 if portal.tile.explored:
-                    vpX = (portal.tile.x - startX) * self.tile_size + self._renderViewPortXOffSet
-                    vpY = (portal.tile.y - startY) * self.tile_size + self._renderViewPortYOffSet
-                    tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
-                    textImg = self.viewport_font.render(portal.char, 1, portal.color)
+                    vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+                    vp_y = (portal.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+                    tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                    text_img = self.viewport_font.render(portal.char, 1, portal.color)
                     #Center
-                    x = tileRect.x + (tileRect.width / 2 - textImg.get_width() /2)
-                    y = tileRect.y + (tileRect.height / 2 - textImg.get_height() /2)
-                    self.surface_viewport.blit(textImg, (x, y))
+                    x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() /2)
+                    y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() /2)
+                    self.surface_viewport.blit(text_img, (x, y))
 
             # Redraw player character (makes sure it is on top of other characters)
             player = self.game.player
-            vpX = (player.tile.x - startX) * self.tile_size + self._renderViewPortXOffSet
-            vpY = (player.tile.y - startY) * self.tile_size + self._renderViewPortYOffSet
-            tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
-            textImg = self.viewport_font.render(player.char, 1, player.color)
+            vp_x = (player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+            vp_y = (player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+            tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+            text_img = self.viewport_font.render(player.char, 1, player.color)
             # Center on the tile
-            x = tileRect.x + (tileRect.width / 2 - textImg.get_width() / 2)
-            y = tileRect.y + (tileRect.height / 2 - textImg.get_height() / 2)
-            self.surface_viewport.blit(textImg, (x, y))
+            x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() / 2)
+            y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() / 2)
+            self.surface_viewport.blit(text_img, (x, y))
 
             if self.targeting_mode:
                 # Indicate we are in targeting mode
-                blitText = GuiUtilities.FONT_PANEL.render("Select target (Escape to cancel)", 1, (255, 0, 0))
-                self.surface_viewport.blit(blitText, (6, 2 + blitText.get_height()))
-                # Highlight selected tile with a crosshair
+                blit_text = GuiUtilities.FONT_PANEL.render("Select target (Escape to cancel)", 1, (255, 0, 0))
+                self.surface_viewport.blit(blit_text, (6, 2 + blit_text.get_height()))
+                # Highlight selected tile with a cross hair
                 if self._renderSelectedTile is not None:
                     tile = self._renderSelectedTile
-                    vpX = (tile.x - startX) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2
-                    vpY = (tile.y - startY) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2
-                    tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
-                    pygame.draw.circle(self.surface_viewport, GuiCONSTANTS.COLOR_SELECT, (vpX, vpY), self.tile_size / 2, 2)
+                    vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2
+                    vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2
+                    tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                    pygame.draw.circle(self.surface_viewport, COLORS.SELECTION, (vp_x, vp_y), self.tile_size / 2, 2)
             else:
                 # Highlight selected tile
                 if self._renderSelectedTile is not None:
                     tile = self._renderSelectedTile
-                    vpX = (tile.x - startX) * self.tile_size + self._renderViewPortXOffSet
-                    vpY = (tile.y - startY) * self.tile_size + self._renderViewPortYOffSet
-                    tileRect = pygame.Rect(vpX, vpY, self.tile_size, self.tile_size)
-                    pygame.draw.rect(self.surface_viewport, GuiCONSTANTS.COLOR_SELECT, tileRect, 2)
+                    vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+                    vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+                    tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                    pygame.draw.rect(self.surface_viewport, COLORS.SELECTION, tile_rect, 2)
                     self.render_popup(tile)
-                    #Show tile detail pop up
+                    # Show tile detail pop up
                     if self.surface_popup is not None:
-                        pygame.draw.rect(self.surface_viewport, GuiCONSTANTS.COLOR_SELECT, tileRect)
-                        self.surface_viewport.blit(self.surface_popup, (tileRect.x - self.surface_popup.get_width(), tileRect.y))
+                        pygame.draw.rect(self.surface_viewport, COLORS.SELECTION, tile_rect)
+                        self.surface_viewport.blit(self.surface_popup, (tile_rect.x - self.surface_popup.get_width(), tile_rect.y))
 
             # Show level name in top left hand
             if self.render_level is not None:
-                blitText = GuiUtilities.FONT_PANEL.render(self.render_level.name, 1, GuiCONSTANTS.COLOR_PANEL_FONT)
-                self.surface_viewport.blit(blitText, (6, 2))
+                blit_text = GuiUtilities.FONT_PANEL.render(self.render_level.name, 1, COLORS.PANEL_FONT)
+                self.surface_viewport.blit(blit_text, (6, 2))
         
     def render_popup(self, tile):
         """
         renders a surface containing info details for the given tile
         """
         # create a component for every actor on the tile
-        panelFont = GuiUtilities.FONT_PANEL
+        panel_font = GuiUtilities.FONT_PANEL
         components = []
-        xOffSet , yOffSet = 3 , 3
-        width , height = 2*xOffSet , 2*yOffSet
+        x_off_set, y_off_set = 3, 3
+        width, height = 2*x_off_set, 2*y_off_set
         for myActor in tile.actors:
             if myActor.inView:
-                myText = myActor.char + ': ' + myActor.name + ' (' + str(myActor.currentHitPoints) + '/' + str(myActor.maxHitPoints) + ')'
-                textImg = panelFont.render(myText, 1, myActor.color)
-                components.append((xOffSet, yOffSet, textImg))
-                height += textImg.get_height()
-                yOffSet = height
-                neededWidth = xOffSet + textImg.get_width() + xOffSet
-                if neededWidth > width : width = neededWidth 
+                my_text = myActor.char + ': ' + myActor.name + \
+                          ' (' + str(myActor.currentHitPoints) + '/' + str(myActor.maxHitPoints) + ')'
+                text_img = panel_font.render(my_text, 1, myActor.color)
+                components.append((x_off_set, y_off_set, text_img))
+                height += text_img.get_height()
+                y_off_set = height
+                needed_width = x_off_set + text_img.get_width() + x_off_set
+                if needed_width > width: width = needed_width
         if len(components) == 0:
             # nothing to see here (empty tile)
             self._surfaceDetails = None
@@ -754,7 +753,7 @@ class GuiApplication(object):
             self._surfaceDetails = pygame.Surface((width, height), pygame.SRCALPHA)
             self.surface_popup.fill((0, 0, 0, 125))
             # border in selection color
-            pygame.draw.rect(self.surface_popup, GuiCONSTANTS.COLOR_POPUP, (0, 0, width, height), 3)
+            pygame.draw.rect(self.surface_popup, COLORS.POPUP_BORDER, (0, 0, width, height), 3)
             # add the components
             for (x, y, s) in components:
                 self.surface_popup.blit(s, (x, y))
@@ -786,32 +785,32 @@ class GuiApplication(object):
         # nbr of flashes per second
         flashes = 2
         # run an effectLoop
-        for i in range (0,flashes):
+        for i in range(0, flashes):
             # flash on
-            dirtyRects = []
+            dirty_rects = []
             for tile in tiles:
-                # translate to coords in the display
+                # translate to coordinates in the display
                 display_x, display_y = self.calculate_display_coords(tile)
                 dirty = self.surface_display.blit(flash_on_surface, (display_x, display_y))
-                dirtyRects.append(dirty)
+                dirty_rects.append(dirty)
             # render
-            pygame.display.update(dirtyRects)
-            # limit framerate
+            pygame.display.update(dirty_rects)
+            # limit frame rate
             frame_rate_limit = 5 * flashes
             clock.tick(frame_rate_limit)
             # flash of
-            dirtyRects = []
+            dirty_rects = []
             for tile in tiles:
-                # translate to coords in the display
+                # translate to coordinates in the display
                 view_port_x, view_port_y = self.calculate_viewport_coords(tile)
                 display_x, display_y = self.calculate_display_coords(tile)
                 # restore original tile from viewport surface
                 vp_rect = (view_port_x, view_port_y, self.tile_size, self.tile_size)
                 dirty = self.surface_display.blit(self.surface_viewport, (display_x, display_y), vp_rect)
-                dirtyRects.append(dirty)
+                dirty_rects.append(dirty)
             # render
-            pygame.display.update(dirtyRects)
-            # limit framerate
+            pygame.display.update(dirty_rects)
+            # limit frame rate
             frame_rate_limit = 5 * flashes
             clock.tick(frame_rate_limit)
 
@@ -899,9 +898,9 @@ class GuiApplication(object):
         Zoom in while centering on current mouse position.
         """
         # zoom in limit
-        if self.zoom_factor == GuiCONSTANTS.MAX_ZOOM_FACTOR:
+        if self.zoom_factor == MAX_ZOOM_FACTOR:
             return
-        zoom_multiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
+        zoom_multiplier = ZOOM_MULTIPLIER
         # change zoom factor
         self._zoomFactor = self.zoom_factor * zoom_multiplier
         # Center viewport on mouse location
@@ -925,7 +924,7 @@ class GuiApplication(object):
         # zoom out limit
         if self.zoom_factor == 1:
             return
-        zoom_multiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
+        zoom_multiplier = ZOOM_MULTIPLIER
         # change zoom factor
         self._zoomFactor = self.zoom_factor / zoom_multiplier
         if self.zoom_factor < 1:
@@ -948,8 +947,8 @@ class GuiApplication(object):
         """
         zooms in on provided tile
         """
-        if self.zoom_factor == GuiCONSTANTS.MAX_ZOOM_FACTOR: return
-        zoom_multiplier = GuiCONSTANTS.ZOOM_MULTIPLIER
+        if self.zoom_factor == MAX_ZOOM_FACTOR: return
+        zoom_multiplier = ZOOM_MULTIPLIER
         # change zoom factor
         self._zoomFactor = self.zoom_factor * zoom_multiplier
         # set new viewport coords

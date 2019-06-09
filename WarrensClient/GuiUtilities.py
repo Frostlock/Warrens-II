@@ -8,7 +8,7 @@ several of these methods where copied from
 """
 import sys
 import pygame
-from WarrensClient import GuiCONSTANTS
+from WarrensClient.GuiCONSTANTS import COLORS, SPLASH_IMAGE
 from WarrensGame import CONSTANTS
 from itertools import chain
 
@@ -89,7 +89,7 @@ def show_message(target, header, message):
     msg_width = int(target.get_width()/2)
     
     # Render the header
-    line = FONT_HEADER.render(header, 1, GuiCONSTANTS.COLOR_FONT)
+    line = FONT_HEADER.render(header, 1, COLORS.MENU_FONT)
     lines.append(line)
     header_width = line.get_rect().size[0]
     if header_width > msg_width:
@@ -99,7 +99,7 @@ def show_message(target, header, message):
     # Render the lines of the message
     split_message = wrap_multi_line(message, FONT_NORMAL, msg_width)
     for part in split_message:
-        line = FONT_NORMAL.render(part, 1, GuiCONSTANTS.COLOR_FONT)
+        line = FONT_NORMAL.render(part, 1, COLORS.MENU_FONT)
         lines.append(line)
         line_width = line.get_rect().size[0]
         if line_width > msg_width:
@@ -115,7 +115,7 @@ def show_message(target, header, message):
     
     # Display message background
     msg_background = pygame.Surface((msg_width, msg_height), pygame.SRCALPHA)
-    msg_background.fill(GuiCONSTANTS.COLOR_MENU_BG)
+    msg_background.fill(COLORS.MENU_BG)
     target.blit(msg_background, (x, y))
 
     # Display message
@@ -157,7 +157,7 @@ def show_menu(target, header, items, shortcut_keys=None):
     msg_width = int(target.get_width()/2)
     
     # Render the header
-    line = FONT_HEADER.render(header, 1, GuiCONSTANTS.COLOR_FONT)
+    line = FONT_HEADER.render(header, 1, COLORS.MENU_FONT)
     lines.append(line)
     header_width = line.get_rect().size[0]
     if header_width > msg_width:
@@ -170,7 +170,7 @@ def show_menu(target, header, items, shortcut_keys=None):
         shortcut_keys = [str(l) for l in range(0, len(items))]
     # Render a line for every item
     for i in range(0, len(items)):
-        line = FONT_NORMAL.render(shortcut_keys[i] + ": " + items[i], 1, GuiCONSTANTS.COLOR_FONT)
+        line = FONT_NORMAL.render(shortcut_keys[i] + ": " + items[i], 1, COLORS.MENU_FONT)
         lines.append(line)
         line_width = line.get_rect().size[0]
         if line_width > msg_width:
@@ -186,7 +186,7 @@ def show_menu(target, header, items, shortcut_keys=None):
     
     # Blit message background
     msg_background = pygame.Surface((msg_width, msg_height), pygame.SRCALPHA)
-    msg_background.fill(GuiCONSTANTS.COLOR_MENU_BG)
+    msg_background.fill(COLORS.MENU_BG)
     target.blit(msg_background, (x, y))
 
     # Blit message and refresh screen
@@ -230,7 +230,7 @@ def show_splash(target):
     original_surface = target.copy()
 
     # Show the splash screen
-    splash = pygame.image.load(GuiCONSTANTS.SPLASH_IMAGE)
+    splash = pygame.image.load(SPLASH_IMAGE)
     target.fill((0, 0, 0))
     x = int(target.get_width() / 2 - splash.get_width() / 2)
     y = int(target.get_height() / 2 - splash.get_height() / 2)
@@ -258,18 +258,18 @@ def get_element_color(element):
     :return: RGB color tuple
     """
     if element == CONSTANTS.HEAL:
-        return GuiCONSTANTS.COLOR_RGB_HEAL
+        return COLORS.HEAL
     elif element == CONSTANTS.WATER:
-        return GuiCONSTANTS.COLOR_RGB_WATER
+        return COLORS.WATER
     elif element == CONSTANTS.AIR:
-        return GuiCONSTANTS.COLOR_RGB_AIR
+        return COLORS.AIR
     elif element == CONSTANTS.FIRE:
-        return GuiCONSTANTS.COLOR_RGB_FIRE
+        return COLORS.FIRE
     elif element == CONSTANTS.EARTH:
-        return GuiCONSTANTS.COLOR_RGB_EARTH
+        return COLORS.EARTH
     elif element == CONSTANTS.ELEC:
-        return GuiCONSTANTS.COLOR_RGB_ELEC
+        return COLORS.ELEC
     elif element == CONSTANTS.MIND:
-        return GuiCONSTANTS.COLOR_RGB_MIND
+        return COLORS.MIND
     else:
         raise NotImplementedError("Missing element to color mapping.")
