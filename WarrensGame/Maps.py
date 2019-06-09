@@ -3,7 +3,7 @@
 import math
 import random
 
-import WarrensGame.CONSTANTS as CONSTANTS
+from WarrensGame.CONSTANTS import TEXTURES, DAYLIGHT_RADIUS, TORCH_RADIUS, DUNGEON, TOWN, CAVE, TILE_DEFAULT_COLOR
 import WarrensGame.Utilities as Utilities
 
 
@@ -124,7 +124,7 @@ class Map(object):
         self._areas = None
         self._entryTile = None
         self._exitTile = None
-        self._range_of_view = CONSTANTS.TORCH_RADIUS
+        self._range_of_view = TORCH_RADIUS
         self._level = level
         self._json = {}
         self.json["width"] = map_width
@@ -292,7 +292,7 @@ class DungeonMap(Map):
         super(DungeonMap, self).__init__(map_width, map_height, level)
         self.texture_set = TextureSet.STONE
         # Initialize range of view
-        self._rangeOfView = CONSTANTS.TORCH_RADIUS
+        self._rangeOfView = TORCH_RADIUS
 
     def generate_map(self):
         """
@@ -302,9 +302,9 @@ class DungeonMap(Map):
         self.clear_rooms()
 
         # Constants used to generate map
-        room_max_size = CONSTANTS.DUNGEON_ROOM_MAX_SIZE
-        room_min_size = CONSTANTS.DUNGEON_ROOM_MIN_SIZE
-        max_rooms = CONSTANTS.DUNGEON_MAX_ROOMS
+        room_max_size = DUNGEON.ROOM_MAX_SIZE
+        room_min_size = DUNGEON.ROOM_MIN_SIZE
+        max_rooms = DUNGEON.MAX_ROOMS
 
         if self.width < room_max_size or self.height < room_max_size:
             raise Utilities.GameError("Requested size is too small, can't generate dungeon.")
@@ -318,7 +318,7 @@ class DungeonMap(Map):
                 t = self.tiles[x][y]
                 t.blocked = True
                 t.blockSight = True
-                t.color = CONSTANTS.DUNGEON_COLOR_WALL
+                t.color = DUNGEON.COLOR_WALL
                 t.material = MaterialType.STONE
 
         # Cut out rooms
@@ -347,7 +347,7 @@ class DungeonMap(Map):
                 for y in range(new_room.y1 + 1, new_room.y2):
                     self.tiles[x][y].blocked = False
                     self.tiles[x][y].blockSight = False
-                    self.tiles[x][y].color = CONSTANTS.DUNGEON_COLOR_FLOOR
+                    self.tiles[x][y].color = DUNGEON.COLOR_FLOOR
                     self.tiles[x][y].material = MaterialType.DIRT
 
             # Create corridor towards previous room
@@ -378,45 +378,45 @@ class DungeonMap(Map):
                 h = t.texture_hash
                 # Map hash to a tileset ID
                 if not self.tiles[x][y].blockSight:
-                    t.texture_id = TextureId.TILE_EMPTY
+                    t.texture_id = TEXTURES.TILE_EMPTY
                     if random.random() < 0.05:
-                        t.texture_id = TextureId.TILE_SUBTILES
+                        t.texture_id = TEXTURES.TILE_SUBTILES
                     if random.random() < 0.05:
-                        t.texture_id = TextureId.TILE_LINED
+                        t.texture_id = TEXTURES.TILE_LINED
                     if random.random() < 0.05:
-                        t.texture_id = TextureId.TILE_CRACKED
+                        t.texture_id = TEXTURES.TILE_CRACKED
                 elif h in [16, 511]:
-                    t.texture_id = TextureId.PILLAR
+                    t.texture_id = TEXTURES.PILLAR
                 elif h in [24, 89]:
-                    t.texture_id = TextureId.NS_WALL_W_CAP
+                    t.texture_id = TEXTURES.NS_WALL_W_CAP
                 elif h in [56, 57, 60, 63, 120, 121, 124, 125, 127, 312, 313, 316, 317, 319, 377, 380, 381, 383, 504, 505, 508, 509]:
-                    t.texture_id = TextureId.NS_WALL
+                    t.texture_id = TEXTURES.NS_WALL
                 elif h in [48, 308]:
-                    t.texture_id = TextureId.NS_WALL_E_CAP
+                    t.texture_id = TEXTURES.NS_WALL_E_CAP
                 elif h in [18, 23]:
-                    t.texture_id = TextureId.EW_WALL_N_CAP
+                    t.texture_id = TEXTURES.EW_WALL_N_CAP
                 elif h in [146, 147, 150, 151, 210, 214, 215, 219, 223, 402, 403, 407, 438, 439, 466, 467, 470, 471, 475, 479, 502, 503]:
-                    t.texture_id = TextureId.EW_WALL
+                    t.texture_id = TEXTURES.EW_WALL
                 elif h in [144, 464]:
-                    t.texture_id = TextureId.EW_WALL_S_CAP
+                    t.texture_id = TEXTURES.EW_WALL_S_CAP
                 elif h in [27, 30, 31, 90, 91, 94, 95, 510]:
-                    t.texture_id = TextureId.NW_CORNER
+                    t.texture_id = TEXTURES.NW_CORNER
                 elif h in [51, 54, 55, 306, 307, 310, 311, 507]:
-                    t.texture_id = TextureId.NE_CORNER
+                    t.texture_id = TEXTURES.NE_CORNER
                 elif h in [153, 216, 217, 408, 409, 447, 472, 473]:
-                    t.texture_id = TextureId.SW_CORNER
+                    t.texture_id = TEXTURES.SW_CORNER
                 elif h in [180, 240, 244, 255, 432, 436, 496, 500]:
-                    t.texture_id = TextureId.SE_CORNER
+                    t.texture_id = TEXTURES.SE_CORNER
                 elif h in [186]:
-                    t.texture_id = TextureId.CROSS
+                    t.texture_id = TEXTURES.CROSS
                 elif h in [58, 59, 62, 122, 123, 126, 314, 318, 378, 379, 382]:
-                    t.texture_id = TextureId.T_SOUTH
+                    t.texture_id = TEXTURES.T_SOUTH
                 elif h in [178, 179, 182, 183, 242, 243, 246, 247, 434, 435, 498]:
-                    t.texture_id = TextureId.T_WEST
+                    t.texture_id = TEXTURES.T_WEST
                 elif h in [154, 155, 158, 159, 218, 222, 410, 411, 414, 415, 474]:
-                    t.texture_id = TextureId.T_EAST
+                    t.texture_id = TEXTURES.T_EAST
                 elif h in [184, 185, 188, 189, 248, 249, 252, 253, 440, 441, 444]:
-                    t.texture_id = TextureId.T_NORTH
+                    t.texture_id = TEXTURES.T_NORTH
                 else:
                     print("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
 
@@ -424,14 +424,14 @@ class DungeonMap(Map):
         for x in range(min(x1, x2), max(x1, x2) + 1):
             self.tiles[x][y].blocked = False
             self.tiles[x][y].blockSight = False
-            self.tiles[x][y].color = CONSTANTS.DUNGEON_COLOR_FLOOR
+            self.tiles[x][y].color = DUNGEON.COLOR_FLOOR
             self.tiles[x][y].material = MaterialType.DIRT
 
     def _create_vertical_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
             self.tiles[x][y].blocked = False
             self.tiles[x][y].blockSight = False
-            self.tiles[x][y].color = CONSTANTS.DUNGEON_COLOR_FLOOR
+            self.tiles[x][y].color = DUNGEON.COLOR_FLOOR
             self.tiles[x][y].material = MaterialType.DIRT
 
     def getRandomEmptyTile(self):
@@ -461,36 +461,6 @@ class TextureSet:
     FENCE = 17
 
 
-class TextureId:
-    """
-    Enumerator for textures ID's.
-    Hack: The integer values correspond with tilesheet column numbers.
-    TODO: The actual mapping to tilesheet column numbers should be done in the GUI. Making this implementation
-    independent of the actual tilesheet being used.
-    """
-    TILE_EMPTY = 4
-    TILE_LINED = 5
-    TILE_CRACKED = 6
-    TILE_SUBTILES = 7
-    PORTAL_UP = 8
-    PORTAL_DOWN = 9
-    PILLAR = 10
-    EW_WALL = 15
-    NS_WALL = 12
-    EW_WALL_N_CAP = 14
-    EW_WALL_S_CAP = 64
-    NS_WALL_W_CAP = 11
-    NS_WALL_E_CAP = 13
-    NW_CORNER = 17
-    NE_CORNER = 18
-    SW_CORNER = 19
-    SE_CORNER = 20
-    CROSS = 21
-    T_SOUTH = 22
-    T_WEST = 23
-    T_EAST = 24
-    T_NORTH = 25
-
 class TownMap(Map):
     """
     This class represents a randomized town map.
@@ -519,7 +489,7 @@ class TownMap(Map):
         """
         super(TownMap, self).__init__(map_width, map_height, level)
         #Initialize range of view
-        self._rangeOfView = CONSTANTS.TOWN_RADIUS
+        self._rangeOfView = DAYLIGHT_RADIUS
 
     def generate_map(self):
         """
@@ -529,9 +499,9 @@ class TownMap(Map):
         self.clearHouses()
 
         #Constants used to generate map
-        HOUSE_MAX_SIZE = CONSTANTS.TOWN_HOUSE_MAX_SIZE
-        HOUSE_MIN_SIZE = CONSTANTS.TOWN_HOUSE_MIN_SIZE
-        MAX_HOUSES = CONSTANTS.TOWN_MAX_HOUSES
+        HOUSE_MAX_SIZE = TOWN.HOUSE_MAX_SIZE
+        HOUSE_MIN_SIZE = TOWN.HOUSE_MIN_SIZE
+        MAX_HOUSES = TOWN.MAX_HOUSES
 
         #Create a new map with empty tiles
         self._tiles = [[Tile(self, x, y)
@@ -547,12 +517,12 @@ class TownMap(Map):
                         or x == self.width - 1 or y == self.height - 1:
                     myTile.blocked = True
                     myTile.blockSight = True
-                    myTile.color = CONSTANTS.TOWN_COLOR_BORDER
+                    myTile.color = TOWN.COLOR_BORDER
                     myTile.material = MaterialType.STONE
                 else:
                     myTile.blocked = False
                     myTile.blockSight = False
-                    myTile.color = CONSTANTS.TOWN_COLOR_DIRT
+                    myTile.color = TOWN.COLOR_DIRT
                     myTile.material = MaterialType.DIRT
 
         #generate houses
@@ -582,7 +552,7 @@ class TownMap(Map):
                 for y in range(new_house.y1, new_house.y2 + 1):
                     self.tiles[x][y].blocked = True
                     self.tiles[x][y].blockSight = True
-                    self.tiles[x][y].color = CONSTANTS.TOWN_COLOR_STONE
+                    self.tiles[x][y].color = TOWN.COLOR_STONE
                     self.tiles[x][y].material = MaterialType.STONE
 
             #finally, append the new room to the list
@@ -614,7 +584,7 @@ class SingleRoomMap(Map):
         self._room = myRoom
         super(SingleRoomMap, self).__init__(map_width, map_height, level)
         #Initialize range of view
-        self._rangeOfView = CONSTANTS.TORCH_RADIUS
+        self._rangeOfView = TORCH_RADIUS
 
     def generate_map(self):
         #Create a new map with empty tiles
@@ -628,7 +598,7 @@ class SingleRoomMap(Map):
                 myTile = self.tiles[x][y]
                 myTile.blocked = True
                 myTile.blockSight = True
-                myTile.color = CONSTANTS.DUNGEON_COLOR_WALL
+                myTile.color = DUNGEON.COLOR_WALL
                 myTile.material = MaterialType.STONE
 
         #Cut out the single room
@@ -636,8 +606,9 @@ class SingleRoomMap(Map):
             for y in range(self.room.y1 + 1, self.room.y2):
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].blockSight = False
-                self.tiles[x][y].color = CONSTANTS.DUNGEON_COLOR_FLOOR
+                self.tiles[x][y].color = DUNGEON.COLOR_FLOOR
                 self.tiles[x][y].material = MaterialType.DIRT
+
 
 class CaveMap(Map):
     """
@@ -653,7 +624,7 @@ class CaveMap(Map):
         """
         super(CaveMap, self).__init__(map_width, map_height, level)
         #Initialize range of view
-        self._rangeOfView = CONSTANTS.TORCH_RADIUS
+        self._rangeOfView = TORCH_RADIUS
 
     def generate_map(self):
         #Create a new map with empty tiles
@@ -667,7 +638,7 @@ class CaveMap(Map):
                 myTile = self.tiles[x][y]
                 myTile.blocked = True
                 myTile.blockSight = True
-                myTile.color = CONSTANTS.CAVE_COLOR_ROCK
+                myTile.color = CAVE.COLOR_ROCK
                 myTile.material = MaterialType.STONE 
         
         #Cut out a starting cave area
@@ -705,7 +676,7 @@ class CaveMap(Map):
             tile.material = MaterialType.WATER
             tile.blocked = False
             tile.blockSight = False
-            tile.color = CONSTANTS.WATER_COLOR
+            tile.color = CAVE.WATER_COLOR
 
         # Ensure the border of the map is blocked
         for y in range(self.height):
@@ -715,7 +686,7 @@ class CaveMap(Map):
                         or x == self.width - 1 or y == self.height - 1:
                     myTile.blocked = True
                     myTile.blockSight = True
-                    myTile.color = CONSTANTS.CAVE_COLOR_ROCK
+                    myTile.color = CAVE.COLOR_ROCK
                     myTile.material = MaterialType.STONE
 
     def createCorridor(self, x, y, prevX, prevY):
@@ -733,7 +704,7 @@ class CaveMap(Map):
     def clearTile(self, tile):
         tile.blocked = False
         tile.blockSight = False
-        tile.color = CONSTANTS.CAVE_COLOR_DIRT
+        tile.color = CAVE.COLOR_DIRT
         tile.material = MaterialType.DIRT
 
 class Room:
@@ -1014,7 +985,7 @@ class Tile(object):
         self.json["texture_set"] = None
         self.json["texture_id"] = None
         self.json["inView"] = True
-        self.json["color"] = CONSTANTS.TILE_DEFAULT_COLOR
+        self.json["color"] = TILE_DEFAULT_COLOR
         self._actors = []
         self.json["actors"] = {}
         # DEPRECATED

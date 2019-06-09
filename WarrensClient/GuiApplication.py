@@ -9,7 +9,7 @@ import pygame
 from pygame.locals import *
 from WarrensClient import GuiUtilities
 from WarrensClient.GuiCONSTANTS import *
-from WarrensClient.GuiGraphics import initialize_sprites, get_sprite_surface
+from WarrensClient.GuiGraphics import initialize_sprites, get_tile_surface, get_sprite_surface
 from WarrensGame.Actors import Character
 from WarrensGame.Effects import EffectTarget
 from WarrensGame.Game import Game
@@ -475,31 +475,6 @@ class GuiApplication(object):
         # Re-initialize sprites
         initialize_sprites(self.tile_size)
 
-        # TODO: move into GuiApplication, need to load some sprites from the wall tileset...
-        # Load tileset
-        tile_image = pygame.image.load('./Assets/tiles.bin').convert()
-        tile_image.set_colorkey((0, 0, 0))
-        # Resize to match up with current zoomlevel (tiles.bin has 24 by 24 tiles)
-        tileset_size = 24
-        tileset_margin = 0
-        factor = self.tile_size / tileset_size
-        image_width, image_height = tile_image.get_size()
-        tile_image = pygame.transform.scale(tile_image, (int(image_width * factor), int(image_height * factor)))
-        image_width, image_height = tile_image.get_size()
-        tileset_size = int(tileset_size * factor)
-        tileset_margin = int(tileset_margin * factor)
-        max_x = int(image_width // (tileset_size + tileset_margin))
-        max_y = int(image_height // (tileset_size + tileset_margin))
-        self.tileset = []
-        for tile_x in range(0, max_x):
-            row = []
-            for tile_y in range(0, max_y):
-                x = tile_x * (tileset_size + tileset_margin)
-                y = tile_y * (tileset_size + tileset_margin)
-                rect = (x, y, tileset_size, tileset_size)
-                row.append(tile_image.subsurface(rect))
-            self.tileset.append(row)
-
     def render_screen(self):
         """
         Main render function
@@ -643,13 +618,15 @@ class GuiApplication(object):
                 vp_y = (tile["y"] - start_y) * self.tile_size + self._renderViewPortYOffSet
                 tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
                 if tile["explored"]:
+                    # Draw the tile background
                     tile_count += 1
-                    if tile["texture_id"] is None:
+                    sprite = get_tile_surface(tile["texture_id"], tile["texture_set"])
+                    if sprite is None:
                         # No texture specified: Blit tile color
                         self.surface_viewport.fill(tile["color"], tile_rect)
                     else:
-                        # Blit texture based on provided id
-                        self.surface_viewport.blit(self.tileset[tile["texture_id"]][tile["texture_set"]], tile_rect)
+                        # Blit texture
+                        self.surface_viewport.blit(sprite, tile_rect)
 
                     if tile["inView"]:
                         # draw any actors standing on this tile (monsters, portals, items, ...)

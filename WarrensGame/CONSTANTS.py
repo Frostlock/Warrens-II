@@ -6,29 +6,42 @@ MAP_WIDTH = 80
 MAP_HEIGHT = 50
 TILE_DEFAULT_COLOR = (175,175,175)
 
-# Dungeon generation
-DUNGEON_ROOM_MAX_SIZE = 10
-DUNGEON_ROOM_MIN_SIZE = 6
-DUNGEON_MAX_ROOMS = 30
-DUNGEON_COLOR_FLOOR = (134,134,134)
-DUNGEON_COLOR_WALL = (75,70,50)
 
-# Town generation
-TOWN_HOUSE_MAX_SIZE = 14
-TOWN_HOUSE_MIN_SIZE = 8
-TOWN_MAX_HOUSES = 18
-TOWN_COLOR_BORDER = (25,25,25)
-TOWN_COLOR_DIRT = (127,75,35)
-TOWN_COLOR_STONE = (105,105,105)
+class DUNGEON:
+    """
+    Constants for dungeon generation.
+    """
+    ROOM_MAX_SIZE = 10
+    ROOM_MIN_SIZE = 6
+    MAX_ROOMS = 30
+    COLOR_FLOOR = (134, 134, 134)
+    COLOR_WALL = (75, 70, 50)
 
-# Cave generation
-CAVE_COLOR_ROCK = (75,50,35)
-CAVE_COLOR_DIRT = (120,90,70)
-WATER_COLOR = (30,144,255)
+
+class TOWN:
+    """
+    Constants for town generation
+    """
+    HOUSE_MAX_SIZE = 14
+    HOUSE_MIN_SIZE = 8
+    MAX_HOUSES = 18
+    COLOR_BORDER = (25, 25, 25)
+    COLOR_DIRT = (127, 75, 35)
+    COLOR_STONE = (105, 105, 105)
+
+
+class CAVE:
+    """
+    Constants for cave generation
+    """
+    COLOR_ROCK = (75, 50, 35)
+    COLOR_DIRT = (120, 90, 70)
+    WATER_COLOR = (30, 144, 255)
+
 
 # Field of view
 TORCH_RADIUS = 10
-TOWN_RADIUS = 30
+DAYLIGHT_RADIUS = 30
 
 # Data files
 DATA_MONSTERS = "./WarrensGame/Monsters.csv"
@@ -76,8 +89,38 @@ GAME_EVENT_QUEUE_SIZE = 20
 
 class SPRITES:
     """
-    Enumerator providing sprite ID's
+    Enumerator providing sprite ID's.
+    Note that the game only provides these ID's.
+    Mapping these to actual graphics is done in the GUI.
     """
     PORTAL = 0
     STAIRS_DOWN = 1
     STAIRS_UP = 2
+
+
+class TEXTURES:
+    """
+    Enumerator for textures ID's.
+    Hack: The integer values correspond with tilesheet column numbers.
+    TODO: Merge with SPRITES class above? Move actual mapping to tilesheet column numbers WarrensClient.GuiGraphics?
+    """
+    TILE_EMPTY = 4
+    TILE_LINED = 5
+    TILE_CRACKED = 6
+    TILE_SUBTILES = 7
+    PILLAR = 10
+    EW_WALL = 15
+    NS_WALL = 12
+    EW_WALL_N_CAP = 14
+    EW_WALL_S_CAP = 64
+    NS_WALL_W_CAP = 11
+    NS_WALL_E_CAP = 13
+    NW_CORNER = 17
+    NE_CORNER = 18
+    SW_CORNER = 19
+    SE_CORNER = 20
+    CROSS = 21
+    T_SOUTH = 22
+    T_WEST = 23
+    T_EAST = 24
+    T_NORTH = 25
