@@ -387,17 +387,17 @@ class DungeonMap(Map):
                         t.texture_id = TEXTURES.TILE_CRACKED
                 elif h in [16, 511]:
                     t.texture_id = TEXTURES.PILLAR
-                elif h in [24, 89]:
+                elif h in [24, 25, 88, 89]:
                     t.texture_id = TEXTURES.NS_WALL_W_CAP
                 elif h in [56, 57, 60, 63, 120, 121, 124, 125, 127, 312, 313, 316, 317, 319, 377, 380, 381, 383, 504, 505, 508, 509]:
                     t.texture_id = TEXTURES.NS_WALL
-                elif h in [48, 308]:
+                elif h in [48, 52, 304, 308]:
                     t.texture_id = TEXTURES.NS_WALL_E_CAP
-                elif h in [18, 23]:
+                elif h in [18, 19, 22, 23]:
                     t.texture_id = TEXTURES.EW_WALL_N_CAP
                 elif h in [146, 147, 150, 151, 210, 214, 215, 219, 223, 402, 403, 407, 438, 439, 466, 467, 470, 471, 475, 479, 502, 503]:
                     t.texture_id = TEXTURES.EW_WALL
-                elif h in [144, 464]:
+                elif h in [144, 208, 400, 464]:
                     t.texture_id = TEXTURES.EW_WALL_S_CAP
                 elif h in [27, 30, 31, 90, 91, 94, 95, 510]:
                     t.texture_id = TEXTURES.NW_CORNER
@@ -559,6 +559,7 @@ class TownMap(Map):
             self.houses.append(new_house)
             num_houses += 1
 
+
 class SingleRoomMap(Map):
     """
     This class represents a very simple map with only one room.
@@ -707,6 +708,7 @@ class CaveMap(Map):
         tile.color = CAVE.COLOR_DIRT
         tile.material = MaterialType.DIRT
 
+
 class Room:
     """
     Describes a rectangular room on the map
@@ -749,6 +751,7 @@ class Room:
                     aTile = self._map.tiles[x][y]
         return aTile
 
+
 class MaterialType:
     """
     Enumerator for material types.
@@ -758,6 +761,7 @@ class MaterialType:
     STONE = 2
     DOOR = 3
     WATER = 4
+
 
 class Tile(object):
     """
