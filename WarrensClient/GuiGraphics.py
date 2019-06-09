@@ -47,8 +47,8 @@ def initialize_sprites(tile_size):
 
     # Link loaded sprites to Game sprite ID's
     global sprite_dict
-    sprite_dict[SPRITES.STAIRS_DOWN] = sprites[1][13]
-    sprite_dict[SPRITES.STAIRS_UP] = sprites[5][5]
+    sprite_dict[SPRITES.STAIRS_DOWN] = tiles[9][1]
+    sprite_dict[SPRITES.STAIRS_UP] = tiles[8][1]
     sprite_dict[SPRITES.PORTAL] = sprites[1][1]
 
 
