@@ -668,11 +668,13 @@ class GuiApplication(object):
             vp_x = (player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
             vp_y = (player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
             tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-            text_img = self.viewport_font.render(player.char, 1, player.color)
-            # Center on the tile
-            x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() / 2)
-            y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() / 2)
-            self.surface_viewport.blit(text_img, (x, y))
+            sprite = get_sprite_surface(player.sprite_id)
+            if sprite is None:
+                sprite = self.viewport_font.render(player.char, 1, player.color)
+            # Center on tile
+            x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
+            y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
+            self.surface_viewport.blit(sprite, (x, y))
 
             if self.targeting_mode:
                 # Indicate we are in targeting mode

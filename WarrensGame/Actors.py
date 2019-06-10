@@ -156,19 +156,6 @@ class Actor(object):
         """
         return self.json["color"]
 
-    #DEPRECATED
-    # @property
-    # def sceneObject(self):
-    #     '''
-    #     Property used to store the scene object that represents this actor in the GUI.
-    #     :return: SceneObject
-    #     '''
-    #     return self._sceneObject
-    #
-    # @sceneObject.setter
-    # def sceneObject(self, sceneObject):
-    #     self._sceneObject = sceneObject
-
     @property
     def json(self):
         """
@@ -752,6 +739,9 @@ class Player(Character):
         self.json["nextLevelXp"] = CONSTANTS.GAME_XP_BASE
         self.direction = (1, 1)
 
+        # Set a sprite_id
+        self.sprite_id = CONSTANTS.SPRITES.PLAYER
+
     def _killedBy(self, attacker):
         """
         This function handles the death of this Player
@@ -1054,10 +1044,10 @@ class Monster(Character):
         self._baseMonster = baseMonster
         self._modifiers = []
 
-        #call super class constructor
+        # call super class constructor
         super(Monster, self).__init__()
 
-        #Actor components
+        # Actor components
         self.json["key"] = baseMonster.key
         self.json["char"] = baseMonster.char
         self.json["maxHitPoints"] = roll_hit_die(baseMonster.hitdie)
@@ -1066,11 +1056,15 @@ class Monster(Character):
         self.json["flavorText"] = baseMonster.flavor
         self.json["color"] = baseMonster.color
 
-        #Character components
+        # Character components
         self._xpValue = baseMonster.xp
-        #gets a class object by name; and instanstiate it if not None
+        # ets a class object by name; and instantiate it if not None
         ai_class = eval('WarrensGame.AI.' + baseMonster.AI)
         self._AI = ai_class and ai_class(self) or None
+
+        # For monsters we use the baseMonster key as sprite_id
+        self.sprite_id = baseMonster.key
+
 
 #########
 # ITEMS #
@@ -1202,9 +1196,9 @@ class Item(Actor):
 
     @property
     def name(self):
-        '''
+        """
         Name of this Item
-        '''
+        """
         name = self.baseItem.name
         # Apply modifiers
         for modifier in self.modifiers:
@@ -1254,9 +1248,9 @@ class Item(Actor):
         Creates a new Item object, normally not used directly but called
         by sub class constructors.
         """
-        #call super class constructor
+        # call super class constructor
         super(Item, self).__init__()
-        #Initialize Item components
+        # Initialize Item components
         self._baseItem = baseItem
         self.json["key"] = baseItem.key
         self.json["char"] = baseItem.char
@@ -1264,9 +1258,13 @@ class Item(Actor):
         self._modifiers = []
         self._owner = None
 
-        #Basic items are not stackable
+        # Basic items are not stackable
         self.json["stackable"] = False
         self.json["stackSize"] = 1
+
+        # For Items we use the baseItem.key as sprite ID
+        self.sprite_id = baseItem.key
+
 
 class Equipment(Item):
     """
@@ -1297,16 +1295,16 @@ class Equipment(Item):
             suffix = ' (equiped)'
         return super(Equipment, self).name + suffix
 
-    #constructor
     def __init__(self, baseItem):
         """
         Creates a new uninitialized Equipment object.
         Use ItemLibrary.createItem() to create an initialized Item.
         """
-        #call super class constructor
+        # call super class constructor
         super(Equipment, self).__init__(baseItem)
-        #Initialize equipment properties
+        # Initialize equipment properties
         self.json["isEquiped"] = False
+
 
 class Consumable(Item):
     """
@@ -1377,21 +1375,19 @@ class Consumable(Item):
         """
         if self.stackSize == 0: return True
         return False
-    
-    #constructor
+
     def __init__(self, baseItem):
         """
         Creates a new uninitialized Consumable object.
         Use ItemLibrary.createItem() to create an initialized Item.
         """
-        #call super class constructor
+        # call super class constructor
         super(Consumable, self).__init__(baseItem)
-        #consumables are stackable
+        # consumables are stackable
         self.json["stackable"] = True
         # Effect will be created when item is consumed
         self._effect = None
 
-    #functions
     def applyTo(self, target):
         """
         Applies the effect of this consumable to a target.
@@ -1405,6 +1401,7 @@ class Consumable(Item):
                 if self.effect is not None:
                     self.effect.applyTo(target)
             self.stackSize -= 1
+
 
 class QuestItem(Item):
     """

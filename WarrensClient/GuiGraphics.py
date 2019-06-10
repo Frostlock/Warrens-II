@@ -11,19 +11,47 @@ tiles = None
 
 def initialize_sprites(tile_size):
     """
-    Initialize the sprites. Loads sprite sheets and resize to fit current tile_size
+    Initialize the sprites. This function will load the sprite sheets and resize them to fit current tile_size
     :param tile_size: current game tile size
     :return: None
     """
+    global sprite_dict
     global tiles
+
+    # Load sprite sheets
     tiles = load_sprite_sheet('./Assets/tiles.bin', 24, 0, tile_size)
-    sprites = load_sprite_sheet('./Assets/sprites.bin', 24, 0, tile_size)
+    creatures = load_sprite_sheet('./Assets/creatures.bin', 24, 0, tile_size)
+    items = load_sprite_sheet('./Assets/items.bin', 16, 0, int(0.75 * tile_size))
 
     # Link loaded sprites to Game sprite ID's
-    global sprite_dict
     sprite_dict[SPRITES.STAIRS_DOWN] = tiles[9][1]
     sprite_dict[SPRITES.STAIRS_UP] = tiles[8][1]
-    sprite_dict[SPRITES.PORTAL] = sprites[1][1]
+    sprite_dict[SPRITES.PORTAL] = creatures[1][1]
+
+    # Monsters
+    sprite_dict[SPRITES.KOBOLD] = creatures[1][15]
+    sprite_dict[SPRITES.RAT] = creatures[8][13]
+    sprite_dict[SPRITES.TROLL] = creatures[9][15]
+    sprite_dict[SPRITES.ZOMBIE] = creatures[1][17]
+
+    # Player
+    sprite_dict[SPRITES.PLAYER] = creatures[2][3]
+
+    # Items
+    sprite_dict[SPRITES.POTION_HEAL_SMALL] = items[3][1]
+    sprite_dict[SPRITES.POTION_HEAL_MEDIUM] = items[9][1]
+    sprite_dict[SPRITES.POTION_HEAL_LARGE] = items[15][1]
+    sprite_dict[SPRITES.SCROLL_LIGHTNING] = items[4][7]
+    sprite_dict[SPRITES.SCROLL_FIREBALL] = items[4][7]
+    sprite_dict[SPRITES.SCROLL_FIRENOVA] = items[4][7]
+    sprite_dict[SPRITES.SCROLL_TREMOR] = items[4][7]
+    sprite_dict[SPRITES.SCROLL_CONFUSE] = items[4][7]
+    sprite_dict[SPRITES.DAGGER] = items[1][10]
+    sprite_dict[SPRITES.SHORTSWORD] = items[2][10]
+    sprite_dict[SPRITES.SWORD] = items[11][10]
+    sprite_dict[SPRITES.SHIELD] = items[1][11]
+    sprite_dict[SPRITES.CLOAK] = items[8][12]
+    sprite_dict[SPRITES.RING] = items[10][4]
 
 
 def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):

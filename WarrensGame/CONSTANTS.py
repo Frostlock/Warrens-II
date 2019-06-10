@@ -97,6 +97,28 @@ class SPRITES:
     STAIRS_DOWN = 1
     STAIRS_UP = 2
 
+    KOBOLD = "kobold"
+    RAT = "rat"
+    TROLL = "troll"
+    ZOMBIE = "zombie"
+
+    PLAYER = "player"
+
+    POTION_HEAL_SMALL = "healingvial"
+    POTION_HEAL_MEDIUM = "healingpotion"
+    POTION_HEAL_LARGE = "healingdraught"
+    SCROLL_LIGHTNING = "lightning"
+    SCROLL_FIREBALL = "fireball"
+    SCROLL_FIRENOVA = "firenova"
+    SCROLL_TREMOR = "tremor"
+    SCROLL_CONFUSE = "confuse"
+    DAGGER = "dagger"
+    SHORTSWORD = "shortsword"
+    SWORD = "sword"
+    SHIELD = "shield"
+    CLOAK = "cloak"
+    RING = "ring"
+
 
 class TEXTURES:
     """

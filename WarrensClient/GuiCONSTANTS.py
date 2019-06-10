@@ -7,7 +7,7 @@ APPLICATION_NAME = "W@rrens II"
 SPLASH_IMAGE = "./Assets/TitleScreen.png"
 
 ZOOM_MULTIPLIER = 2  # Increase in zoom for each zooming operation
-MAX_ZOOM_FACTOR = 12  # Not much sense in going over 64, but if you like you can :)
+MAX_ZOOM_FACTOR = 10  # Not much sense in going over 64, but if you like you can :)
 
 # Config switches
 SHOW_PERFORMANCE_LOGGING = False
