@@ -117,7 +117,7 @@ def message(text, category=None):
         # Default to console output
         print(text)
     # Only keep the latest messages in the messageBuffer
-    if len(messageBuffer) > CONSTANTS.GAME_MESSAGE_BUFFER_LENGTH:
+    if len(messageBuffer) > CONSTANTS.GAME.MESSAGE_BUFFER_LENGTH:
         messageBuffer.popleft()
 
 

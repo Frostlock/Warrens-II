@@ -66,16 +66,17 @@ EARTH = 4
 ELEC = 5
 MIND = 6
 
-# TODO: refactor into class below
-GAME_MESSAGE_BUFFER_LENGTH = 5
-GAME_EVENT_QUEUE_SIZE = 20
-GAME_XP_EQUAL_CHALLENGE = 50
+# DEPRECATED
+# GAME_EVENT_QUEUE_SIZE = 20
+# GAME_XP_EQUAL_CHALLENGE = 50
 
 
 class GAME:
     """
     Game system parameters
     """
+    MESSAGE_BUFFER_LENGTH = 5
+
     XP_BASE = 300
     XP_FACTOR = 1.3
 
@@ -91,7 +92,7 @@ class GAME:
 
 class SPRITES:
     """
-    Enumerator providing sprite ID's.
+    Enumerator providing sprite and texture ID's.
     Note that the game only provides these ID's.
     Mapping these to actual graphics is done in the GUI.
     """
@@ -99,15 +100,15 @@ class SPRITES:
     STAIRS_DOWN = 1
     STAIRS_UP = 2
 
+    CHEST_CLOSED = "chest_closed"
+    CHEST_OPEN = "chest_open"
+
     KOBOLD = "kobold"
     RAT = "rat"
     TROLL = "troll"
     ZOMBIE = "zombie"
 
     PLAYER = "player"
-
-    CHEST_CLOSED = "chest_closed"
-    CHEST_OPEN = "chest_open"
 
     POTION_HEAL_SMALL = "healingvial"
     POTION_HEAL_MEDIUM = "healingpotion"
@@ -124,13 +125,8 @@ class SPRITES:
     CLOAK = "cloak"
     RING = "ring"
 
-
-class TEXTURES:
-    """
-    Enumerator for textures ID's.
-    Hack: The integer values correspond with tilesheet column numbers.
-    TODO: Merge with SPRITES class above? Move actual mapping to tilesheet column numbers WarrensClient.GuiGraphics?
-    """
+    # Tiles
+    # Hack: The integer values correspond with tilesheet column numbers.
     TILE_EMPTY = 4
     TILE_LINED = 5
     TILE_CRACKED = 6

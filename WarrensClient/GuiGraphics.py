@@ -27,7 +27,7 @@ def initialize_sprites(tile_size):
     # Portals
     sprite_dict[SPRITES.STAIRS_DOWN] = tiles[9][1]
     sprite_dict[SPRITES.STAIRS_UP] = tiles[8][1]
-    sprite_dict[SPRITES.PORTAL] = creatures[1][1]
+    sprite_dict[SPRITES.PORTAL] = tiles[42][3]
 
     # Monsters
     sprite_dict[SPRITES.KOBOLD] = creatures[1][15]

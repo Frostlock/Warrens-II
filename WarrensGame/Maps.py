@@ -3,7 +3,7 @@
 import math
 import random
 
-from WarrensGame.CONSTANTS import TEXTURES, DAYLIGHT_RADIUS, TORCH_RADIUS, DUNGEON, TOWN, CAVE, TILE_DEFAULT_COLOR
+from WarrensGame.CONSTANTS import SPRITES, DAYLIGHT_RADIUS, TORCH_RADIUS, DUNGEON, TOWN, CAVE, TILE_DEFAULT_COLOR
 import WarrensGame.Utilities as Utilities
 
 
@@ -378,45 +378,45 @@ class DungeonMap(Map):
                 h = t.texture_hash
                 # Map hash to a tileset ID
                 if not self.tiles[x][y].blockSight:
-                    t.texture_id = TEXTURES.TILE_EMPTY
+                    t.texture_id = SPRITES.TILE_EMPTY
                     if random.random() < 0.05:
-                        t.texture_id = TEXTURES.TILE_SUBTILES
+                        t.texture_id = SPRITES.TILE_SUBTILES
                     if random.random() < 0.05:
-                        t.texture_id = TEXTURES.TILE_LINED
+                        t.texture_id = SPRITES.TILE_LINED
                     if random.random() < 0.05:
-                        t.texture_id = TEXTURES.TILE_CRACKED
+                        t.texture_id = SPRITES.TILE_CRACKED
                 elif h in [16, 511]:
-                    t.texture_id = TEXTURES.PILLAR
+                    t.texture_id = SPRITES.PILLAR
                 elif h in [24, 25, 88, 89]:
-                    t.texture_id = TEXTURES.NS_WALL_W_CAP
+                    t.texture_id = SPRITES.NS_WALL_W_CAP
                 elif h in [56, 57, 60, 63, 120, 121, 124, 125, 127, 312, 313, 316, 317, 319, 377, 380, 381, 383, 504, 505, 508, 509]:
-                    t.texture_id = TEXTURES.NS_WALL
+                    t.texture_id = SPRITES.NS_WALL
                 elif h in [48, 52, 304, 308]:
-                    t.texture_id = TEXTURES.NS_WALL_E_CAP
+                    t.texture_id = SPRITES.NS_WALL_E_CAP
                 elif h in [18, 19, 22, 23]:
-                    t.texture_id = TEXTURES.EW_WALL_N_CAP
+                    t.texture_id = SPRITES.EW_WALL_N_CAP
                 elif h in [146, 147, 150, 151, 210, 214, 215, 219, 223, 402, 403, 407, 438, 439, 466, 467, 470, 471, 475, 479, 502, 503]:
-                    t.texture_id = TEXTURES.EW_WALL
+                    t.texture_id = SPRITES.EW_WALL
                 elif h in [144, 208, 400, 464]:
-                    t.texture_id = TEXTURES.EW_WALL_S_CAP
+                    t.texture_id = SPRITES.EW_WALL_S_CAP
                 elif h in [27, 30, 31, 90, 91, 94, 95, 510]:
-                    t.texture_id = TEXTURES.NW_CORNER
+                    t.texture_id = SPRITES.NW_CORNER
                 elif h in [51, 54, 55, 306, 307, 310, 311, 507]:
-                    t.texture_id = TEXTURES.NE_CORNER
+                    t.texture_id = SPRITES.NE_CORNER
                 elif h in [153, 216, 217, 408, 409, 447, 472, 473]:
-                    t.texture_id = TEXTURES.SW_CORNER
+                    t.texture_id = SPRITES.SW_CORNER
                 elif h in [180, 240, 244, 255, 432, 436, 496, 500]:
-                    t.texture_id = TEXTURES.SE_CORNER
+                    t.texture_id = SPRITES.SE_CORNER
                 elif h in [186]:
-                    t.texture_id = TEXTURES.CROSS
+                    t.texture_id = SPRITES.CROSS
                 elif h in [58, 59, 62, 122, 123, 126, 314, 318, 378, 379, 382]:
-                    t.texture_id = TEXTURES.T_SOUTH
+                    t.texture_id = SPRITES.T_SOUTH
                 elif h in [178, 179, 182, 183, 242, 243, 246, 247, 434, 435, 498]:
-                    t.texture_id = TEXTURES.T_WEST
+                    t.texture_id = SPRITES.T_WEST
                 elif h in [154, 155, 158, 159, 218, 222, 410, 411, 414, 415, 474]:
-                    t.texture_id = TEXTURES.T_EAST
+                    t.texture_id = SPRITES.T_EAST
                 elif h in [184, 185, 188, 189, 248, 249, 252, 253, 440, 441, 444]:
-                    t.texture_id = TEXTURES.T_NORTH
+                    t.texture_id = SPRITES.T_NORTH
                 else:
                     print("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
 
