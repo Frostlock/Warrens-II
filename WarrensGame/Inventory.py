@@ -34,14 +34,14 @@ class Inventory(object):
         """
         return self._json
 
-    def __init__(self, character):
+    def __init__(self, actor):
         """
-        Constructor, initializes and empty inventory linked to a character
-        :param character: Character owning this inventory
+        Constructor, initializes and empty inventory linked to an actor
+        :param actor: Actor owning this inventory
         """
         self._json = {}
         self._items = []
-        self._owner = character
+        self._owner = actor
 
     def add(self, item):
         """
@@ -74,6 +74,7 @@ class Inventory(object):
         """
         self.items.remove(item)
         del self.json[id(item)]
+        # TODO: Bug here, stacks get removed completely, need to remove based on find and stacksize.
 
     def find(self, item):
         """
@@ -87,8 +88,9 @@ class Inventory(object):
             # Same base item
             if available_item.key == item.key:
                 available_mod_keys = [mod.key for mod in available_item.modifiers]
+                available_mod_keys.sort()
                 item_mod_keys = [mod.key for mod in item.modifiers]
-                # TODO: sort item_mod_keys and available_mod_keys alphabetically
+                item_mod_keys.sort()
                 if str(available_mod_keys) == str(item_mod_keys):
                     return available_item
         return None
