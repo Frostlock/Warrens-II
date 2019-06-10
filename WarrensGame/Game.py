@@ -265,12 +265,10 @@ class Game(object):
             scroll = self.itemLibrary.create_item("lightning")
             self.player.addItem(scroll)
             # Add a chest with extra gear
-            chest = Container()
+            chest = Chest()
             tile = town.map.tiles[2][2]
             chest.moveToTile(tile)
-            chest.name = "Ancient chest"
-            chest.flavorText = "A sturdy wooden chest. It looks very old."
-            for i in range(1,15):
+            for i in range(1, 15):
                 item = self.itemLibrary.get_random_item(i)
                 chest.inventory.add(item)
 

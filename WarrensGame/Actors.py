@@ -1,6 +1,6 @@
 import random
 
-import WarrensGame.CONSTANTS as CONSTANTS
+from WarrensGame.CONSTANTS import SPRITES, GAME, INTERACTION
 from WarrensGame.Interaction import Interaction
 from WarrensGame.Inventory import Inventory
 import WarrensGame.AI  # Used in eval statement
@@ -306,7 +306,7 @@ class Portal(Actor):
         super(Portal, self).__init__()
         self.char = char
         self.name = name
-        self.sprite_id = CONSTANTS.SPRITES.PORTAL
+        self.sprite_id = SPRITES.PORTAL
         self.json["message"] = message
         self._destination = None
         # portals are purple
@@ -326,30 +326,47 @@ class Portal(Actor):
         level.addPortal(self)
 
 
-class Container(Actor):
-    '''
+class Chest(Actor):
+    """
     Sub class representing a container object.
-    '''
+    """
 
     @property
     def inventory(self):
         return self._inventory
 
-    def __init__(self):
+    @property
+    def locked(self):
+        return self.json["locked"]
+
+    @locked.setter
+    def locked(self, boolean):
+        self.json["locked"] = boolean
+
+    def __init__(self, locked=False):
         """
-        Constructor to create a new portal
+        Constructor to create a new chest
         """
-        super(Container, self).__init__()
+        super(Chest, self).__init__()
         self._inventory = Inventory(self)
-        #containers are gray
+        # Chest specific
+        self.json["locked"] = locked
+        self.char = "H"
         self.json["color"] = (45, 45, 45)
+        self.sprite_id = SPRITES.CHEST_CLOSED
+        self.name = "Chest"
+        self.flavorText = "A sturdy wooden chest."
 
-    def addItem(self, newItem):
-        self.inventory.add(newItem)
+    def addItem(self, item):
+        self.inventory.add(item)
 
-    def removeItem(self, removeItem):
-        self.inventory.remove(removeItem)
-
+    def removeItem(self, item):
+        if self.locked:
+            raise GameError("Chest is locked, please unlock before removing items.")
+        else:
+            self.inventory.remove(item)
+            #self.sprite_id = SPRITES.CHEST_OPEN
+        
 
 ##############
 # CHARACTERS #
@@ -498,7 +515,7 @@ class Character(Actor):
         self._baseMind = 10
 
         # Set defaults for Characters
-        self.json["maxHitPoints"] = self.body * CONSTANTS.GAME_PLAYER_HITPOINT_FACTOR
+        self.json["maxHitPoints"] = self.body * GAME.PLAYER_HITPOINT_FACTOR
         self.json["currentHitPoints"] = self.json["maxHitPoints"]
         self._xpValue = 0
         self._AI = None
@@ -736,11 +753,11 @@ class Player(Character):
         # Player properties
         self.json["xp"] = 0
         self.json["playerLevel"] = 1
-        self.json["nextLevelXp"] = CONSTANTS.GAME_XP_BASE
+        self.json["nextLevelXp"] = GAME.XP_BASE
         self.direction = (1, 1)
 
         # Set a sprite_id
-        self.sprite_id = CONSTANTS.SPRITES.PLAYER
+        self.sprite_id = SPRITES.PLAYER
 
     def _killedBy(self, attacker):
         """
@@ -756,19 +773,19 @@ class Player(Character):
         self.json["name"] = 'The remains of ' + origName
         
     def levelUp(self):
-        '''
+        """
         Increase level of this player
-        '''
+        """
         message("You feel stronger!", "GAME")
         self.json["playerLevel"] += 1
-        self.json["nextLevelXp"] = CONSTANTS.GAME_XP_BASE + CONSTANTS.GAME_XP_BASE * CONSTANTS.GAME_XP_FACTOR * (self.playerLevel * self.playerLevel - 1)
+        self.json["nextLevelXp"] = GAME.XP_BASE + GAME.XP_BASE * GAME.XP_FACTOR * (self.playerLevel * self.playerLevel - 1)
 
-        self._baseAccuracy += CONSTANTS.GAME_PLAYER_LEVEL_ACCURACY
-        self._baseDodge += CONSTANTS.GAME_PLAYER_LEVEL_DODGE
-        self._baseDamage += CONSTANTS.GAME_PLAYER_LEVEL_DAMAGE
-        self._baseArmor += CONSTANTS.GAME_PLAYER_LEVEL_ARMOR
-        self._baseBody += CONSTANTS.GAME_PLAYER_LEVEL_BODY
-        self._baseMind += CONSTANTS.GAME_PLAYER_LEVEL_MIND
+        self._baseAccuracy += GAME.PLAYER_LEVEL_ACCURACY
+        self._baseDodge += GAME.PLAYER_LEVEL_DODGE
+        self._baseDamage += GAME.PLAYER_LEVEL_DAMAGE
+        self._baseArmor += GAME.PLAYER_LEVEL_ARMOR
+        self._baseBody += GAME.PLAYER_LEVEL_BODY
+        self._baseMind += GAME.PLAYER_LEVEL_MIND
          
     def gainXp(self, amount):
         """
@@ -854,13 +871,13 @@ class Player(Character):
         If the interaction requires further handling in the GUI and interaction object will be returned.
         Returns None if the interaction can be completed without further GUI activities.
         """
-        #check if there are items on the current tile to interact with
+        # check if there are items on the current tile to interact with
         for a in self.tile.actors:
             if isinstance(a, Item):
                 self.pickUpItem(a)
                 return None
-            if isinstance(a, Container):
-                interaction = Interaction(CONSTANTS.INTERACTION_CONTAINER, self, a)
+            if isinstance(a, Chest):
+                interaction = Interaction(INTERACTION.CONTAINER, self, a)
                 return interaction
 
     def tryUseItem(self, item, target=None):
@@ -981,9 +998,9 @@ class Monster(Character):
 
     @property
     def modifiers(self):
-        '''
+        """
         Modifiers linked to this item
-        '''
+        """
         return self._modifiers
     @property
     def modifierBonusAccuracy(self):
@@ -1095,16 +1112,16 @@ class Item(Actor):
     
     @property
     def stackSize(self):
-        '''
+        """
         Stack size getter
-        '''
+        """
         return self.json["stackSize"]
     
     @stackSize.setter
     def stackSize(self,newStackSize):
-        '''
+        """
         Stack size setter
-        '''
+        """
         self.json["stackSize"] = newStackSize
 
     @property
@@ -1128,9 +1145,9 @@ class Item(Actor):
 
     @property
     def baseItem(self):
-        '''
+        """
         Base item for this item.
-        '''
+        """
         return self._baseItem
     @property
     def baseAccuracy(self):
@@ -1153,9 +1170,9 @@ class Item(Actor):
 
     @property
     def modifiers(self):
-        '''
+        """
         Modifiers linked to this item
-        '''
+        """
         return self._modifiers
     @property
     def modifierBonusAccuracy(self):
@@ -1230,11 +1247,11 @@ class Item(Actor):
 
     @owner.setter
     def owner(self, owner):
-        '''
+        """
         Set the owner of this item to the given owner (Character).
         :param owner: Character that owns this item
         :return: None
-        '''
+        """
         self._owner = owner
 
     def registerWithLevel(self, level):

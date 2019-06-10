@@ -66,25 +66,27 @@ EARTH = 4
 ELEC = 5
 MIND = 6
 
-# Enumerator to describe available interaction types
-INTERACTION_CONTAINER = 0
-
-# Game system parameters
-GAME_XP_FACTOR = 1.3
-GAME_XP_EQUAL_CHALLENGE = 50
-GAME_XP_BASE = 300
-
-GAME_PLAYER_LEVEL_ACCURACY = 10
-GAME_PLAYER_LEVEL_DODGE = 10
-GAME_PLAYER_LEVEL_DAMAGE = 10
-GAME_PLAYER_LEVEL_ARMOR = 10
-GAME_PLAYER_LEVEL_BODY = 10
-GAME_PLAYER_LEVEL_MIND = 10
-
-GAME_PLAYER_HITPOINT_FACTOR = 5
-
+# TODO: refactor into class below
 GAME_MESSAGE_BUFFER_LENGTH = 5
 GAME_EVENT_QUEUE_SIZE = 20
+GAME_XP_EQUAL_CHALLENGE = 50
+
+
+class GAME:
+    """
+    Game system parameters
+    """
+    XP_BASE = 300
+    XP_FACTOR = 1.3
+
+    PLAYER_LEVEL_ACCURACY = 10
+    PLAYER_LEVEL_DODGE = 10
+    PLAYER_LEVEL_DAMAGE = 10
+    PLAYER_LEVEL_ARMOR = 10
+    PLAYER_LEVEL_BODY = 10
+    PLAYER_LEVEL_MIND = 10
+
+    PLAYER_HITPOINT_FACTOR = 5
 
 
 class SPRITES:
@@ -103,6 +105,9 @@ class SPRITES:
     ZOMBIE = "zombie"
 
     PLAYER = "player"
+
+    CHEST_CLOSED = "chest_closed"
+    CHEST_OPEN = "chest_open"
 
     POTION_HEAL_SMALL = "healingvial"
     POTION_HEAL_MEDIUM = "healingpotion"
@@ -146,3 +151,10 @@ class TEXTURES:
     T_WEST = 23
     T_EAST = 24
     T_NORTH = 25
+
+
+class INTERACTION:
+    """
+    Enumerator to describe available interaction types
+    """
+    CONTAINER = 0

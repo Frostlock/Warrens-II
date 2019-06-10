@@ -24,6 +24,7 @@ def initialize_sprites(tile_size):
     items = load_sprite_sheet('./Assets/items.bin', 16, 0, int(0.75 * tile_size))
 
     # Link loaded sprites to Game sprite ID's
+    # Portals
     sprite_dict[SPRITES.STAIRS_DOWN] = tiles[9][1]
     sprite_dict[SPRITES.STAIRS_UP] = tiles[8][1]
     sprite_dict[SPRITES.PORTAL] = creatures[1][1]
@@ -36,6 +37,12 @@ def initialize_sprites(tile_size):
 
     # Player
     sprite_dict[SPRITES.PLAYER] = creatures[2][3]
+
+    # Chest
+    sprite_dict[SPRITES.CHEST_CLOSED] = tiles[32][4]
+    sprite_dict[SPRITES.CHEST_OPEN] = tiles[35][4]
+    # sprite_dict[SPRITES.CHEST_CLOSED] = tiles[39][5]
+    # sprite_dict[SPRITES.CHEST_OPEN] = tiles[40][5]
 
     # Items
     sprite_dict[SPRITES.POTION_HEAL_SMALL] = items[3][1]
