@@ -352,7 +352,7 @@ class Chest(Actor):
         # Chest specific
         self.json["locked"] = locked
         self.char = "H"
-        self.json["color"] = (45, 45, 45)
+        self.json["color"] = (145, 145, 145)
         self.sprite_id = SPRITES.CHEST_CLOSED
         self.name = "Chest"
         self.flavorText = "A sturdy wooden chest."

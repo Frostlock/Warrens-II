@@ -698,8 +698,12 @@ class GuiApplication(object):
                     self.render_popup(tile)
                     # Show tile detail pop up
                     if self.surface_popup is not None:
-                        pygame.draw.rect(self.surface_viewport, COLORS.SELECTION, tile_rect)
-                        self.surface_viewport.blit(self.surface_popup, (tile_rect.x - self.surface_popup.get_width(), tile_rect.y))
+                        if tile_rect.x >= int(self.surface_viewport.get_size()[0] / 2):
+                            popup_x = tile_rect.x - self.surface_popup.get_width()
+                        else:
+                            popup_x = tile_rect.x + tile_rect.w
+                        popup_y = tile_rect.y
+                        self.surface_viewport.blit(self.surface_popup, (popup_x, popup_y))
 
             # Show level name in top left hand
             if self.render_level is not None:
