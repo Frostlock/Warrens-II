@@ -1,6 +1,6 @@
 """
 This module contains utility functions related to the GUI graphics.
-Loading and managing tilesets, textures and sprites.
+Loading sprite sheets and managing tile sets, textures and sprites.
 """
 import pygame
 from WarrensGame.CONSTANTS import SPRITES
@@ -76,14 +76,11 @@ def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
     image = pygame.image.load(sprite_sheet_path).convert()
     image.set_colorkey((0, 0, 0))  # Black is set as transparent color
 
+    # Calculate required zoom factor
     factor = tile_size / size
-    # image_width, image_height = image.get_size()
-    # image = pygame.transform.scale(image, (int(image_width * factor), int(image_height * factor)))
 
-    # Create subsurfaces for all the tiles
+    # Create sub surfaces for all the tiles
     image_width, image_height = image.get_size()
-    # size = int(size * factor)
-    # margin = int(margin * factor)
     max_x = int(image_width // (size + margin))
     max_y = int(image_height // (size + margin))
     tiles = []
@@ -95,6 +92,7 @@ def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
             rect = (x, y, size, size)
             sprite_surface = image.subsurface(rect)
             sprite_width, sprite_height = sprite_surface.get_size()
+            # Resize the sprite to fit the required tile_size
             sprite_surface = pygame.transform.scale(sprite_surface, (int(sprite_width * factor), int(sprite_height * factor)))
             row.append(sprite_surface)
         tiles.append(row)
@@ -103,11 +101,11 @@ def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
 
 def get_tile_surface(tile_id, tile_set):
     """
-    Look up a tile in the tileset array.
+    Look up a tile in the tile set array.
     If successful match: Return a pygame surface
     If not: Return None 
-    :param tile_id: Column nbr in the tilesheet
-    :param tile_set: Row nbr in the tilesheet
+    :param tile_id: Column nbr in the sprite sheet
+    :param tile_set: Row nbr in the sprite sheet
     :return: Pygame surface containing the tile or None
     """
     if tile_id is None:
