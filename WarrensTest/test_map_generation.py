@@ -115,7 +115,7 @@ class TestMapGeneration(unittest.TestCase):
         with self.assertRaises(GameError):
             DungeonMap(2, 2)
         with self.assertRaises(GameError):
-            DungeonMap(CONSTANTS.DUNGEON_ROOM_MAX_SIZE-1, CONSTANTS.DUNGEON_ROOM_MAX_SIZE-1)
+            DungeonMap(CONSTANTS.DUNGEON.ROOM_MAX_SIZE-1, CONSTANTS.DUNGEON.ROOM_MAX_SIZE-1)
 
 
 if __name__ == "__main__":
