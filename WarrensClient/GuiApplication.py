@@ -64,7 +64,7 @@ class GuiApplication(object):
         """
         Helper surface for the mouse over popup.
         """
-        return self._surfaceDetails
+        return self._surface_popup
 
     @property
     def fullscreen(self):
@@ -222,7 +222,7 @@ class GuiApplication(object):
         self._render_viewport_h  = self.surface_viewport.get_height()
 
         # Clear helper surface for pop up window
-        self._surfaceDetails = None
+        self._surface_popup = None
         
         # Initialize rendering parameters
         self.render_init()
@@ -445,25 +445,25 @@ class GuiApplication(object):
         if self.game_server is None:
             return
         # Initialize maximum tile size for current viewport
-        vpWidth = self.surface_viewport.get_size()[0]
-        vpHeight = self.surface_viewport.get_size()[1]
-        maxTileWidth = int(vpWidth // self.render_level.map["width"])
-        maxTileHeight = int(vpHeight // self.render_level.map["height"])
-        if maxTileWidth < maxTileHeight:
-            maxTileSize = maxTileWidth
+        vp_width = self.surface_viewport.get_size()[0]
+        vp_height = self.surface_viewport.get_size()[1]
+        max_tile_width = int(vp_width // self.render_level.map["width"])
+        max_tile_height = int(vp_height // self.render_level.map["height"])
+        if max_tile_width < max_tile_height:
+            max_tile_size = max_tile_width
         else:
-            maxTileSize = maxTileHeight
+            max_tile_size = max_tile_height
         # Take into account the zoom factor
-        self._tileSize = int(maxTileSize * self.zoom_factor)
+        self._tileSize = int(max_tile_size * self.zoom_factor)
 
         # Initialize render font, a size of roughly 1,5 times the tileSize gives good results
         self._viewPortFont = pygame.font.Font(None, int(1.5 * self.tile_size))
 
         # Determine max coords for view port location
-        totalWidth = self.render_level.map["width"] * self.tile_size
-        totalHeight = self.render_level.map["height"] * self.tile_size
-        self._renderViewPortMaxX = totalWidth - self._render_viewport_w
-        self._renderViewPortMaxY = totalHeight - self._render_viewport_h
+        total_width = self.render_level.map["width"] * self.tile_size
+        total_height = self.render_level.map["height"] * self.tile_size
+        self._renderViewPortMaxX = total_width - self._render_viewport_w
+        self._renderViewPortMaxY = total_height - self._render_viewport_h
         if self._renderViewPortMaxX < 0:
             self._renderViewPortMaxX = 0
         if self._renderViewPortMaxY < 0:
@@ -471,7 +471,7 @@ class GuiApplication(object):
 
         # Prepare fog of war tile (used as overlay later)
         self.fogOfWarTileSurface = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA)
-        self.fogOfWarTileSurface.fill((0, 0, 0, 180))
+        self.fogOfWarTileSurface.fill((0, 0, 0, 140))
 
         # Re-initialize sprites
         initialize_sprites(self.tile_size)
@@ -721,8 +721,7 @@ class GuiApplication(object):
         width, height = 2*x_off_set, 2*y_off_set
         for myActor in tile.actors:
             if myActor.inView:
-                my_text = myActor.char + ': ' + myActor.name + \
-                          ' (' + str(myActor.currentHitPoints) + '/' + str(myActor.maxHitPoints) + ')'
+                my_text = myActor.name + ' (' + str(myActor.currentHitPoints) + '/' + str(myActor.maxHitPoints) + ')'
                 text_img = panel_font.render(my_text, 1, myActor.color)
                 components.append((x_off_set, y_off_set, text_img))
                 height += text_img.get_height()
@@ -731,10 +730,10 @@ class GuiApplication(object):
                 if needed_width > width: width = needed_width
         if len(components) == 0:
             # nothing to see here (empty tile)
-            self._surfaceDetails = None
+            self._surface_popup = None
         else:
             # create the new surface
-            self._surfaceDetails = pygame.Surface((width, height), pygame.SRCALPHA)
+            self._surface_popup = pygame.Surface((width, height), pygame.SRCALPHA)
             self.surface_popup.fill((0, 0, 0, 125))
             # border in selection color
             pygame.draw.rect(self.surface_popup, COLORS.POPUP_BORDER, (0, 0, width, height), 3)
