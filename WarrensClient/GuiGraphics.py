@@ -75,14 +75,15 @@ def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
     # Load tile textures and resize to match up with current tile_size (tiles.bin has 24 by 24 tiles)
     image = pygame.image.load(sprite_sheet_path).convert()
     image.set_colorkey((0, 0, 0))  # Black is set as transparent color
+
     factor = tile_size / size
-    image_width, image_height = image.get_size()
-    image = pygame.transform.scale(image, (int(image_width * factor), int(image_height * factor)))
+    # image_width, image_height = image.get_size()
+    # image = pygame.transform.scale(image, (int(image_width * factor), int(image_height * factor)))
 
     # Create subsurfaces for all the tiles
     image_width, image_height = image.get_size()
-    size = int(size * factor)
-    margin = int(margin * factor)
+    # size = int(size * factor)
+    # margin = int(margin * factor)
     max_x = int(image_width // (size + margin))
     max_y = int(image_height // (size + margin))
     tiles = []
@@ -92,7 +93,10 @@ def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
             x = tile_x * (size + margin)
             y = tile_y * (size + margin)
             rect = (x, y, size, size)
-            row.append(image.subsurface(rect))
+            sprite_surface = image.subsurface(rect)
+            sprite_width, sprite_height = sprite_surface.get_size()
+            sprite_surface = pygame.transform.scale(sprite_surface, (int(sprite_width * factor), int(sprite_height * factor)))
+            row.append(sprite_surface)
         tiles.append(row)
     return tiles
 

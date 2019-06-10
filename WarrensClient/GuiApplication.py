@@ -878,7 +878,7 @@ class GuiApplication(object):
         Zoom in while centering on current mouse position.
         """
         # zoom in limit
-        if self.zoom_factor == MAX_ZOOM_FACTOR:
+        if self.zoom_factor * ZOOM_MULTIPLIER >= MAX_ZOOM_FACTOR:
             return
         zoom_multiplier = ZOOM_MULTIPLIER
         # change zoom factor
@@ -902,7 +902,7 @@ class GuiApplication(object):
         Zoom out while centering on current mouse position.
         """
         # zoom out limit
-        if self.zoom_factor == 1:
+        if self.zoom_factor / ZOOM_MULTIPLIER < 1:
             return
         zoom_multiplier = ZOOM_MULTIPLIER
         # change zoom factor
@@ -927,13 +927,13 @@ class GuiApplication(object):
         """
         zooms in on provided tile
         """
-        if self.zoom_factor == MAX_ZOOM_FACTOR: return
-        zoom_multiplier = ZOOM_MULTIPLIER
+        if self.zoom_factor * ZOOM_MULTIPLIER >= MAX_ZOOM_FACTOR:
+            return
         # change zoom factor
-        self._zoomFactor = self.zoom_factor * zoom_multiplier
+        self._zoomFactor = self.zoom_factor * ZOOM_MULTIPLIER
         # set new viewport coords
-        self._renderViewPortX = tile.x * self.tile_size * zoom_multiplier - (self._render_viewport_w / 2)
-        self._renderViewPortY = tile.y * self.tile_size * zoom_multiplier - (self._render_viewport_h / 2)
+        self._renderViewPortX = tile.x * self.tile_size * ZOOM_MULTIPLIER - (self._render_viewport_w / 2)
+        self._renderViewPortY = tile.y * self.tile_size * ZOOM_MULTIPLIER - (self._render_viewport_h / 2)
         # Reset rendering parameters
         self.render_init()
         
