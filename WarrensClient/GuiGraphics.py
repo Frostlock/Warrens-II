@@ -83,20 +83,20 @@ def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
     image_width, image_height = image.get_size()
     max_x = int(image_width // (size + margin))
     max_y = int(image_height // (size + margin))
-    tiles = []
+    sprites = []
     for tile_x in range(0, max_x):
         row = []
         for tile_y in range(0, max_y):
             x = tile_x * (size + margin)
             y = tile_y * (size + margin)
             rect = (x, y, size, size)
-            sprite_surface = image.subsurface(rect)
-            sprite_width, sprite_height = sprite_surface.get_size()
+            sprite = image.subsurface(rect)
+            sprite_width, sprite_height = sprite.get_size()
             # Resize the sprite to fit the required tile_size
-            sprite_surface = pygame.transform.scale(sprite_surface, (int(sprite_width * factor), int(sprite_height * factor)))
-            row.append(sprite_surface)
-        tiles.append(row)
-    return tiles
+            sprite = pygame.transform.scale(sprite, (int(sprite_width * factor), int(sprite_height * factor)))
+            row.append(sprite)
+        sprites.append(row)
+    return sprites
 
 
 def get_tile_surface(tile_id, tile_set):
