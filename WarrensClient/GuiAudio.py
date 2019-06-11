@@ -25,11 +25,10 @@ def init_audio():
             for file in f:
                 if file[-4:].upper() == ".WAV":
                     sounds[file[:-4].upper()] = pygame.mixer.Sound(os.path.join(r, file))
-                    print(file[:-4])
 
 
 def start_music():
-    pygame.mixer.music.play(loops=-1)
+    pygame.mixer.music.play()
 
 
 def play_sound(sound_name):
