@@ -1,6 +1,12 @@
 """
 This module contains utility functions related to the GUI graphics.
 Loading sprite sheets and managing tile sets, textures and sprites.
+
+Note:
+    Libpng is strict on ICC profiles, if you get an error like the following
+    libpng warning: iCCP: known incorrect sRGB profile
+    You can get rid of it by cleaning up the ICC block in the image. For example with ImageMagick's convert:
+    convert png:items.bin png:items.bin
 """
 import pygame
 from WarrensGame.CONSTANTS import SPRITES
