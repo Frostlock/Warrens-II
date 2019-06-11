@@ -6,3 +6,6 @@ non_git/
 
 # exclude pycharm project information
 .idea/
+
+# exclude python virtual environment
+venv/
