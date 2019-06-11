@@ -9,6 +9,7 @@ several of these methods where copied from
 import sys
 import pygame
 from WarrensClient.GuiCONSTANTS import COLORS, SPLASH_IMAGE
+from WarrensClient.GuiAudio import play_sound
 from WarrensGame import CONSTANTS
 from itertools import chain
 
@@ -27,26 +28,25 @@ def init_fonts():
     FONT_NORMAL = pygame.font.Font(None, 20)  
 
 
-def truncline(text, font, maxwidth):
-        real = len(text)
-        stext = text
-        l = font.size(text)[0]
-        cut = 0
-        a = 0
-        done = 1
-        old = None
-        while l > maxwidth:
-            a = a+1
-            n = text.rsplit(None, a)[0]
-            if stext == n:
-                cut += 1
-                stext = n[:-cut]
-            else:
-                stext = n
-            l = font.size(stext)[0]
-            real = len(stext)
-            done = 0
-        return real, done, stext
+def truncline(text, font, max_width):
+    real = len(text)
+    stext = text
+    line_width = font.size(text)[0]
+    cut = 0
+    a = 0
+    done = 1
+    while line_width > max_width:
+        a = a+1
+        n = text.rsplit(None, a)[0]
+        if stext == n:
+            cut += 1
+            stext = n[:-cut]
+        else:
+            stext = n
+        line_width = font.size(stext)[0]
+        real = len(stext)
+        done = 0
+    return real, done, stext
 
 
 def wrapline(text, font, maxwidth):
@@ -134,6 +134,7 @@ def show_message(target, header, message):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+                    play_sound("click")
                     loop = False
             
     # Restore original screen
@@ -205,6 +206,7 @@ def show_menu(target, header, items, shortcut_keys=None):
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
+                play_sound("click")
                 if event.key == pygame.K_ESCAPE:
                     loop = False
                 elif event.unicode in shortcut_keys:
@@ -243,6 +245,7 @@ def show_splash(target):
             if e.type == pygame.QUIT:
                 sys.exit()
             if e.type == pygame.KEYDOWN:
+                play_sound("click")
                 loop = False
 
     # Restore original screen

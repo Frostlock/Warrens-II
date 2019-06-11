@@ -52,3 +52,9 @@ class COLORS:
     # VAR_ELEC = (45, 45, 100)
     MIND = (50, 185, 250)
     # VAR_MIND = (25, 25, 25)
+
+
+class AUDIO:
+    ENABLED = True
+    MUSIC = "./WarrensClient/music/west-winds.ogg"
+    SFX = "./WarrensClient/sfx"
