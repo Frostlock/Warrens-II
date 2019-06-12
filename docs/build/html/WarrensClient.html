@@ -1,0 +1,647 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>WarrensClient package &#8212; Warrens-II 1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="warrensclient-package">
+<h1>WarrensClient package<a class="headerlink" href="#warrensclient-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-WarrensClient.GuiApplication">
+<span id="warrensclient-guiapplication-module"></span><h2>WarrensClient.GuiApplication module<a class="headerlink" href="#module-WarrensClient.GuiApplication" title="Permalink to this headline">¶</a></h2>
+<p>This module contains a Pygame GUI implementation for the game.
+The GUI connects to a game server (local or remote) it can visualize and interact with the game.</p>
+<dl class="class">
+<dt id="WarrensClient.GuiApplication.GuiApplication">
+<em class="property">class </em><code class="sig-prename descclassname">WarrensClient.GuiApplication.</code><code class="sig-name descname">GuiApplication</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>PyGame implementation for dungeonGame GUI</p>
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.animation_flash_tiles">
+<code class="sig-name descname">animation_flash_tiles</code><span class="sig-paren">(</span><em class="sig-param">color</em>, <em class="sig-param">tiles</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.animation_flash_tiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Animation of a colored flash effect on specified tiles
+color is an RGB tuple</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.animation_nova">
+<code class="sig-name descname">animation_nova</code><span class="sig-paren">(</span><em class="sig-param">color</em>, <em class="sig-param">center_tile</em>, <em class="sig-param">radius=0</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.animation_nova" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.calculate_display_coords">
+<code class="sig-name descname">calculate_display_coords</code><span class="sig-paren">(</span><em class="sig-param">tile</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.calculate_display_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculates the (x, y) coordinate of the given tile on the surfaceDisplay</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.calculate_viewport_coords">
+<code class="sig-name descname">calculate_viewport_coords</code><span class="sig-paren">(</span><em class="sig-param">tile</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.calculate_viewport_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculates the (x, y) coordinate of the given tile on the surfaceViewPort</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.connect_to_server">
+<code class="sig-name descname">connect_to_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.connect_to_server" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.debug_maps">
+<code class="sig-name descname">debug_maps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.debug_maps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.dragging_mode">
+<em class="property">property </em><code class="sig-name descname">dragging_mode</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.dragging_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns boolean indicating whether a mouse dragging operation is going on at the moment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.drop_inventory">
+<code class="sig-name descname">drop_inventory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.drop_inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Present inventory to player with possibility to drop an item.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_dragging_start">
+<code class="sig-name descname">event_dragging_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_dragging_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_dragging_stop">
+<code class="sig-name descname">event_dragging_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_dragging_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_mouse_movement">
+<code class="sig-name descname">event_mouse_movement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_mouse_movement" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_targeting_acquire">
+<code class="sig-name descname">event_targeting_acquire</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_targeting_acquire" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_targeting_start">
+<code class="sig-name descname">event_targeting_start</code><span class="sig-paren">(</span><em class="sig-param">item</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_targeting_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_targeting_stop">
+<code class="sig-name descname">event_targeting_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_targeting_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_zoom_in">
+<code class="sig-name descname">event_zoom_in</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_zoom_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zoom in while centering on current mouse position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_zoom_on_tile">
+<code class="sig-name descname">event_zoom_on_tile</code><span class="sig-paren">(</span><em class="sig-param">tile</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_zoom_on_tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>zooms in on provided tile</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.event_zoom_out">
+<code class="sig-name descname">event_zoom_out</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.event_zoom_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zoom out while centering on current mouse position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.fullscreen">
+<em class="property">property </em><code class="sig-name descname">fullscreen</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.fullscreen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether or not we are in fullscreen mode.
+:return: Boolean</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.game">
+<em class="property">property </em><code class="sig-name descname">game</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.game" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current game.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.game_server">
+<em class="property">property </em><code class="sig-name descname">game_server</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.game_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property to access the game server.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.handle_event">
+<code class="sig-name descname">handle_event</code><span class="sig-paren">(</span><em class="sig-param">event</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.handle_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle a single Pygame event.
+:param event: Pygame event
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.main_in_game_loop">
+<code class="sig-name descname">main_in_game_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.main_in_game_loop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.new_game">
+<code class="sig-name descname">new_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.new_game" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.render_init">
+<code class="sig-name descname">render_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.render_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes rendering parameters
+Prepares and scales tileset.
+This function should be called on window resizing, loading a new level and changing zoom levels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.render_level">
+<em class="property">property </em><code class="sig-name descname">render_level</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.render_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the Level object that is currently rendered in the viewport.
+This property helps identifying if the currentLevel in the game changes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.render_panel">
+<code class="sig-name descname">render_panel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.render_panel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the content of the Panel surface</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.render_popup">
+<code class="sig-name descname">render_popup</code><span class="sig-paren">(</span><em class="sig-param">tile</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.render_popup" title="Permalink to this definition">¶</a></dt>
+<dd><p>renders a surface containing info details for the given tile</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.render_screen">
+<code class="sig-name descname">render_screen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.render_screen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main render function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.render_viewport">
+<code class="sig-name descname">render_viewport</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.render_viewport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the content of the Viewport surface.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.setup_surfaces">
+<code class="sig-name descname">setup_surfaces</code><span class="sig-paren">(</span><em class="sig-param">display_size</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.setup_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the pygame display and creates properly sized surfaces for the game interface
+:param display_size: (width, height)
+:return: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.show_effects">
+<code class="sig-name descname">show_effects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.show_effects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.show_game_menu">
+<code class="sig-name descname">show_game_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.show_game_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.show_main_menu">
+<code class="sig-name descname">show_main_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.show_main_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.show_splash_screen">
+<code class="sig-name descname">show_splash_screen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.show_splash_screen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the splash screen followed by and unending loop of the main menu.
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.stop_game">
+<code class="sig-name descname">stop_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.stop_game" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.surface_display">
+<em class="property">property </em><code class="sig-name descname">surface_display</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.surface_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main PyGame surface, the actual surface of the window that is visible to the user.
+This is the main surface, the other surfaces are helper surfaces which are blitted on top of this one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.surface_panel">
+<em class="property">property </em><code class="sig-name descname">surface_panel</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.surface_panel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper surface for the panel at the bottom of the screen.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.surface_popup">
+<em class="property">property </em><code class="sig-name descname">surface_popup</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.surface_popup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper surface for the mouse over popup.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.surface_viewport">
+<em class="property">property </em><code class="sig-name descname">surface_viewport</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.surface_viewport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper surface that contains the current view of the map.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.targeting_mode">
+<em class="property">property </em><code class="sig-name descname">targeting_mode</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.targeting_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns boolean indicating whether GUI is in targeting mode or not.
+Targeting mode is used when the game requires the GUI to target something.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.tile_size">
+<em class="property">property </em><code class="sig-name descname">tile_size</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.tile_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tile size in pixels</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.use_inventory">
+<code class="sig-name descname">use_inventory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.use_inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Present inventory to player with possibility to use an item.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.viewport_font">
+<em class="property">property </em><code class="sig-name descname">viewport_font</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.viewport_font" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pygame font used to draw actors in the viewport surface</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensClient.GuiApplication.GuiApplication.zoom_factor">
+<em class="property">property </em><code class="sig-name descname">zoom_factor</code><a class="headerlink" href="#WarrensClient.GuiApplication.GuiApplication.zoom_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum zoom factor is 1, in this case the entire map is shown on the screen.
+Higher zoom factors will zoom in on specific areas of the map.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-WarrensClient.GuiAudio">
+<span id="warrensclient-guiaudio-module"></span><h2>WarrensClient.GuiAudio module<a class="headerlink" href="#module-WarrensClient.GuiAudio" title="Permalink to this headline">¶</a></h2>
+<p>This module contains utility functions related to the GUI audio.
+Loading music &amp; sound effects and managing playback.</p>
+<dl class="function">
+<dt id="WarrensClient.GuiAudio.init_audio">
+<code class="sig-prename descclassname">WarrensClient.GuiAudio.</code><code class="sig-name descname">init_audio</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiAudio.init_audio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiAudio.play_sound">
+<code class="sig-prename descclassname">WarrensClient.GuiAudio.</code><code class="sig-name descname">play_sound</code><span class="sig-paren">(</span><em class="sig-param">sound_name</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiAudio.play_sound" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiAudio.start_music">
+<code class="sig-prename descclassname">WarrensClient.GuiAudio.</code><code class="sig-name descname">start_music</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiAudio.start_music" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-WarrensClient.GuiCONSTANTS">
+<span id="warrensclient-guiconstants-module"></span><h2>WarrensClient.GuiCONSTANTS module<a class="headerlink" href="#module-WarrensClient.GuiCONSTANTS" title="Permalink to this headline">¶</a></h2>
+<p>This module contains all the constants that are used by the application.
+Note that all constants are CAPITAL letters only for clarity.</p>
+<dl class="class">
+<dt id="WarrensClient.GuiCONSTANTS.AUDIO">
+<em class="property">class </em><code class="sig-prename descclassname">WarrensClient.GuiCONSTANTS.</code><code class="sig-name descname">AUDIO</code><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.AUDIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.AUDIO.ENABLED">
+<code class="sig-name descname">ENABLED</code><em class="property"> = True</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.AUDIO.ENABLED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.AUDIO.MUSIC">
+<code class="sig-name descname">MUSIC</code><em class="property"> = './WarrensClient/music/west-winds.ogg'</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.AUDIO.MUSIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.AUDIO.SFX">
+<code class="sig-name descname">SFX</code><em class="property"> = './WarrensClient/sfx'</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.AUDIO.SFX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS">
+<em class="property">class </em><code class="sig-prename descclassname">WarrensClient.GuiCONSTANTS.</code><code class="sig-name descname">COLORS</code><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.AIR">
+<code class="sig-name descname">AIR</code><em class="property"> = (130, 204, 255)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.AIR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.BAR_HEALTH">
+<code class="sig-name descname">BAR_HEALTH</code><em class="property"> = (150, 0, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.BAR_HEALTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.BAR_HEALTH_BG">
+<code class="sig-name descname">BAR_HEALTH_BG</code><em class="property"> = (25, 0, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.BAR_HEALTH_BG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.BAR_XP">
+<code class="sig-name descname">BAR_XP</code><em class="property"> = (0, 150, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.BAR_XP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.BAR_XP_BG">
+<code class="sig-name descname">BAR_XP_BG</code><em class="property"> = (0, 25, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.BAR_XP_BG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.EARTH">
+<code class="sig-name descname">EARTH</code><em class="property"> = (95, 60, 50)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.EARTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.ELEC">
+<code class="sig-name descname">ELEC</code><em class="property"> = (140, 170, 205)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.ELEC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.FIRE">
+<code class="sig-name descname">FIRE</code><em class="property"> = (240, 83, 50)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.FIRE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.HEAL">
+<code class="sig-name descname">HEAL</code><em class="property"> = (220, 10, 10)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.HEAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.MENU_BG">
+<code class="sig-name descname">MENU_BG</code><em class="property"> = (0, 0, 0, 125)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.MENU_BG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.MENU_FONT">
+<code class="sig-name descname">MENU_FONT</code><em class="property"> = (191, 191, 191)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.MENU_FONT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.MIND">
+<code class="sig-name descname">MIND</code><em class="property"> = (50, 185, 250)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.MIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.PANEL_BG">
+<code class="sig-name descname">PANEL_BG</code><em class="property"> = (0, 0, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.PANEL_BG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.PANEL_FONT">
+<code class="sig-name descname">PANEL_FONT</code><em class="property"> = (191, 191, 191)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.PANEL_FONT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.POPUP_BORDER">
+<code class="sig-name descname">POPUP_BORDER</code><em class="property"> = (243, 0, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.POPUP_BORDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.SELECTION">
+<code class="sig-name descname">SELECTION</code><em class="property"> = (255, 0, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.SELECTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.VP_UNEXPLORED">
+<code class="sig-name descname">VP_UNEXPLORED</code><em class="property"> = (0, 0, 0)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.VP_UNEXPLORED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensClient.GuiCONSTANTS.COLORS.WATER">
+<code class="sig-name descname">WATER</code><em class="property"> = (30, 144, 255)</em><a class="headerlink" href="#WarrensClient.GuiCONSTANTS.COLORS.WATER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-WarrensClient.GuiGraphics">
+<span id="warrensclient-guigraphics-module"></span><h2>WarrensClient.GuiGraphics module<a class="headerlink" href="#module-WarrensClient.GuiGraphics" title="Permalink to this headline">¶</a></h2>
+<p>This module contains utility functions related to the GUI graphics.
+Loading sprite sheets and managing tile sets, textures and sprites.</p>
+<dl class="simple">
+<dt>Note:</dt><dd><p>Libpng is strict on ICC profiles, if you get an error like the following
+libpng warning: iCCP: known incorrect sRGB profile
+You can get rid of it by cleaning up the ICC block in the image. For example with ImageMagick’s convert:
+convert png:items.bin png:items.bin</p>
+</dd>
+</dl>
+<dl class="function">
+<dt id="WarrensClient.GuiGraphics.get_sprite_surface">
+<code class="sig-prename descclassname">WarrensClient.GuiGraphics.</code><code class="sig-name descname">get_sprite_surface</code><span class="sig-paren">(</span><em class="sig-param">sprite_id</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiGraphics.get_sprite_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to match a sprite to the provided sprite id.
+If successful match: Return a pygame surface
+If not: Return None
+:param sprite_id: numerical ID from the Game CONSTANTS
+:return: Pygame surface containing the sprite or None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiGraphics.get_tile_surface">
+<code class="sig-prename descclassname">WarrensClient.GuiGraphics.</code><code class="sig-name descname">get_tile_surface</code><span class="sig-paren">(</span><em class="sig-param">tile_id</em>, <em class="sig-param">tile_set</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiGraphics.get_tile_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up a tile in the tile set array.
+If successful match: Return a pygame surface
+If not: Return None 
+:param tile_id: Column nbr in the sprite sheet
+:param tile_set: Row nbr in the sprite sheet
+:return: Pygame surface containing the tile or None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiGraphics.initialize_sprites">
+<code class="sig-prename descclassname">WarrensClient.GuiGraphics.</code><code class="sig-name descname">initialize_sprites</code><span class="sig-paren">(</span><em class="sig-param">tile_size</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiGraphics.initialize_sprites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the sprites. This function will load the sprite sheets and resize them to fit current tile_size
+:param tile_size: current game tile size
+:return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiGraphics.load_sprite_sheet">
+<code class="sig-prename descclassname">WarrensClient.GuiGraphics.</code><code class="sig-name descname">load_sprite_sheet</code><span class="sig-paren">(</span><em class="sig-param">sprite_sheet_path</em>, <em class="sig-param">size</em>, <em class="sig-param">margin</em>, <em class="sig-param">tile_size</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiGraphics.load_sprite_sheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a sprite sheet from an image. The sprite sheet will be carved up into its sprites.
+The sprites will be resized to the requested tile_size. This function returns a two dimensional array with
+a pygame surface for every sprite.
+:param sprite_sheet_path: Path to the image file containing the sprite sheet
+:param size: size of the sprite on input image
+:param margin: possible margin between sprites on the input image
+:param tile_size: Requested tile size for the sprites.
+:return: Two dimensional array with pygame Surfaces containing the individual sprites.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-WarrensClient.GuiUtilities">
+<span id="warrensclient-guiutilities-module"></span><h2>WarrensClient.GuiUtilities module<a class="headerlink" href="#module-WarrensClient.GuiUtilities" title="Permalink to this headline">¶</a></h2>
+<p>This module contains utility functions to show Messages and Menu’s on a pygame surface.</p>
+<p>Credit:
+several of these methods where copied from 
+# <a class="reference external" href="https://www.pygame.org/wiki/TextWrapping?parent=CookBook">https://www.pygame.org/wiki/TextWrapping?parent=CookBook</a></p>
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.get_element_color">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">get_element_color</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.get_element_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function looks up the preferred color for the given element
+:param element: Element type
+:return: RGB color tuple</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.init_fonts">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">init_fonts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.init_fonts" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will initialize the fonts</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.show_menu">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">show_menu</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">header</em>, <em class="sig-param">items</em>, <em class="sig-param">shortcut_keys=None</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.show_menu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows a menu with multiple items centered on the target surface.
+If shortcut keys are not specified numeric keys will be generated.
+Returns integer index of selected item or None
+:param target: Target surface on top of which the menu will be displayed
+:param header: Header text for the menu
+:param items: Items to be shown in the menu
+:param shortcut_keys: Shortcut keys to be used for menu selection
+:return: Integer index of selected item or None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.show_message">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">show_message</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">header</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.show_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will show a pop up message in the middle of the target surface.
+It waits for the user to acknowledge the message by hitting enter or escape.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.show_message_controls">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">show_message_controls</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.show_message_controls" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.show_splash">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">show_splash</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.show_splash" title="Permalink to this definition">¶</a></dt>
+<dd><p>shows a splash screen and waits for user keypress.
+:param target: Surface on which to show the splash screen
+:return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.truncline">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">truncline</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">font</em>, <em class="sig-param">max_width</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.truncline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.wrap_multi_line">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">wrap_multi_line</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">font</em>, <em class="sig-param">maxwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.wrap_multi_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns text taking new lines into account.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="WarrensClient.GuiUtilities.wrapline">
+<code class="sig-prename descclassname">WarrensClient.GuiUtilities.</code><code class="sig-name descname">wrapline</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">font</em>, <em class="sig-param">maxwidth</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensClient.GuiUtilities.wrapline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-WarrensClient">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-WarrensClient" title="Permalink to this headline">¶</a></h2>
+<p>This module contains a GUI implementation.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Warrens-II</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Frostlock.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/WarrensClient.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
