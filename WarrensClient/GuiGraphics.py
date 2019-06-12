@@ -15,6 +15,11 @@ sprite_dict = {}
 tiles = None
 
 
+#TODO: Fix missing tileset assignments below.
+#WARNING: Unknown hash 433, can't assign tileset ID.
+#WARNING: Unknown hash 283, can't assign tileset ID.
+
+
 def initialize_sprites(tile_size):
     """
     Initialize the sprites. This function will load the sprite sheets and resize them to fit current tile_size
