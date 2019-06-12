@@ -43,6 +43,33 @@ class Inventory(object):
         self._items = []
         self._owner = actor
 
+    def __str__(self):
+        """
+        String representation of this inventory.
+        :return: Multiline String
+        """
+        out = ""
+        for item in self.items:
+            if item.stackable:
+                out += item.name + " (stack: " + str(item.stackSize) + ") "
+            else:
+                out += item.name + " "
+        return out
+
+    @property
+    def item_count(self):
+        """
+        Calculate the number of items in this inventory. This will include the stacksize in the totals.
+        :return: Integer
+        """
+        count = 0
+        for item in self.items:
+            if item.stackable:
+                count += item.stackSize
+            else:
+                count += 1
+        return count
+
     def add(self, item):
         """
         Add an item to this inventory
@@ -68,13 +95,21 @@ class Inventory(object):
 
     def remove(self, item):
         """
-        Remove an item from this inventory
+        Remove one item from this inventory.
+        If the item is not found nothing is done.
+        If there is a stack of the item, one occurence will be removed from the stack.
         :param item: item to be removed
         :return: None
         """
-        self.items.remove(item)
-        del self.json[id(item)]
-        # TODO: Bug here, stacks get removed completely, need to remove based on find and stacksize.
+        found_item = self.find(item)
+        if found_item is not None:
+            if found_item.stackable and found_item.stackSize > 1:
+                # leave the item but reduce the stack size
+                found_item.stackSize -= 1
+            else:
+                # remove the item
+                self.items.remove(found_item)
+                del self.json[id(found_item)]
 
     def find(self, item):
         """
