@@ -86,6 +86,12 @@ class TestGame(unittest.TestCase):
         damage_item = self.game.itemLibrary.create_item("fireball")
         an_item = random.choice(self.game.itemLibrary.items)
         damage_item.applyTo(an_item)
+        # TODO: this sometimes raises an error:
+        # File ".Warrens-II\WarrensGame\Actors.py", line 1419, in applyTo
+        # self.effect.applyTo(target)
+        # File ".\Warrens-II\WarrensGame\Effects.py", line 266, in applyTo
+        # raise GameError("Can't find a tile for Actor " + str(target))
+        # WarrensGame.Utilities.GameError: "Can't find a tile for Actor scroll of confuse <WarrensGame.Actors.Consumable object at 0x053B10F0>"
 
         # Damage a tile
         damage_item = self.game.itemLibrary.create_item("fireball")
