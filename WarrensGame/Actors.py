@@ -94,14 +94,14 @@ class Actor(object):
         return self._tile
 
     @tile.setter
-    def tile(self, targetTile):
+    def tile(self, target_tile):
         """
         Moves this actor to the targetTile.
         """
         if self._tile is not None:
             self._tile.removeActor(self)
-        self._tile = targetTile
-        targetTile.addActor(self)
+        self._tile = target_tile
+        target_tile.addActor(self)
 
     @property
     def level(self):
@@ -1331,8 +1331,8 @@ class Consumable(Item):
     def effect(self):
         """
         The effect that this consumable can generate.
+        Note that this property will be None while the effect is not triggered.
         """
-        #TODO: Modifier to take into account?
         return self._effect
 
     @property
@@ -1340,8 +1340,18 @@ class Consumable(Item):
         """
         Boolean that indicates whether this consumable is targeted.
         """
-        #TODO: Modifier of non targeted to targeted?
-        return self.baseItem.targeted
+        if self.target is None:
+            return False
+        else:
+            return True
+
+    @property
+    def target(self):
+        """
+        Target type for this consumable
+        :return: TARGET enumerator or None
+        """
+        return self.baseItem.target
 
     @property
     def effectRadius(self):

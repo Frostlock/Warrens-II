@@ -12,7 +12,7 @@ from WarrensClient.CONFIG import *
 from WarrensClient.Graphics import initialize_sprites, get_tile_surface, get_sprite_surface
 from WarrensClient import Audio
 from WarrensGame.Actors import Character
-from WarrensGame.Effects import EffectTarget
+from WarrensGame.Effects import TARGET
 from WarrensGame.Game import Game
 from WarrensGame.GameServer import LocalServer, RemoteServer
 
@@ -689,10 +689,10 @@ class Application(object):
                 # Highlight selected tile with a cross hair
                 if self._renderSelectedTile is not None:
                     tile = self._renderSelectedTile
-                    vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2
-                    vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2
+                    vp_x = int((tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2)
+                    vp_y = int((tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2)
                     tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-                    pygame.draw.circle(self.surface_viewport, COLORS.SELECTION, (vp_x, vp_y), self.tile_size / 2, 2)
+                    pygame.draw.circle(self.surface_viewport, COLORS.SELECTION, (vp_x, vp_y), int(self.tile_size / 2), 2)
             else:
                 # Highlight selected tile
                 if self._renderSelectedTile is not None:
@@ -750,13 +750,13 @@ class Application(object):
     def show_effects(self):
         for effect in self.game.activeEffects:
             # Current implementation looks at effect targetType to decide on a visualization option.
-            if effect.targetType == EffectTarget.SELF:
+            if effect.targetType == TARGET.SELF:
                 # flash tile on which actor is standing
                 self.animation_flash_tiles(GuiUtilities.get_element_color(effect.effectElement), effect.tiles)
-            elif effect.targetType == EffectTarget.CHARACTER:
+            elif effect.targetType == TARGET.ACTOR:
                 # circle around the target character
-                self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.tiles[0], effect.effectRadius)
-            elif effect.targetType == EffectTarget.TILE:
+                self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.actors[0].tile, effect.effectRadius)
+            elif effect.targetType == TARGET.TILE:
                 # circular blast around centerTile
                 self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.centerTile, effect.effectRadius)
             else:
@@ -983,7 +983,9 @@ class Application(object):
     def event_targeting_start(self, item):
         self._targetingMode = True
         self._targetingItem = item
-        self._targetType = item.effect.targetType
+        print(item)
+        self._targetType = item.target
+        print (item.target)
     
     def event_targeting_acquire(self):
         # targeted tile is currently selected
@@ -991,9 +993,9 @@ class Application(object):
         # hack to avoid lingering selection tile
         self._renderSelectedTile = None
         # find target based on targetType
-        if self._targetType == EffectTarget.TILE:
+        if self._targetType == TARGET.TILE:
             my_target = target_tile
-        elif self._targetType == EffectTarget.CHARACTER:
+        elif self._targetType == TARGET.ACTOR:
             # Currently this finds all ACTORS, not limited to CHARACTERS
             # find target actor on tile
             if len(target_tile.actors) == 0:

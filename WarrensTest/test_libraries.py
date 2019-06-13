@@ -6,6 +6,7 @@ import unittest
 from WarrensGame.Actors import Monster, Consumable, Equipment
 from WarrensGame.Libraries import MonsterLibrary, ItemLibrary
 from WarrensGame.Utilities import GameError
+from WarrensGame.Effects import TARGET
 
 
 class TestMonsterLibrary(unittest.TestCase):
@@ -90,7 +91,7 @@ class TestItemLibrary(unittest.TestCase):
         """
         unittest framework will run this once before all the tests in this class.
         """
-        pass
+        cls.legal_targets = TARGET.legal_targets
 
     @classmethod
     def tearDownClass(cls):
@@ -126,6 +127,8 @@ class TestItemLibrary(unittest.TestCase):
                 self.assertIsInstance(item, Equipment)
             else:
                 raise AssertionError("Unknown item type: " + str(item.type))
+            if item.targeted:
+                self.assertIn(item.target, self.legal_targets)
         # Ensure items are being tracked correctly
         self.assertEqual(len(items), len(self.ilib.items))
 

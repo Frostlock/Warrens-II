@@ -1,22 +1,22 @@
-key,type,position,name,modifierLevel,effect,targeted,effectRadius,effectHitDie,effectDuration,effectElement,bonusAccuracy,bonusDodge,bonusDamage,bonusArmor,bonusBody,bonusMind
-minor,Consumable,prefix,Minor,-1,None,False,0,-1,0,None,0,0,0,0,0,0
-major,Consumable,prefix,Major,1,None,False,0,1,0,None,0,0,0,0,0,0
-exquisite,Consumable,prefix,Exquisite,3,None,False,0,2,1,None,0,0,0,0,0,0
-tiny,Equipment,prefix,Tiny,-2,None,False,0,0,0,None,0,0,-2,0,0,0
-small,Equipment,prefix,Small,-1,None,False,0,0,0,None,0,0,-1,0,0,0
-large,Equipment,prefix,Large,1,None,False,0,0,0,None,0,0,1,0,0,0
-huge,Equipment,prefix,Huge,2,None,False,0,0,0,None,0,0,2,1,0,0
-giant,Equipment,prefix,Giant,3,None,False,0,0,0,None,0,0,3,2,0,0
-ruined,Equipment,prefix,Ruined,-1,None,False,0,0,0,None,0,0,-1,0,0,0
-ancient,Equipment,prefix,Ancient,0,None,False,0,0,0,None,0,0,0,0,0,0
-soldier,Equipment,suffix,of the soldier,1,None,False,0,0,0,None,1,1,1,1,0,0
-slaying,Equipment,suffix,of slaying,3,None,False,0,0,0,None,-2,0,3,-2,0,0
-minorProtection,Equipment,suffix,of minor protection,1,None,False,0,0,0,None,1,0,0,1,0,0
-protection,Equipment,suffix,of protection,2,None,False,0,0,0,None,2,0,0,2,0,0
-majorProtection,Equipment,suffix,of major protection,3,None,False,0,0,0,None,3,0,0,3,0,0
-bear,Equipment,suffix,of the bear,1,None,False,0,0,0,None,0,0,0,1,1,0
-elephant,Equipment,suffix,of the elephant,2,None,False,0,0,0,None,0,0,0,2,2,0
-whale,Equipment,suffix,of the whale,3,None,False,0,0,0,None,0,0,0,3,3,0
-double,Consumable,prefix,double,2,None,False,0,0,"2
+key,type,position,name,modifierLevel,effect,target,effectRadius,effectHitDie,effectDuration,effectElement,bonusAccuracy,bonusDodge,bonusDamage,bonusArmor,bonusBody,bonusMind
+minor,Consumable,prefix,Minor,-1,None,None,0,-1,0,None,0,0,0,0,0,0
+major,Consumable,prefix,Major,1,None,None,0,1,0,None,0,0,0,0,0,0
+exquisite,Consumable,prefix,Exquisite,3,None,None,0,2,1,None,0,0,0,0,0,0
+tiny,Equipment,prefix,Tiny,-2,None,None,0,0,0,None,0,0,-2,0,0,0
+small,Equipment,prefix,Small,-1,None,None,0,0,0,None,0,0,-1,0,0,0
+large,Equipment,prefix,Large,1,None,None,0,0,0,None,0,0,1,0,0,0
+huge,Equipment,prefix,Huge,2,None,None,0,0,0,None,0,0,2,1,0,0
+giant,Equipment,prefix,Giant,3,None,None,0,0,0,None,0,0,3,2,0,0
+ruined,Equipment,prefix,Ruined,-1,None,None,0,0,0,None,0,0,-1,0,0,0
+ancient,Equipment,prefix,Ancient,0,None,None,0,0,0,None,0,0,0,0,0,0
+soldier,Equipment,suffix,of the soldier,1,None,None,0,0,0,None,1,1,1,1,0,0
+slaying,Equipment,suffix,of slaying,3,None,None,0,0,0,None,-2,0,3,-2,0,0
+minorProtection,Equipment,suffix,of minor protection,1,None,None,0,0,0,None,1,0,0,1,0,0
+protection,Equipment,suffix,of protection,2,None,None,0,0,0,None,2,0,0,2,0,0
+majorProtection,Equipment,suffix,of major protection,3,None,None,0,0,0,None,3,0,0,3,0,0
+bear,Equipment,suffix,of the bear,1,None,None,0,0,0,None,0,0,0,1,1,0
+elephant,Equipment,suffix,of the elephant,2,None,None,0,0,0,None,0,0,0,2,2,0
+whale,Equipment,suffix,of the whale,3,None,None,0,0,0,None,0,0,0,3,3,0
+double,Consumable,prefix,double,2,None,None,0,0,"2
 ",None,0,0,0,0,0,0
-triple,Consumable,prefix,triple,4,None,False,0,0,3,None,0,0,0,0,0,0
+triple,Consumable,prefix,triple,4,None,None,0,0,3,None,0,0,0,0,0,0

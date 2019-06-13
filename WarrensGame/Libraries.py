@@ -1,9 +1,8 @@
+import csv
+import random
 from WarrensGame.Actors import *
 from WarrensGame.CONSTANTS import *
 from WarrensGame.Utilities import GameError
-
-import csv
-import random
 
 
 class BaseMonster(dict):
@@ -318,7 +317,9 @@ class ItemLibrary:
             for itemDataDict in reader:
                 # Ensure incoming data from csv file is interpreted correctly
                 itemDataDict["itemLevel"] = int(itemDataDict["itemLevel"])
-                itemDataDict["targeted"] = eval(itemDataDict["targeted"])
+                itemDataDict["target"] = itemDataDict["target"]
+                if itemDataDict["target"] == "None":
+                    itemDataDict["target"] = None
                 itemDataDict["effectRadius"] = int(itemDataDict["effectRadius"])
                 itemDataDict["effectDuration"] = int(itemDataDict["effectDuration"])
                 itemDataDict["effectElement"] = eval(itemDataDict["effectElement"])
@@ -343,7 +344,9 @@ class ItemLibrary:
             for modifierDataDict in reader:
                 # Ensure incoming data from csv file is interpreted correctly
                 modifierDataDict["modifierLevel"] = int(modifierDataDict["modifierLevel"])
-                modifierDataDict["targeted"] = eval(modifierDataDict["targeted"])
+                modifierDataDict["target"] = modifierDataDict["target"]
+                if modifierDataDict["target"] == "None":
+                    modifierDataDict["target"] = None
                 modifierDataDict["effectRadius"] = int(modifierDataDict["effectRadius"])
                 modifierDataDict["effectHitDie"] = int(modifierDataDict["effectHitDie"])
                 modifierDataDict["effectDuration"] = int(modifierDataDict["effectDuration"])
