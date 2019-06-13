@@ -463,7 +463,7 @@ class Application(object):
         self._tileSize = int(max_tile_size * self.zoom_factor)
 
         # Initialize render font, a size of roughly 1,5 times the tileSize gives good results
-        self._viewPortFont = pygame.font.Font(None, int(1.5 * self.tile_size))
+        self._viewPortFont = GuiUtilities.viewport_font(self.tile_size)
 
         # Determine max coords for view port location
         total_width = self.render_level.map["width"] * self.tile_size

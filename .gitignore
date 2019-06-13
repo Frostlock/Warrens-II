@@ -9,3 +9,6 @@ non_git/
 
 # exclude python virtual environment
 venv/
+
+# exclude pyinstaller build directory
+pyinstaller/build/
