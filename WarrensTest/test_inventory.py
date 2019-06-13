@@ -71,7 +71,6 @@ class TestInventory(unittest.TestCase):
         for lvl in range(1, 15):
             item = self.item_library.get_random_item(lvl)
             i.add(item)
-        print(i)
 
         while i.item_count > 0:
             before = len(i.items)
