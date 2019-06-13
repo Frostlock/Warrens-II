@@ -5,7 +5,7 @@ Loading music & sound effects and managing playback.
 import pygame
 import os
 
-from WarrensClient.GuiCONSTANTS import AUDIO
+from WarrensClient.CONFIG import AUDIO
 
 sounds = None
 

@@ -8,9 +8,9 @@ import time
 import pygame
 from pygame.locals import *
 from WarrensClient import GuiUtilities
-from WarrensClient.GuiCONSTANTS import *
-from WarrensClient.GuiGraphics import initialize_sprites, get_tile_surface, get_sprite_surface
-from WarrensClient import GuiAudio
+from WarrensClient.CONFIG import *
+from WarrensClient.Graphics import initialize_sprites, get_tile_surface, get_sprite_surface
+from WarrensClient import Audio
 from WarrensGame.Actors import Character
 from WarrensGame.Effects import EffectTarget
 from WarrensGame.Game import Game
@@ -33,7 +33,7 @@ MOVEMENT_KEYS = {
         }
 
 
-class GuiApplication(object):
+class Application(object):
     """
     PyGame implementation for dungeonGame GUI
     """
@@ -168,7 +168,7 @@ class GuiApplication(object):
         GuiUtilities.init_fonts()
 
         # Initialize audio
-        GuiAudio.init_audio()
+        Audio.init_audio()
         
         # Initialize properties
         self.render_level = None
@@ -237,7 +237,7 @@ class GuiApplication(object):
         Show the splash screen followed by and unending loop of the main menu.
         :return:
         """
-        GuiAudio.start_music()
+        Audio.start_music()
         GuiUtilities.show_splash(self.surface_display)
         while True:
             self.show_main_menu()

@@ -10,7 +10,7 @@ Note:
 """
 import pygame
 from WarrensGame.CONSTANTS import SPRITES
-from WarrensClient.GuiCONSTANTS import GRAPHICS
+from WarrensClient.CONFIG import GRAPHICS
 
 sprite_dict = {}
 tiles = None

@@ -1,11 +1,11 @@
-from WarrensClient.GuiApplication import GuiApplication
+from WarrensClient.Application import Application
 
 
 def Launch():
     """
     Launches the GuiApplication with splashscreen.
     """
-    _application = GuiApplication()
+    _application = Application()
     _application.show_splash_screen()
 
 

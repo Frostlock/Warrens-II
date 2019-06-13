@@ -8,8 +8,8 @@ several of these methods where copied from
 """
 import sys
 import pygame
-from WarrensClient.GuiCONSTANTS import COLORS, GRAPHICS
-from WarrensClient.GuiAudio import play_sound
+from WarrensClient.CONFIG import COLORS, GRAPHICS
+from WarrensClient.Audio import play_sound
 from WarrensGame import CONSTANTS
 from itertools import chain
 
