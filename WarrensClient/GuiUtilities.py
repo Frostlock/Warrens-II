@@ -8,7 +8,7 @@ several of these methods where copied from
 """
 import sys
 import pygame
-from WarrensClient.GuiCONSTANTS import COLORS, SPLASH_IMAGE
+from WarrensClient.GuiCONSTANTS import COLORS, GRAPHICS
 from WarrensClient.GuiAudio import play_sound
 from WarrensGame import CONSTANTS
 from itertools import chain
@@ -231,7 +231,7 @@ def show_splash(target):
     original_surface = target.copy()
 
     # Show the splash screen
-    splash = pygame.image.load(SPLASH_IMAGE)
+    splash = pygame.image.load(GRAPHICS.SPLASH)
     target.fill((0, 0, 0))
     x = int(target.get_width() / 2 - splash.get_width() / 2)
     y = int(target.get_height() / 2 - splash.get_height() / 2)

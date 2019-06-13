@@ -10,6 +10,7 @@ Note:
 """
 import pygame
 from WarrensGame.CONSTANTS import SPRITES
+from WarrensClient.GuiCONSTANTS import GRAPHICS
 
 sprite_dict = {}
 tiles = None
@@ -30,9 +31,9 @@ def initialize_sprites(tile_size):
     global tiles
 
     # Load sprite sheets
-    tiles = load_sprite_sheet('./Assets/tiles.bin', 24, 0, tile_size)
-    creatures = load_sprite_sheet('./Assets/creatures.bin', 24, 0, tile_size)
-    items = load_sprite_sheet('./Assets/items.bin', 16, 0, int(0.75 * tile_size))
+    tiles = load_sprite_sheet(GRAPHICS.TILES, 24, 0, tile_size)
+    creatures = load_sprite_sheet(GRAPHICS.CREATURES, 24, 0, tile_size)
+    items = load_sprite_sheet(GRAPHICS.ITEMS, 16, 0, int(0.75 * tile_size))
 
     # Link loaded sprites to Game sprite ID's
     # Portals
