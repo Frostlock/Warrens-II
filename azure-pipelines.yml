@@ -29,5 +29,7 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
+    pwd
+    ls
     python -m unittest discover ./WarrrensTest
   displayName: 'unittest discovery'
