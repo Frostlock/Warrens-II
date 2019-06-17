@@ -17,17 +17,15 @@ FONT_PANEL = None
 FONT_HEADER = None
 FONT_NORMAL = None
 
-# TODO: Include a font asset instead of relying on the standard system font
 
 def init_fonts():
     """
     This function will initialize the fonts
     """
     global FONT_PANEL, FONT_HEADER, FONT_NORMAL
-    available_fonts = pygame.font.get_fonts()
-    FONT_PANEL = pygame.font.SysFont(available_fonts[0], 20)
-    FONT_HEADER = pygame.font.SysFont(available_fonts[0], 30)
-    FONT_NORMAL = pygame.font.SysFont(available_fonts[0], 20)
+    FONT_PANEL = pygame.font.Font(GRAPHICS.FONT, 14)
+    FONT_HEADER = pygame.font.Font(GRAPHICS.FONT, 28)
+    FONT_NORMAL = pygame.font.Font(GRAPHICS.FONT, 14)
 
 
 def viewport_font(tile_size):
@@ -36,8 +34,7 @@ def viewport_font(tile_size):
     :param tile_size: integer
     :return: pygame font
     """
-    available_fonts = pygame.font.get_fonts()
-    return pygame.font.SysFont(available_fonts[0], int(1.5 * tile_size))
+    return pygame.font.Font(GRAPHICS.FONT, tile_size)
 
 
 def truncline(text, font, max_width):

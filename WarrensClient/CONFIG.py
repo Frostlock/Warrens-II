@@ -13,6 +13,7 @@ SHOW_PERFORMANCE_LOGGING = False
 
 
 class GRAPHICS:
+    FONT = "./WarrensClient/assets/CommodorePixeled.ttf"
     SPLASH = "./WarrensClient/assets/TitleScreen.png"
     CREATURES = "./WarrensClient/assets/creatures.bin"
     ITEMS = "./WarrensClient/assets/items.bin"
