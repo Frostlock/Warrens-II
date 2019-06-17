@@ -1,10 +1,6 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+# Azure pipeline definition
 
-trigger:
-- master
+trigger: none
 
 # Run across multiple platform and python version combinations
 strategy:
@@ -42,10 +38,17 @@ pool:
   vmImage: $(imageName)
 
 steps:
+# Initialize python
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
+
+# Extra dependencies for Mac and Python 3.5
+- script: |
+    brew install sdl sdl_image sdl_mixer sdl_ttf portmidi
+  condition: and(eq(variables['imageName'], 'macos-10.13'), eq(variables['python.version'], '3.5'))
+  displayName: 'Extra dependencies for Mac and Python 3.5'
 
 # Install PIP and dependencies
 - script: |
