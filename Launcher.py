@@ -3,7 +3,7 @@ import os
 import sys
 
 
-def Launch():
+def launch():
     """
     Launches the GuiApplication with splashscreen.
     """
@@ -12,7 +12,7 @@ def Launch():
 
 
 if __name__ == '__main__':
-    # The following ensures that the working directory is set correctly when executing through a pyinstaller generated package.
+    # The following ensures that working directory is set correctly when executing in a pyinstaller generated package.
     if getattr(sys, 'frozen', False):
         os.chdir(sys._MEIPASS)
-    Launch()
+    launch()
