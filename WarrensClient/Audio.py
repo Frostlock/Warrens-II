@@ -37,4 +37,3 @@ def play_sound(sound_name):
         sounds[sound_name.upper()].play()
     except KeyError:
         print("Warning: Failed to play sound " + sound_name)
-
