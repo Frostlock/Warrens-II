@@ -87,6 +87,11 @@ class TestGame(unittest.TestCase):
         an_item = random.choice(self.game.itemLibrary.items)
         damage_item.applyTo(an_item)
         # TODO: this sometimes raises an error:
+        # Suspected reason for failure
+        # The random.choice picks an item that is not in an inventory and not on a tile.
+        # Potentially one of the items generated during this test :)
+        # This leads to the test failing.
+        # Error:
         # File ".Warrens-II\WarrensGame\Actors.py", line 1419, in applyTo
         # self.effect.applyTo(target)
         # File ".\Warrens-II\WarrensGame\Effects.py", line 266, in applyTo
