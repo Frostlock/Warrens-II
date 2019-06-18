@@ -255,12 +255,14 @@ class DamageEffect(Effect):
             self._centerTile = target
         elif isinstance(target, WarrensGame.Actors.Actor):
             # Actor could be located on a tile
-            if not target.tile is None:
+            if target.tile is not None:
                 self._centerTile = target.tile
             # Actor could be located in an inventory
-            elif not target.owner is None:
+            elif target.owner is not None:
                 self._centerTile = target.owner.tile
             else:
+                # Unable to find a tile for the target
+                # This is an illegal situation since we expect the target to be either on a tile or in an inventory
                 raise GameError("Can't find a tile for Actor " + str(target))
         else:
             raise GameError("Can not apply damage effect to " + str(target))

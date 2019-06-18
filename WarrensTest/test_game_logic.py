@@ -51,21 +51,25 @@ class TestGame(unittest.TestCase):
 
         # Healing the player
         healing_item = self.game.itemLibrary.create_item("healingpotion")
+        self.game.player.addItem(healing_item)
         healing_item.applyTo(self.game.player)
 
         # Healing a monster
         healing_item = self.game.itemLibrary.create_item("healingpotion")
+        self.game.player.addItem(healing_item)
         a_monster = random.choice(self.game.monsterLibrary.monsters)
         healing_item.applyTo(a_monster)
 
         # Healing an item
         healing_item = self.game.itemLibrary.create_item("healingpotion")
+        self.game.player.addItem(healing_item)
         an_item = random.choice(self.game.itemLibrary.items)
         with self.assertRaises(GameError):
             healing_item.applyTo(an_item)
 
         # Healing a tile
         healing_item = self.game.itemLibrary.create_item("healingpotion")
+        self.game.player.addItem(healing_item)
         a_tile = self.game.currentLevel.map.getRandomTile()
         with self.assertRaises(GameError):
             healing_item.applyTo(a_tile)
@@ -75,36 +79,35 @@ class TestGame(unittest.TestCase):
 
         # Damage the player
         damage_item = self.game.itemLibrary.create_item("fireball")
+        self.game.player.addItem(damage_item)
         damage_item.applyTo(self.game.player)
 
         # Damage a monster
         damage_item = self.game.itemLibrary.create_item("fireball")
+        self.game.player.addItem(damage_item)
         a_monster = random.choice(self.game.monsterLibrary.monsters)
         damage_item.applyTo(a_monster)
 
         # Damage an item
         damage_item = self.game.itemLibrary.create_item("fireball")
+        self.game.player.addItem(damage_item)
         an_item = random.choice(self.game.itemLibrary.items)
         damage_item.applyTo(an_item)
-        # TODO: this sometimes raises an error:
-        # Suspected reason for failure
-        # The random.choice picks an item that is not in an inventory and not on a tile.
-        # Potentially one of the items generated during this test :)
-        # This leads to the test failing.
-        # Error:
-        # File ".Warrens-II\WarrensGame\Actors.py", line 1419, in applyTo
-        # self.effect.applyTo(target)
-        # File ".\Warrens-II\WarrensGame\Effects.py", line 266, in applyTo
-        # raise GameError("Can't find a tile for Actor " + str(target))
-        # WarrensGame.Utilities.GameError: "Can't find a tile for Actor scroll of confuse <WarrensGame.Actors.Consumable object at 0x053B10F0>"
+
+        # Damage self
+        damage_item = self.game.itemLibrary.create_item("fireball")
+        self.game.player.addItem(damage_item)
+        damage_item.applyTo(damage_item)
 
         # Damage a tile
         damage_item = self.game.itemLibrary.create_item("fireball")
+        self.game.player.addItem(damage_item)
         a_tile = self.game.currentLevel.map.getRandomTile()
         damage_item.applyTo(a_tile)
 
         # Damage a something that does not make sense
         damage_item = self.game.itemLibrary.create_item("fireball")
+        self.game.player.addItem(damage_item)
         with self.assertRaises(GameError):
             damage_item.applyTo(self.game)
 
@@ -113,28 +116,33 @@ class TestGame(unittest.TestCase):
 
         # Confuse the player
         confuse_item = self.game.itemLibrary.create_item("confuse")
+        self.game.player.addItem(confuse_item)
         with self.assertRaises(GameError):
             confuse_item.applyTo(self.game.player)
 
         # Confuse a monster
         confuse_item = self.game.itemLibrary.create_item("confuse")
+        self.game.player.addItem(confuse_item)
         a_monster = random.choice(self.game.monsterLibrary.monsters)
         confuse_item.applyTo(a_monster)
 
         # Confuse an item
         confuse_item = self.game.itemLibrary.create_item("confuse")
+        self.game.player.addItem(confuse_item)
         an_item = random.choice(self.game.itemLibrary.items)
         with self.assertRaises(GameError):
             confuse_item.applyTo(an_item)
         
         # Confuse a tile
         confuse_item = self.game.itemLibrary.create_item("confuse")
+        self.game.player.addItem(confuse_item)
         a_tile = self.game.currentLevel.map.getRandomTile()
         with self.assertRaises(GameError):
             confuse_item.applyTo(a_tile)
 
-        # Confuse a something that does not make sense
+        # Confuse something that does not make sense
         confuse_item = self.game.itemLibrary.create_item("confuse")
+        self.game.player.addItem(confuse_item)
         with self.assertRaises(GameError):
             confuse_item.applyTo(self.game)
 
