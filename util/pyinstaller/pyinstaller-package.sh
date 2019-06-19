@@ -10,9 +10,9 @@ pyinstaller --clean --noconfirm \
     --workpath="./build" \
     --specpath="./build" \
     --distpath="./../../dist" \
-    --add-data="../../../WarrensClient/assets/*:WarrensClient/assets" \
-    --add-data="../../../WarrensClient/music/*:WarrensClient/music" \
-    --add-data="../../../WarrensClient/sfx/*:WarrensClient/sfx" \
-    --add-data="../../../WarrensGame/*.csv:WarrensGame" \
+    --add-data="../../../src/WarrensClient/assets/*:WarrensClient/assets" \
+    --add-data="../../../src/WarrensClient/music/*:WarrensClient/music" \
+    --add-data="../../../src/WarrensClient/sfx/*:WarrensClient/sfx" \
+    --add-data="../../../src/WarrensGame/*.csv:WarrensGame" \
     --onefile \
-    ../../Warrens.py
+    ../../src/Warrens.py

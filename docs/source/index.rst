@@ -1,13 +1,13 @@
-.. Warrens-II documentation master file, created by
-   sphinx-quickstart on Wed Jun 12 20:28:05 2019.
+.. Warrens II documentation master file, created by
+   sphinx-quickstart on Wed Jun 19 21:33:21 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Warrens-II documentation
-========================
+Welcome to Warrens II's documentation!
+======================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents:
 
 

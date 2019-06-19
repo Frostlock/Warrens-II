@@ -1,10 +1,10 @@
-Warrens-II
-==========
+src
+===
 
 .. toctree::
    :maxdepth: 4
 
-   Launcher
+   Warrens
    WarrensClient
    WarrensGame
    WarrensTest

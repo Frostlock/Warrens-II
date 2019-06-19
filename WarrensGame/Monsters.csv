@@ -1,7 +1,0 @@
-key,char,name,hitdie,xp,unique,challengeRating,accuracy,dodge,damage,armor,body,mind,color,flavor,killedBy,AI
-kobold,k,kobold,1d8,50,False,2,10,12,12,10,10,10,"[255,255,0]","This humanoid is about the size of a gnome or halfling. It has a scaly hide, a naked tail like that of a rat, and a doglike head with two small horns.",Kobold kills you!,BasicMonsterAI
-rat,r,rat,1d2,50,False,1,10,10,10,10,10,10,"[240,240,240]",A big rat scuttling around.,The rat crawls up your arm and rips out your throat.,BasicMonsterAI
-troll,T,troll,3d6,100,False,3,13,13,13,13,13,13,"[0,128,0]",,The trolls wicked grin is the last thing you see before everything goes dark.,BasicMonsterAI
-zombie,z,zombie,2d6,50,False,1,11,8,14,11,11,2,"[64,128,64]",It looks like a walking corpse that has seen better days.,Zombie grunts happily at your corpse and starts eating.,BasicMonsterAI
-zombie_master,Z,Zombie Master,4d8,1000,True,5,30,30,30,30,30,30,"[164,228,164]",This walking corpse appears to be a lot faster and agile than you would expect.,Zombie Masters kicks your corpse one final time and calmly walks away.,BasicMonsterAI
-zombie_bob,b,Bob the zombie,3d6,100,True,1,12,8,14,11,11,2,"[64,128,164]","This zombie is wearing a sign that reads:'Hi, my name is Bob'",Bob grunts.,BasicMonsterAI

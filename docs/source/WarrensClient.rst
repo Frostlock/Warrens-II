@@ -4,34 +4,34 @@ WarrensClient package
 Submodules
 ----------
 
-WarrensClient.GuiApplication module
------------------------------------
-
-.. automodule:: WarrensClient.GuiApplication
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-WarrensClient.GuiAudio module
------------------------------
-
-.. automodule:: WarrensClient.GuiAudio
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-WarrensClient.GuiCONSTANTS module
----------------------------------
-
-.. automodule:: WarrensClient.GuiCONSTANTS
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-WarrensClient.GuiGraphics module
+WarrensClient.Application module
 --------------------------------
 
-.. automodule:: WarrensClient.GuiGraphics
+.. automodule:: WarrensClient.Application
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+WarrensClient.Audio module
+--------------------------
+
+.. automodule:: WarrensClient.Audio
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+WarrensClient.CONFIG module
+---------------------------
+
+.. automodule:: WarrensClient.CONFIG
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+WarrensClient.Graphics module
+-----------------------------
+
+.. automodule:: WarrensClient.Graphics
    :members:
    :undoc-members:
    :show-inheritance:

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>WarrensGame package &#8212; Warrens-II 1 documentation</title>
+    <title>WarrensGame package &#8212; Warrens II  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -519,7 +519,8 @@ specific Effect subclass.</p>
 <dl class="method">
 <dt id="WarrensGame.Actors.Consumable.effect">
 <em class="property">property </em><code class="sig-name descname">effect</code><a class="headerlink" href="#WarrensGame.Actors.Consumable.effect" title="Permalink to this definition">¶</a></dt>
-<dd><p>The effect that this consumable can generate.</p>
+<dd><p>The effect that this consumable can generate.
+Note that this property will be None while the effect is not triggered.</p>
 </dd></dl>
 
 <dl class="method">
@@ -550,6 +551,13 @@ specific Effect subclass.</p>
 <dt id="WarrensGame.Actors.Consumable.isConsumed">
 <em class="property">property </em><code class="sig-name descname">isConsumed</code><a class="headerlink" href="#WarrensGame.Actors.Consumable.isConsumed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Boolean indicating if this stack of consumable has been consumed completely</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="WarrensGame.Actors.Consumable.target">
+<em class="property">property </em><code class="sig-name descname">target</code><a class="headerlink" href="#WarrensGame.Actors.Consumable.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Target type for this consumable
+:return: TARGET enumerator or None</p>
 </dd></dl>
 
 <dl class="method">
@@ -1443,10 +1451,12 @@ Currently there are no plans to store the game data in sqlite.</p>
 </div>
 <div class="section" id="module-WarrensGame.Effects">
 <span id="warrensgame-effects-module"></span><h2>WarrensGame.Effects module<a class="headerlink" href="#module-WarrensGame.Effects" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the implementation of game effects.
+This ranges from magical effects to melee effects and healing effectss.</p>
 <dl class="class">
 <dt id="WarrensGame.Effects.ConfuseEffect">
 <em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Effects.</code><code class="sig-name descname">ConfuseEffect</code><span class="sig-paren">(</span><em class="sig-param">source</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensGame.Effects.ConfuseEffect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.MagicEffect" title="WarrensGame.Effects.MagicEffect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.MagicEffect</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.Effect" title="WarrensGame.Effects.Effect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.Effect</span></code></a></p>
 <p>This class represents a damage nova effect</p>
 <dl class="method">
 <dt id="WarrensGame.Effects.ConfuseEffect.applyTo">
@@ -1468,7 +1478,7 @@ Currently there are no plans to store the game data in sqlite.</p>
 <dl class="class">
 <dt id="WarrensGame.Effects.DamageEffect">
 <em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Effects.</code><code class="sig-name descname">DamageEffect</code><span class="sig-paren">(</span><em class="sig-param">source</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensGame.Effects.DamageEffect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.MagicEffect" title="WarrensGame.Effects.MagicEffect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.MagicEffect</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.Effect" title="WarrensGame.Effects.Effect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.Effect</span></code></a></p>
 <p>This class implements a damage effect.
 It can be targeted, in which case it will damage all actors in a circular area.
 It can be untargeted, in which case it will function as a nova, damaging all actors in a circular area around the source, excluding the tile of the source</p>
@@ -1514,7 +1524,9 @@ All actors on the tiles in the area of effect will be damaged.
 <dt id="WarrensGame.Effects.Effect.applyTo">
 <code class="sig-name descname">applyTo</code><span class="sig-paren">(</span><em class="sig-param">target</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensGame.Effects.Effect.applyTo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies this effect to a target. The target can be several types of
-objects, it depends on the specific Effect subclass.</p>
+objects, it depends on the specific Effect subclass.
+:param target: Target object for the effect
+:return: None</p>
 </dd></dl>
 
 <dl class="method">
@@ -1546,13 +1558,6 @@ this effect is applied.</p>
 <dt id="WarrensGame.Effects.Effect.effectRadius">
 <em class="property">property </em><code class="sig-name descname">effectRadius</code><a class="headerlink" href="#WarrensGame.Effects.Effect.effectRadius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Radius of the effect size</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="WarrensGame.Effects.Effect.sceneObject">
-<em class="property">property </em><code class="sig-name descname">sceneObject</code><a class="headerlink" href="#WarrensGame.Effects.Effect.sceneObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property used to store the scene object that represents this actor in the GUI.
-:return: SceneObject</p>
 </dd></dl>
 
 <dl class="method">
@@ -1590,31 +1595,9 @@ Supposed to be overridden in subclass.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="WarrensGame.Effects.EffectTarget">
-<em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Effects.</code><code class="sig-name descname">EffectTarget</code><a class="headerlink" href="#WarrensGame.Effects.EffectTarget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Enumerator class to describe effect target types.</p>
-<dl class="attribute">
-<dt id="WarrensGame.Effects.EffectTarget.CHARACTER">
-<code class="sig-name descname">CHARACTER</code><em class="property"> = 3</em><a class="headerlink" href="#WarrensGame.Effects.EffectTarget.CHARACTER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="WarrensGame.Effects.EffectTarget.SELF">
-<code class="sig-name descname">SELF</code><em class="property"> = 0</em><a class="headerlink" href="#WarrensGame.Effects.EffectTarget.SELF" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="WarrensGame.Effects.EffectTarget.TILE">
-<code class="sig-name descname">TILE</code><em class="property"> = 4</em><a class="headerlink" href="#WarrensGame.Effects.EffectTarget.TILE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="WarrensGame.Effects.HealEffect">
 <em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Effects.</code><code class="sig-name descname">HealEffect</code><span class="sig-paren">(</span><em class="sig-param">source</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensGame.Effects.HealEffect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.MagicEffect" title="WarrensGame.Effects.MagicEffect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.MagicEffect</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.Effect" title="WarrensGame.Effects.Effect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.Effect</span></code></a></p>
 <p>This class represents a healing effect</p>
 <dl class="method">
 <dt id="WarrensGame.Effects.HealEffect.applyTo">
@@ -1634,19 +1617,39 @@ Supposed to be overridden in subclass.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="WarrensGame.Effects.MagicEffect">
-<em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Effects.</code><code class="sig-name descname">MagicEffect</code><span class="sig-paren">(</span><em class="sig-param">source</em><span class="sig-paren">)</span><a class="headerlink" href="#WarrensGame.Effects.MagicEffect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#WarrensGame.Effects.Effect" title="WarrensGame.Effects.Effect"><code class="xref py py-class docutils literal notranslate"><span class="pre">WarrensGame.Effects.Effect</span></code></a></p>
-<p>Base class for magic effects.</p>
+<dt id="WarrensGame.Effects.TARGET">
+<em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Effects.</code><code class="sig-name descname">TARGET</code><a class="headerlink" href="#WarrensGame.Effects.TARGET" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Enumerator class to describe effect target types.</p>
+<dl class="attribute">
+<dt id="WarrensGame.Effects.TARGET.ACTOR">
+<code class="sig-name descname">ACTOR</code><em class="property"> = 'actor'</em><a class="headerlink" href="#WarrensGame.Effects.TARGET.ACTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensGame.Effects.TARGET.SELF">
+<code class="sig-name descname">SELF</code><em class="property"> = 'self'</em><a class="headerlink" href="#WarrensGame.Effects.TARGET.SELF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensGame.Effects.TARGET.TILE">
+<code class="sig-name descname">TILE</code><em class="property"> = 'tile'</em><a class="headerlink" href="#WarrensGame.Effects.TARGET.TILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="WarrensGame.Effects.TARGET.legal_targets">
+<code class="sig-name descname">legal_targets</code><em class="property"> = ['self', 'actor', 'tile']</em><a class="headerlink" href="#WarrensGame.Effects.TARGET.legal_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-WarrensGame.Game">
 <span id="warrensgame-game-module"></span><h2>WarrensGame.Game module<a class="headerlink" href="#module-WarrensGame.Game" title="Permalink to this headline">¶</a></h2>
-<p>Created on Apr 13, 2014</p>
-<p>To understand the design, it is recommended to read
-the class design documentation on the wiki first!</p>
-<p>&#64;author: pi</p>
+<p>Created on Apr 13, 2014
+To understand the design, it is recommended to read
+the class design documentation on the wiki first!
+&#64;author: pi</p>
 <dl class="class">
 <dt id="WarrensGame.Game.Game">
 <em class="property">class </em><code class="sig-prename descclassname">WarrensGame.Game.</code><code class="sig-name descname">Game</code><a class="headerlink" href="#WarrensGame.Game.Game" title="Permalink to this definition">¶</a></dt>
@@ -3072,7 +3075,7 @@ Arguments</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">Warrens-II</a></h1>
+<h1 class="logo"><a href="index.html">Warrens II</a></h1>
 
 
 
