@@ -11,4 +11,4 @@ non_git/
 venv/
 
 # exclude pyinstaller build directory
-pyinstaller/build/
+util/pyinstaller/build/

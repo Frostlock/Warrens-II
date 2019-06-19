@@ -3,10 +3,14 @@ This file contains some notes on how PyInstaller is used.
 
 # Installation on Linux
 In theory this is enough
-`sudo pip install pyinstaller`
+`sudo pip3 install pyinstaller`
 
 I also needed
-`sudo pip install --upgrade setuptools`
+`sudo pip3 install --upgrade setuptools`
+
+If you have both python 2 and 3 running in parallell, make sure to use the pip3 version.
+I struggled with some packaging issues because pyinstaller was running under python 2 and 
+thus pulling in python 2 libraries.
 
 # Specifically for pygame
 I ran into this issue
