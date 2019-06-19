@@ -1,7 +1,7 @@
 # Azure pipeline definition
 
 trigger:
-  - Master
+- master
 
 # Run across multiple platform and python version combinations
 strategy:
