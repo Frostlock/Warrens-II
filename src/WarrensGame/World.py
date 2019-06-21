@@ -27,12 +27,13 @@ class World(object):
     #     """
     #     return self._state
 
-    # @property
-    # def player(self):
-    #     """
-    #     The player of the game
-    #     """
-    #     return self._player
+    @property
+    def players(self):
+        """
+        The players present in the world.
+        :return: Array of players
+        """
+        return self._players
 
     @property
     def levels(self):
@@ -41,20 +42,6 @@ class World(object):
         """
         return self._levels
 
-    # @property
-    # def current_level(self):
-    #     """
-    #     Returns the current level
-    #     """
-    #     return self._currentLevel
-    #
-    # @current_level.setter
-    # def current_level(self, level):
-    #     """
-    #     Sets the current level
-    #     """
-    #     self._currentLevel = level
-    #     Utilities.game_event("Level", level.json)
 
     # @property
     # def active_effects(self):
@@ -84,7 +71,7 @@ class World(object):
         :return : World object
         """
         # Initialize class variables
-        # self._player = None
+        self._players = []
         self._levels = []
         # self._currentLevel = None
         # self._activeEffects = []
@@ -115,6 +102,7 @@ class World(object):
     #
     #     # Create player
     #     self.reset_player()
+
     def _generate_world(self):
         """
         Private method that handles the procedural generation of the world.
@@ -132,13 +120,13 @@ class World(object):
         # Add some dungeon levels underneath the town
         # Dungeon levels are connected sequentially
         prev_level = None
-        for i in range(1, WORLD.DUNGEON_LEVELS):
+        for i in range(1, WORLD.DUNGEON_LEVELS + 1):
             prev_level = self.levels[i - 1]
             self._add_dungeon_level(i, [prev_level])
 
         # Add some cave levels
         # Caves are connected to town and to some other random level
-        for i in range(1, WORLD.CAVE_LEVELS):
+        for i in range(1, WORLD.CAVE_LEVELS + 1):
             random_level = random.choice(self.levels)
             self._add_cave_level(2, [town, random_level])
 
@@ -202,60 +190,61 @@ class World(object):
             # connect the two portals
             down_portal.connectTo(up_portal)
 
-    # def reset_player(self):
-    #     """
-    #     Reset the player for this game.
-    #     :return : None
-    #     """
-    #     self._player = Player()
-    #     first_level = self.levels[0]
-    #     self.player.moveToLevel(first_level, first_level.getRandomEmptyTile())
-    #
-    #     # Starting gear
-    #     potion = self.item_library.create_item("healingpotion")
-    #     self.player.addItem(potion)
-    #     potion = self.item_library.create_item("healingpotion")
-    #     self.player.addItem(potion)
-    #
-    #     # Quick start
-    #     if CONSTANTS.QUICK_START:
-    #         town = self.levels[0]
-    #         # Group portals together
-    #         i = 1
-    #         for portal in town.portals:
-    #             if portal.destinationPortal.level not in town.subLevels:
-    #                 tile = town.map.tiles[1][i]
-    #                 i += 1
-    #                 portal.moveToTile(tile)
-    #         # Move player close to portals
-    #         tile = town.map.tiles[2][1]
-    #         self.player.moveToTile(tile)
-    #         # Provide more starting gear
-    #         scroll = self.item_library.create_item("firenova", "double")
-    #         self.player.addItem(scroll)
-    #         scroll = self.item_library.create_item("tremor")
-    #         self.player.addItem(scroll)
-    #         potion = self.item_library.create_item("healingvial", "exquisite")
-    #         self.player.addItem(potion)
-    #         cloak = self.item_library.create_item("cloak")
-    #         self.player.addItem(cloak)
-    #         scroll = self.item_library.create_item("fireball")
-    #         self.player.addItem(scroll)
-    #         scroll = self.item_library.create_item("confuse")
-    #         self.player.addItem(scroll)
-    #         scroll = self.item_library.create_item("lightning")
-    #         self.player.addItem(scroll)
-    #         # Add a chest with extra gear
-    #         chest = Chest()
-    #         tile = town.map.tiles[2][2]
-    #         chest.moveToTile(tile)
-    #         for i in range(1, 15):
-    #             item = self.item_library.get_random_item(i)
-    #             chest.inventory.add(item)
-    #
-    #     first_level.map.updateFieldOfView(
-    #         self._player.tile.x, self._player.tile.y)
-    #
+    def new_player(self):
+        """
+        Adds a new player to the world.
+        :return : Player
+        """
+        player = Player()
+        self.players.append(player)
+        first_level = self.levels[0]
+        player.moveToLevel(first_level, first_level.getRandomEmptyTile())
+
+        # Starting gear
+        potion = self.item_library.create_item("healingpotion")
+        player.addItem(potion)
+        potion = self.item_library.create_item("healingpotion")
+        player.addItem(potion)
+
+        first_level.map.updateFieldOfView(player.tile.x, player.tile.y)
+
+        return Player
+        # # Quick start
+        # if CONSTANTS.QUICK_START:
+        #     town = self.levels[0]
+        #     # Group portals together
+        #     i = 1
+        #     for portal in town.portals:
+        #         if portal.destinationPortal.level not in town.subLevels:
+        #             tile = town.map.tiles[1][i]
+        #             i += 1
+        #             portal.moveToTile(tile)
+        #     # Move player close to portals
+        #     tile = town.map.tiles[2][1]
+        #     self.player.moveToTile(tile)
+        #     # Provide more starting gear
+        #     scroll = self.item_library.create_item("firenova", "double")
+        #     self.player.addItem(scroll)
+        #     scroll = self.item_library.create_item("tremor")
+        #     self.player.addItem(scroll)
+        #     potion = self.item_library.create_item("healingvial", "exquisite")
+        #     self.player.addItem(potion)
+        #     cloak = self.item_library.create_item("cloak")
+        #     self.player.addItem(cloak)
+        #     scroll = self.item_library.create_item("fireball")
+        #     self.player.addItem(scroll)
+        #     scroll = self.item_library.create_item("confuse")
+        #     self.player.addItem(scroll)
+        #     scroll = self.item_library.create_item("lightning")
+        #     self.player.addItem(scroll)
+        #     # Add a chest with extra gear
+        #     chest = Chest()
+        #     tile = town.map.tiles[2][2]
+        #     chest.moveToTile(tile)
+        #     for i in range(1, 15):
+        #         item = self.item_library.get_random_item(i)
+        #         chest.inventory.add(item)
+
     # def load_game(self, file_name):
     #     """
     #     Loads game state from a file
@@ -272,38 +261,39 @@ class World(object):
     #     """
     #     raise NotImplementedError("Can't save to " + file_name + ". Saving not implemented.")
 
-    def try_to_play_turn(self):
+    def tick(self):
         """
-        This function should be called regularly by the GUI. It waits for the player
-        to take action after which all AI controlled characters also get to act.
-        This is what moves the game forward.
-        :return : Boolean indicating if a turn was played
+        This function moves time forward in the world.
+        :return : None
         """
-        # Wait for player to take action
-        if self.player.actionTaken:
-            # Let characters take a turn
-            for c in self.current_level.characters:
-                assert isinstance(c, Character)
-                if c.state == Character.ACTIVE:
-                    c.takeTurn()
-                    c.actionTaken = False
-            # Update field of view
-            self.current_level.map.updateFieldOfView(self.player.tile.x, self.player.tile.y)
-            # Let effects tick
-            to_remove = []
-            for effect in self.active_effects:
-                if effect.effectDuration <= 0:
-                    to_remove.append(effect)
-                else:
-                    effect.tick()
-            # Remove effects that are no longer active
-            for effect in to_remove:
-                self.active_effects.remove(effect)
-            # Broadcast game state
-            self.broadcast_game_state()
-            return True
-        else:
-            return False
+        for level in self.levels:
+            level.tick()
+
+        # # Wait for player to take action
+        # if self.player.actionTaken:
+        #     # Let characters take a turn
+        #     for c in self.current_level.characters:
+        #         assert isinstance(c, Character)
+        #         if c.state == Character.ACTIVE:
+        #             c.takeTurn()
+        #             c.actionTaken = False
+        #     # Update field of view
+        #     self.current_level.map.updateFieldOfView(self.player.tile.x, self.player.tile.y)
+        #     # Let effects tick
+        #     to_remove = []
+        #     for effect in self.active_effects:
+        #         if effect.effectDuration <= 0:
+        #             to_remove.append(effect)
+        #         else:
+        #             effect.tick()
+        #     # Remove effects that are no longer active
+        #     for effect in to_remove:
+        #         self.active_effects.remove(effect)
+        #     # Broadcast game state
+        #     self.broadcast_game_state()
+        #     return True
+        # else:
+        #     return False
 
     # def broadcast_game_state(self):
     #     Utilities.game_event("Level", self.current_level.json)

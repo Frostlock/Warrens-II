@@ -2,7 +2,7 @@
 
 import random
 
-import WarrensGame.Actors as Actors
+from WarrensGame.Actors import Portal, Player, NPC
 import WarrensGame.CONSTANTS as CONSTANTS
 import WarrensGame.Maps as Maps
 
@@ -59,6 +59,23 @@ class Level(object):
         The characters on this level
         """
         return self._characters
+
+    @property
+    def players(self):
+        """
+        The players on this level
+        """
+        return [player for player in self.characters if isinstance(player, Player)]
+
+    @property
+    def player_present(self):
+        """
+        Property that indicates if a player is present on this level.
+        :return: Boolean
+        """
+        if len(self.players) > 0:
+            return True
+        return False
 
     @property
     def items(self):
@@ -140,6 +157,16 @@ class Level(object):
             return None
         return self.map.getRandomEmptyTile()
 
+    def tick(self):
+        """
+        Move time forward for this level.
+        :return: None
+        """
+        for level in self.subLevels:
+            level.tick()
+        for character in self.characters:
+            character.tick()
+
 
 class DungeonLevel(Level):
     """
@@ -154,13 +181,13 @@ class DungeonLevel(Level):
             difficulty - Difficulty of this level
             name - a textual name for this level
         """
-        #call constructor of super class
+        # call constructor of super class
         super(DungeonLevel, self).__init__(owner, difficulty, name)
-        #generate the map
+        # generate the map
         self.map = Maps.DungeonMap(CONSTANTS.MAP_WIDTH, CONSTANTS.MAP_HEIGHT, self)
-        #add some monsters
+        # add some monsters
         self._placeMonsters()
-        #add some items
+        # add some items
         self._placeItems()
 
     def _placeMonsters(self):
@@ -195,22 +222,22 @@ class DungeonLevel(Level):
         This function will place items on this level depending on the
         difficulty level and using the ItemLibrary in the Game
         """
-        #Grab the ItemLibrary
+        # Grab the ItemLibrary
         lib = self.game.item_library
-        #max number of items per room
+        # max number of items per room
         max_items = lib.max_items_per_room(self.difficulty)
 
-        #generate items for every room
+        # generate items for every room
         for room in self.map.rooms:
-            #choose random number of items to create
+            # choose random number of items to create
             num_items = random.randrange(0, max_items)
             for i in range(num_items + 1):
-                #choose random spot for new item
+                # choose random spot for new item
                 x = random.randrange(room.x1 + 1, room.x2 - 1)
                 y = random.randrange(room.y1 + 1, room.y2 - 1)
                 target_tile = self.map.tiles[x][y]
 
-                #only place it if the tile is not blocked and empty
+                # only place it if the tile is not blocked and empty
                 if not target_tile.blocked and target_tile.empty:
 
                     # get a random item
@@ -231,11 +258,11 @@ class TownLevel(Level):
             difficulty - Difficulty of this level
             name - a textual name for this level
         """
-        #call constructor of super class
+        # call constructor of super class
         super(TownLevel, self).__init__(owner, difficulty, name)
-        #generate the map
+        # generate the map
         self.map = Maps.TownMap(CONSTANTS.MAP_WIDTH, CONSTANTS.MAP_HEIGHT, self)
-        #generate sublevels for the houses
+        # generate sublevels for the houses
         for house in self.map.houses:
             self.generateHouseInterior(house)
 
@@ -260,7 +287,7 @@ class TownLevel(Level):
         doorTile.blockSight = False
         doorTile.material = Maps.MaterialType.DOOR
         #Create the door that leads into the house
-        doorIn = Actors.Portal('>', 'door', 'You enter the house.')
+        doorIn = Portal('>', 'door', 'You enter the house.')
         doorIn.moveToLevel(self, doorTile)
         #Generate the level that represents the interior of the house
         houseLevel = SingleRoomLevel(self.game, self.difficulty, 'house', house)
@@ -271,14 +298,14 @@ class TownLevel(Level):
         doorTile.blockSight = False
         doorTile.material = Maps.MaterialType.DOOR
         #Create the door that leads out of the house
-        doorOut = Actors.Portal('<', 'door', 'You leave the house.')
+        doorOut = Portal('<', 'door', 'You leave the house.')
         doorOut.moveToLevel(houseLevel, doorTile)
         #Connect the two doors
         doorIn.connectTo(doorOut)
 
         #Add an NPC in the house
         tile = houseLevel.getRandomEmptyTile()
-        npc = Actors.NPC()
+        npc = NPC()
         npc.moveToLevel(houseLevel, tile)
 
 

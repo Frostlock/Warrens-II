@@ -272,6 +272,14 @@ class Actor(object):
         # Actors are invulnerable
         pass
 
+    def tick(self):
+        """
+        Move time forward for this actor.
+        This enables the actor to take action in a real time world.
+        :return: None
+        """
+        pass
+
 
 ############
 # Specials #
@@ -690,6 +698,14 @@ class Character(Actor):
     def takeTurn(self):
         """
         Function to make this Character take one turn.
+        """
+        if self.AI is not None:
+            self.AI.take_turn()
+
+    def tick(self):
+        """
+        Function to move time forward and enable this character to take action in a real time world.
+        :return:
         """
         if self.AI is not None:
             self.AI.take_turn()

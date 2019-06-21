@@ -70,35 +70,34 @@ class BasicMonsterAI(AI):
         if self.character.level is None:
             message("   Not in a level, can't take action.", "AI")
             return
-        # Only take action if we find the player
-        if self.character.level.game.player is None:
-            message("   No player found, staying put", "AI")
+        # Only take action if we find a player on our level
+        if not self.character.level.player_present:
+            message("   No player found on level, staying put", "AI")
             return
 
-        player = self.character.level.game.player
-        # Only take action if player is not dead.
-        if player.state == WarrensGame.Actors.Character.DEAD:
-            message("   Player is dead, no action needed", "AI")
-            return
-
-        # TODO medium: read this from the config file via monsterlibrary via
-        # new class variable in Character class
-        range_of_sight = 8
-        range_of_attack = 2
-        distance = distance_between_actors(self.character, player)
-
-        # Only take action if player is within range of sight
-        if distance > range_of_sight:
-            return
-        # Attack if player is within range of attack
-        elif distance < range_of_attack:
-            message("   Attacking player", "AI")
-            self.character.attack(player)
-            return
-        else:
-            message("   Moving towards player", "AI")
-            self.character.moveTowards(player)
-            return
+        for player in self.character.level.players:
+            # Only take action if player is not dead.
+            if player.state == WarrensGame.Actors.Character.DEAD:
+                message("   Player is dead, no action needed", "AI")
+                return
+            else:
+                # TODO medium: read this from the config file via monsterlibrary
+                range_of_sight = 8
+                range_of_attack = 2
+                distance = distance_between_actors(self.character, player)
+                # Only take action if player is within range of sight
+                if distance > range_of_sight:
+                    message("   Player is out of sight, no action needed", "AI")
+                    return
+                # Attack if player is within range of attack
+                elif distance < range_of_attack:
+                    message("   Attacking player", "AI")
+                    self.character.attack(player)
+                    return
+                else:
+                    message("   Moving towards player", "AI")
+                    self.character.moveTowards(player)
+                    return
 
 
 class ConfusedMonsterAI(AI):

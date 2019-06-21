@@ -4,6 +4,7 @@ import unittest
 from WarrensGame.CONSTANTS import WORLD, CONFIG
 from WarrensGame.World import World
 from WarrensGame.Levels import TownLevel, DungeonLevel, CaveLevel
+from WarrensGame.Libraries import MonsterLibrary, ItemLibrary
 from WarrensGame.Actors import Character
 from WarrensGame.Utilities import GameError
 
@@ -25,9 +26,9 @@ class TestWorld(unittest.TestCase):
     def test_validate_world_generation(self):
         """
         Check the basic properties of a world.
+        :return: None
         """
         # Check if the right number of levels were generated.
-        self.assertEqual(len(self.world.levels), WORLD.DUNGEON_LEVELS + WORLD.CAVE_LEVELS + 1)
         town_count, dungeon_count, cave_count = 0, 0, 0
         for level in self.world.levels:
             if isinstance(level, TownLevel):
@@ -36,10 +37,46 @@ class TestWorld(unittest.TestCase):
                 dungeon_count += 1
             if isinstance(level, CaveLevel):
                 cave_count += 1
+        self.assertEqual(len(self.world.levels), WORLD.DUNGEON_LEVELS + WORLD.CAVE_LEVELS + 1)
         self.assertEqual(town_count, 1)
         self.assertEqual(dungeon_count, WORLD.DUNGEON_LEVELS)
         self.assertEqual(cave_count, WORLD.CAVE_LEVELS)
 
+    def test_validate_library_initialization(self):
+        """
+        Check if the Monster and Item libraries are properly initialized
+        :return: None
+        """
+        self.assertIsInstance(self.world.monster_library, MonsterLibrary)
+        self.assertIsInstance(self.world.item_library, ItemLibrary)
+
+    def test_world_tick(self):
+        """
+        Test the tick() function of the world to move time forward
+        :return: None
+        """
+        for i in range(10):
+            self.world.tick()
+
+    def test_world_players(self):
+        """
+        Test adding and removing of players to the world.
+        :return:
+        """
+        # World should not have any players upon initialization
+        self.assertEqual(len(self.world.players), 0)
+        # Add a first player
+        self.world.new_player()
+        self.assertEqual(len(self.world.players), 1)
+        # Add a second player
+        self.world.new_player()
+        self.assertEqual(len(self.world.players), 2)
+
+    def test_save_world(self):
+        pass
+
+    def test_load_world(self):
+        pass
 
 
     # def test_healingEffect(self):
