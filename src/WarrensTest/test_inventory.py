@@ -1,7 +1,7 @@
 import unittest
 import random
 
-import WarrensGame.CONSTANTS as CONSTANTS
+from  WarrensGame.CONSTANTS import CONFIG
 from WarrensGame.Inventory import Inventory
 from WarrensGame.Libraries import ItemLibrary
 from WarrensGame.Actors import Character
@@ -14,10 +14,10 @@ class TestInventory(unittest.TestCase):
         """
         unittest framework will run this once before all the tests in this class.
         """
-        CONSTANTS.SHOW_AI_LOGGING = False
-        CONSTANTS.SHOW_GAME_LOGGING = False
-        CONSTANTS.SHOW_COMBAT_LOGGING = False
-        CONSTANTS.SHOW_GENERATION_LOGGING = False
+        CONFIG.SHOW_AI_LOGGING = False
+        CONFIG.SHOW_GAME_LOGGING = False
+        CONFIG.SHOW_COMBAT_LOGGING = False
+        CONFIG.SHOW_GENERATION_LOGGING = False
 
         cls.item_library = ItemLibrary()
         cls.character = Character()

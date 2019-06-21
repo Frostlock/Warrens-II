@@ -7,6 +7,14 @@ MAP_HEIGHT = 50
 TILE_DEFAULT_COLOR = (175,175,175)
 
 
+class WORLD:
+    """
+    Constants for world generation.
+    """
+    DUNGEON_LEVELS = 10
+    CAVE_LEVELS = 2
+
+
 class DUNGEON:
     """
     Constants for dungeon generation.
@@ -39,42 +47,49 @@ class CAVE:
     WATER_COLOR = (30, 144, 255)
 
 
+class CONFIG:
+    """
+    System configuration parameters
+    """
+    # Data files
+    DATA_MONSTERS = "./WarrensGame/Monsters.csv"
+    DATA_ITEMS = "./WarrensGame/Items.csv"
+    DATA_ITEM_MODIFIERS = "./WarrensGame/ItemModifiers.csv"
+
+    # Config switches
+    SHOW_GAME_LOGGING = True
+    SHOW_AI_LOGGING = False
+    SHOW_COMBAT_LOGGING = True
+    SHOW_GENERATION_LOGGING = True
+    SHOW_NETWORK_LOGGING = True
+
+
+class EFFECT:
+    """
+    Enumerator class to describe the element of an effect.
+    """
+    NONE = None
+    HEAL = 0
+    WATER = 1
+    AIR = 2
+    FIRE = 3
+    EARTH = 4
+    ELEC = 5
+    MIND = 6
+
+
+# TODO: move into the enumerator configs
 # Field of view
 TORCH_RADIUS = 10
 DAYLIGHT_RADIUS = 30
-
-# Data files
-DATA_MONSTERS = "./WarrensGame/Monsters.csv"
-DATA_ITEMS = "./WarrensGame/Items.csv"
-DATA_ITEM_MODIFIERS = "./WarrensGame/ItemModifiers.csv"
-
-# Config switches
-SHOW_GAME_LOGGING = True
-SHOW_AI_LOGGING = False
-SHOW_COMBAT_LOGGING = True
-SHOW_GENERATION_LOGGING = True
-SHOW_NETWORK_LOGGING = True
 QUICK_START = True
-
-# Enumerator to describe the element of an effect.
-# The naming is intentionally without prefix, it looks nicer in the CSV files.
-HEAL = 0
-WATER = 1
-AIR = 2
-FIRE = 3
-EARTH = 4
-ELEC = 5
-MIND = 6
-
-# DEPRECATED
-# GAME_EVENT_QUEUE_SIZE = 20
-# GAME_XP_EQUAL_CHALLENGE = 50
 
 
 class GAME:
     """
     Game system parameters
     """
+    # TODO: Move to CONFIG class
     MESSAGE_BUFFER_LENGTH = 5
 
     XP_BASE = 300

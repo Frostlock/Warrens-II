@@ -1,7 +1,7 @@
 import csv
 import random
 from WarrensGame.Actors import *
-from WarrensGame.CONSTANTS import *
+from WarrensGame.CONSTANTS import CONFIG, EFFECT
 from WarrensGame.Utilities import GameError
 
 
@@ -101,7 +101,7 @@ class MonsterLibrary:
         self._challengeIndex = {}
 
         # Read data from CSV file
-        with open(DATA_MONSTERS) as csvfile:
+        with open(CONFIG.DATA_MONSTERS) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             for monsterDataDict in reader:
                 # Ensure incoming data from csv file is interpreted correctly
@@ -312,7 +312,7 @@ class ItemLibrary:
         self._modifierLevelIndex = {}
 
         # read item data from CSV file
-        with open(DATA_ITEMS) as csvfile:
+        with open(CONFIG.DATA_ITEMS) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             for itemDataDict in reader:
                 # Ensure incoming data from csv file is interpreted correctly
@@ -322,7 +322,7 @@ class ItemLibrary:
                     itemDataDict["target"] = None
                 itemDataDict["effectRadius"] = int(itemDataDict["effectRadius"])
                 itemDataDict["effectDuration"] = int(itemDataDict["effectDuration"])
-                itemDataDict["effectElement"] = eval(itemDataDict["effectElement"])
+                itemDataDict["effectElement"] = eval("EFFECT." + itemDataDict["effectElement"])
                 itemDataDict["bonusAccuracy"] = int(itemDataDict["bonusAccuracy"])
                 itemDataDict["bonusDodge"] = int(itemDataDict["bonusDodge"])
                 itemDataDict["bonusDamage"] = int(itemDataDict["bonusDamage"])
@@ -339,7 +339,7 @@ class ItemLibrary:
                 self.item_level_index[int(base_item.itemLevel)].append(base_item)
 
         # read item modifier data from CSV file
-        with open(DATA_ITEM_MODIFIERS) as csvfile:
+        with open(CONFIG.DATA_ITEM_MODIFIERS) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             for modifierDataDict in reader:
                 # Ensure incoming data from csv file is interpreted correctly
@@ -350,7 +350,7 @@ class ItemLibrary:
                 modifierDataDict["effectRadius"] = int(modifierDataDict["effectRadius"])
                 modifierDataDict["effectHitDie"] = int(modifierDataDict["effectHitDie"])
                 modifierDataDict["effectDuration"] = int(modifierDataDict["effectDuration"])
-                modifierDataDict["effectElement"] = eval(modifierDataDict["effectElement"])
+                modifierDataDict["effectElement"] = eval("EFFECT." + modifierDataDict["effectElement"])
                 modifierDataDict["bonusAccuracy"] = int(modifierDataDict["bonusAccuracy"])
                 modifierDataDict["bonusDodge"] = int(modifierDataDict["bonusDodge"])
                 modifierDataDict["bonusDamage"] = int(modifierDataDict["bonusDamage"])

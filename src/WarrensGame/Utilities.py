@@ -95,23 +95,23 @@ def message(text, category=None):
         print(text)
     elif category.upper() == "GAME":
         # Game output is stored (so it can be referenced by application implementation)
-        if CONSTANTS.SHOW_GAME_LOGGING is True:
+        if CONSTANTS.CONFIG.SHOW_GAME_LOGGING is True:
             print("GAME: " + text)
         messageBuffer.append(text)
         game_event("Message", {"category": category, "text": text})
     elif category.upper() == "AI":
-        if CONSTANTS.SHOW_AI_LOGGING is True:
+        if CONSTANTS.CONFIG.SHOW_AI_LOGGING is True:
             print("AI: " + text)
     elif category.upper() == "COMBAT":
-        if CONSTANTS.SHOW_COMBAT_LOGGING is True:
+        if CONSTANTS.CONFIG.SHOW_COMBAT_LOGGING is True:
             print("COMBAT: " + text)
         messageBuffer.append(text)
         game_event("Message", {"category": category, "text": text})
     elif category.upper() == "GENERATION":
-        if CONSTANTS.SHOW_GENERATION_LOGGING is True:
+        if CONSTANTS.CONFIG.SHOW_GENERATION_LOGGING is True:
             print("GENERATION: " + text)
     elif category.upper() == "NETWORK":
-        if CONSTANTS.SHOW_NETWORK_LOGGING is True:
+        if CONSTANTS.CONFIG.SHOW_NETWORK_LOGGING is True:
             print("NETWORK: " + text)
     else:
         # Default to console output

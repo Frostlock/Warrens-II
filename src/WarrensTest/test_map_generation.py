@@ -1,6 +1,6 @@
 import unittest
 
-import WarrensGame.CONSTANTS as CONSTANTS
+from WarrensGame.CONSTANTS import CONFIG, DUNGEON
 from WarrensGame.Maps import Tile, Map, DungeonMap
 from WarrensGame.Utilities import GameError
 
@@ -12,10 +12,10 @@ class TestMapGeneration(unittest.TestCase):
         """
         unittest framework will run this once before all the tests in this class.
         """
-        CONSTANTS.SHOW_AI_LOGGING = False
-        CONSTANTS.SHOW_GAME_LOGGING = False
-        CONSTANTS.SHOW_COMBAT_LOGGING = False
-        CONSTANTS.SHOW_GENERATION_LOGGING = False
+        CONFIG.SHOW_AI_LOGGING = False
+        CONFIG.SHOW_GAME_LOGGING = False
+        CONFIG.SHOW_COMBAT_LOGGING = False
+        CONFIG.SHOW_GENERATION_LOGGING = False
 
     @classmethod
     def tearDownClass(cls):
@@ -114,7 +114,7 @@ class TestMapGeneration(unittest.TestCase):
         with self.assertRaises(GameError):
             DungeonMap(2, 2)
         with self.assertRaises(GameError):
-            DungeonMap(CONSTANTS.DUNGEON.ROOM_MAX_SIZE - 1, CONSTANTS.DUNGEON.ROOM_MAX_SIZE - 1)
+            DungeonMap(DUNGEON.ROOM_MAX_SIZE - 1, DUNGEON.ROOM_MAX_SIZE - 1)
 
 
 if __name__ == "__main__":

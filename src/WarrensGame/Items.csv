@@ -7,8 +7,8 @@ fireball,Consumable,s,scroll of fireball,5,DamageEffect,tile,6,2d10,1,FIRE,0,0,0
 firenova,Consumable,s,scroll of fire nova,4,DamageEffect,None,4,2d10,0,FIRE,0,0,0,0,0,0
 tremor,Consumable,s,scroll of tremor,3,DamageEffect,None,5,2d4,3,EARTH,0,0,0,0,0,0
 confuse,Consumable,s,scroll of confuse,3,ConfuseEffect,actor,0,1d6,5,MIND,0,0,0,0,0,0
-dagger,Equipment,I,dagger,1,None,None,0,None,0,None,0,0,4,0,0,0
-shortsword,Equipment,I,short sword,2,None,None,0,None,0,None,0,0,8,0,0,0
-shield,Equipment,O,shield,4,None,None,0,None,0,None,0,0,0,2,0,0
-cloak,Equipment,c,cloak,2,None,None,0,None,0,None,0,1,0,0,0,0
-ring,Equipment,o,ring,2,None,None,0,None,0,None,1,1,1,1,1,1
+dagger,Equipment,I,dagger,1,None,None,0,None,0,NONE,0,0,4,0,0,0
+shortsword,Equipment,I,short sword,2,None,None,0,None,0,NONE,0,0,8,0,0,0
+shield,Equipment,O,shield,4,None,None,0,None,0,NONE,0,0,0,2,0,0
+cloak,Equipment,c,cloak,2,None,None,0,None,0,NONE,0,1,0,0,0,0
+ring,Equipment,o,ring,2,None,None,0,None,0,NONE,1,1,1,1,1,1
