@@ -4,7 +4,7 @@ from WarrensGame.CONSTANTS import SPRITES, GAME, INTERACTION
 from WarrensGame.Interaction import Interaction
 from WarrensGame.Inventory import Inventory
 import WarrensGame.AI  # Used in eval statement
-import WarrensGame.Effects  # Used in eval statement
+import WarrensGame.Effects as Effects
 from WarrensGame.Utilities import message, roll_hit_die, GameError, distance_between_actors, clamp, game_event
 
 
@@ -1340,7 +1340,7 @@ class Consumable(Item):
         """
         Boolean that indicates whether this consumable is targeted.
         """
-        if self.target is None:
+        if self.target is None or self.target == Effects.TARGET.SELF:
             return False
         else:
             return True

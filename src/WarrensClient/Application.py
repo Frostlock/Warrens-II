@@ -983,9 +983,7 @@ class Application(object):
     def event_targeting_start(self, item):
         self._targetingMode = True
         self._targetingItem = item
-        print(item)
         self._targetType = item.target
-        print (item.target)
     
     def event_targeting_acquire(self):
         # targeted tile is currently selected
