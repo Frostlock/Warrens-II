@@ -351,7 +351,7 @@ class Application(object):
             # TODO: Implement for RemoteServer
             if isinstance(self.game_server, LocalServer):
                 #If the player took a turn: Let the game play a turn
-                self.game.tryToPlayTurn()
+                self.game.try_to_play_turn()
 
             #limit framerate (kinda optimistic since with current rendering we don't achieve this framerate :) )
             frameRateLimit = 30
@@ -601,7 +601,7 @@ class Application(object):
         # TODO: Implement for RemoteServer
         if isinstance(self.game_server, LocalServer):
             # Make sure field of view is up to date
-            self.game.currentLevel.map.updateFieldOfView(self.game.player.tile.x, self.game.player.tile.y)
+            self.game.current_level.map.updateFieldOfView(self.game.player.tile.x, self.game.player.tile.y)
 
         # Render tiles that are in the viewport area
         start_x = int(self._renderViewPortX // self.tile_size)
@@ -657,7 +657,7 @@ class Application(object):
         if isinstance(self.game_server, LocalServer):
 
             # Draw portals on explored tiles (remain visible even when out of view)
-            portals = self.game.currentLevel.portals
+            portals = self.game.current_level.portals
             for portal in portals:
                 if portal.tile.explored:
                     vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
@@ -748,7 +748,7 @@ class Application(object):
                 self.surface_popup.blit(s, (x, y))
 
     def show_effects(self):
-        for effect in self.game.activeEffects:
+        for effect in self.game.active_effects:
             # Current implementation looks at effect targetType to decide on a visualization option.
             if effect.targetType == TARGET.SELF:
                 # flash tile on which actor is standing
@@ -874,7 +874,7 @@ class Application(object):
             mapX = self._renderViewPortX + mouseX
             mapY = self._renderViewPortY + mouseY
             # Determine Tile
-            gameMap = self.game.currentLevel.map
+            gameMap = self.game.current_level.map
             tileX = int(mapX / self.tile_size)
             tileY = int(mapY / self.tile_size)
             if tileX > 0 and tileX < gameMap.width-1 and tileY > 0 and tileY < gameMap.height-1:

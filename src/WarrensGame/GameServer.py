@@ -193,9 +193,9 @@ class LocalServer(Server, threading.Thread):
         Proxy Json for the current level
         :return:
         """
-        if self._level_json is not self.game.currentLevel.json:
-            self._level_json = self.game.currentLevel.json
-            self._level_proxy = Proxy(self.game.currentLevel.json)
+        if self._level_json is not self.game.current_level.json:
+            self._level_json = self.game.current_level.json
+            self._level_proxy = Proxy(self.game.current_level.json)
         return self._level_proxy
 
     def new_local_game(self):

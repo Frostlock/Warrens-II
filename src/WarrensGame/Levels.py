@@ -169,7 +169,7 @@ class DungeonLevel(Level):
         difficulty level and using the MonsterLibrary in the Game
         """
         # Grab the MonsterLibrary
-        lib = self.game.monsterLibrary
+        lib = self.game.monster_library
         # max number of monsters per room
         max_monsters = lib.max_monsters_per_room(self.difficulty)
 
@@ -196,7 +196,7 @@ class DungeonLevel(Level):
         difficulty level and using the ItemLibrary in the Game
         """
         #Grab the ItemLibrary
-        lib = self.game.itemLibrary
+        lib = self.game.item_library
         #max number of items per room
         max_items = lib.max_items_per_room(self.difficulty)
 
@@ -320,7 +320,7 @@ class CaveLevel(Level):
         
     def _placeMonsters(self):
         #Grab the MonsterLibrary
-        lib = self.game.monsterLibrary
+        lib = self.game.monster_library
         #Randomly determine nbr of monsters
         nbr = random.randrange(0, 4)
         for i in range(0, nbr):

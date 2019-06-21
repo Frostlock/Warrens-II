@@ -692,7 +692,7 @@ class Character(Actor):
         Function to make this Character take one turn.
         """
         if self.AI is not None:
-            self.AI.takeTurn()
+            self.AI.take_turn()
 
 
 class Player(Character):
@@ -811,7 +811,7 @@ class Player(Character):
         self.moveToLevel(destinationLevel, destinationTile)
         #change the current level of the game to the destinationlevel
         myGame = destinationLevel.game
-        myGame.currentLevel = destinationLevel
+        myGame.current_level = destinationLevel
 
     def tryMoveOrAttack(self, dx, dy):
         """

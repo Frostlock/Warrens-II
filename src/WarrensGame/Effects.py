@@ -162,7 +162,7 @@ class HealEffect(Effect):
         if not isinstance(target, WarrensGame.Actors.Character):
             raise GameError("Can not apply healing effect to " + str(target))
         self.actors.append(target)
-        target.tile.map.level.game.activeEffects.append(self)
+        target.tile.map.level.game.active_effects.append(self)
         self.tick()
 
     def tick(self):
@@ -203,7 +203,7 @@ class ConfuseEffect(Effect):
             raise GameError("Can not apply confuse effect to " + str(target))
         confused_turns = self.effectDuration
         WarrensGame.AI.ConfusedMonsterAI(self, target, confused_turns)
-        target.level.game.activeEffects.append(self)
+        target.level.game.active_effects.append(self)
         self.actors.append(target)
         message(target.name + ' is confused for ' + str(confused_turns) + ' turns.', "GAME")
 
@@ -279,7 +279,7 @@ class DamageEffect(Effect):
         # Tick for damage
         self.tick()
         # Register effect with Game
-        self.centerTile.map.level.game.activeEffects.append(self)
+        self.centerTile.map.level.game.active_effects.append(self)
 
     def tick(self):
         """

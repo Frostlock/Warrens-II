@@ -1,11 +1,8 @@
 #!/usr/bin/python
 
 import random
-
-######
-# AI #
-######
-import WarrensGame.Utilities as Utilities
+import WarrensGame.Actors
+from WarrensGame.Utilities import GameError, message, distance_between_actors
 
 # Possible directions for movement
 DIRECTIONS = [(-1, +0),
@@ -16,6 +13,7 @@ DIRECTIONS = [(-1, +0),
               (+1, +1),
               (-1, -1),
               (+1, -1)]
+
 
 class AI(object):
     """
@@ -40,12 +38,11 @@ class AI(object):
         """
         self._character = character
 
-    def takeTurn(self):
+    def take_turn(self):
         """
         Take one turn
         """
-        raise Utilities.GameError("Class AI does not have implementation"
-                "for takeTurn(), please use one of the subclasss")
+        raise GameError("Class AI does not have implementation for takeTurn(), please use one of the subclasses")
 
 
 class BasicMonsterAI(AI):
@@ -60,98 +57,96 @@ class BasicMonsterAI(AI):
             monster - Monster to which this AI is linked.
         """
         super(BasicMonsterAI, self).__init__(monster)
-        #init class variables
+        # Init class variables
         self._player = None
         
-    def takeTurn(self):
+    def take_turn(self):
         """
         Take one turn
         """
-        Utilities.message(self.character.name + ' at ' + str(self.character.tile) +
+        message(self.character.name + ' at ' + str(self.character.tile) +
                 ' takes turn.', "AI")
-        #Only take action if we are in a level
+        # Only take action if we are in a level
         if self.character.level is None:
-            Utilities.message("   Not in a level, can't take action.", "AI")
+            message("   Not in a level, can't take action.", "AI")
             return
-        #Only take action if we find the player
+        # Only take action if we find the player
         if self.character.level.game.player is None:
-            Utilities.message("   No player found, staying put", "AI")
+            message("   No player found, staying put", "AI")
             return
 
         player = self.character.level.game.player
-        #Only take action if player is not dead.
+        # Only take action if player is not dead.
         if player.state == WarrensGame.Actors.Character.DEAD:
-            Utilities.message("   Player is dead, no action needed", "AI")
+            message("   Player is dead, no action needed", "AI")
             return
 
-        #TODO medium: read this from the config file via monsterlibrary via
-        #new class variable in Character class
-        RoS = 8  # Range of Sight
-        RoA = 2  # Range of Attack
-        distance = Utilities.distance_between_actors(self.character, player)
-        #message('   Player ' + self.player.name + ' found at ' + \
-        #        str(self.player.tile) + ' distance: ' + str(distance), "AI")
+        # TODO medium: read this from the config file via monsterlibrary via
+        # new class variable in Character class
+        range_of_sight = 8
+        range_of_attack = 2
+        distance = distance_between_actors(self.character, player)
 
-        #Only take action if player is within range of sight
-        if distance > RoS:
-            #message("   Player out of range of sight", "AI")
+        # Only take action if player is within range of sight
+        if distance > range_of_sight:
             return
-        #Attack if player is within range of attack
-        elif distance < RoA:
-            Utilities.message("   Attacking player", "AI")
+        # Attack if player is within range of attack
+        elif distance < range_of_attack:
+            message("   Attacking player", "AI")
             self.character.attack(player)
             return
         else:
-            Utilities.message("   Moving towards player", "AI")
+            message("   Moving towards player", "AI")
             self.character.moveTowards(player)
             return
 
 
 class ConfusedMonsterAI(AI):
     """
-    AI sub class that provides AI implementation for confused monsters.
-    It can be used to confuse a monster for a number of turns. After the turns the confusedAI will switch the monster back to the original AI.
-    
+    AI sub class that provides an implementation for confused monsters.
+    It can be used to confuse a monster for a number of turns. After the number of turns has passed
+    the confusedAI will switch the monster back to the originalAI.
     """
-    def __init__(self, sourceEffect, confusedMonster, confusedTurns):
-            """
-            Constructor
-            Arguments
-                sourceEffect - the effect that causes the confusion
-                confusedMonster - the Monster to which this AI is linked.
-                confusedTurns - the number of turns the monster is confused
-            """
-            super(ConfusedMonsterAI, self).__init__(confusedMonster)
-            self.originalAI = confusedMonster.AI
-            self.sourceEffect = sourceEffect
-            self.confusedTurns = confusedTurns
-            confusedMonster.AI = self
-    
-    def takeTurn(self):
+
+    def __init__(self, source_effect, confused_monster, confused_turns):
         """
-        Take one turn
+        Constructor
+        :param source_effect: The effect that causes the confusion
+        :param confused_monster: The Monster to which this AI is linked.
+        :param confused_turns: The number of turns the monster is confused
+        """
+        super(ConfusedMonsterAI, self).__init__(confused_monster)
+        self.originalAI = confused_monster.AI
+        self.sourceEffect = source_effect
+        self.confusedTurns = confused_turns
+        confused_monster.AI = self
+    
+    def take_turn(self):
+        """
+        Make this AI object take one turn.
+        For a confused monster the monster will move in a random direction.
         """
         # Try to move in a random direction
-        Utilities.message(self.character.name + ' stumbles around (confused).', "GAME")
-        direction = self.randomDirection()
-        if not direction is None:
+        message(self.character.name + ' stumbles around (confused).', "GAME")
+        direction = self.random_direction()
+        if direction is not None:
             self.character.moveAlongVector(*direction)
 
         # Switch back to regular AI if confusedTurns are over
         self.confusedTurns -= 1
         if self.confusedTurns == 0:
             self.character.AI = self.originalAI
-            Utilities.message(self.character.name + ' is no longer confused.', "GAME")
+            message(self.character.name + ' is no longer confused.', "GAME")
 
-    def randomDirection(self):
-        '''
+    def random_direction(self):
+        """
         Select a random direction away from the current location.
         Returns None if no suitable direction is found.
         :return: None or a tuple (x,y) direction
-        '''
+        """
         # Available directions, take a copy to work with
         directions = list(DIRECTIONS)
-        targetDirection = None
+        target_direction = None
         while len(directions) > 0:
             # Find a random tile to move to
             direction = random.choice(directions)
@@ -159,11 +154,10 @@ class ConfusedMonsterAI(AI):
             directions.remove(direction)
             x = self.character.tile.x + direction[0]
             y = self.character.tile.y + direction[1]
-            targetTile = self.character.level.map.tiles[x][y]
+            target_tile = self.character.level.map.tiles[x][y]
             # Check if the tile is occupied
-            if len(targetTile.actors) == 0:
-                if not targetTile.blocked:
-                    targetDirection = direction
+            if len(target_tile.actors) == 0:
+                if not target_tile.blocked:
+                    target_direction = direction
                     break
-        # Done
-        return targetDirection
+        return target_direction

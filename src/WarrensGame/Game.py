@@ -1,11 +1,8 @@
 """
 Created on Apr 13, 2014
-To understand the design, it is recommended to read
-the class design documentation on the wiki first!
-@author: pi
+@author: Frostlock
 """
 
-from WarrensGame.AI import *
 from WarrensGame.Levels import *
 from WarrensGame.Libraries import *
 from WarrensGame.Maps import *
@@ -13,12 +10,8 @@ from WarrensGame.Maps import *
 
 class Game(object):
     """
-    The game class contains the logic to run the game.
-    It knows about turns
-    It has pointers to all the other stuff, via the Game object you can drill
-    down to all components
-    It can save and load
-    It keeps track of the levels and knows which is the current level
+    The game class implements a turn based game.
+    It contains the logic to run the game and has pointers to all the underlying objects.
     """
     PLAYING = 0
     FINISHED = 1
@@ -30,22 +23,6 @@ class Game(object):
         Returns the game state
         """
         return self._state
-
-    # @property
-    # def messageBuffer(self):
-    #     """
-    #     Returns a queue of game messages.
-    #     This is meant to be used by the GUI application to show the latest relevant game messages.
-    #     """
-    #     return Utilities.messageBuffer
-    #
-    # @property
-    # def event_queue(self):
-    #     """
-    #     Returns a queue of game events.
-    #     :return:
-    #     """
-    #     return Utilities.event_queue
 
     @property
     def player(self):
@@ -62,14 +39,14 @@ class Game(object):
         return self._levels
 
     @property
-    def currentLevel(self):
+    def current_level(self):
         """
         Returns the current level
         """
         return self._currentLevel
 
-    @currentLevel.setter
-    def currentLevel(self, level):
+    @current_level.setter
+    def current_level(self, level):
         """
         Sets the current level
         """
@@ -77,7 +54,7 @@ class Game(object):
         Utilities.game_event("Level", level.json)
 
     @property
-    def activeEffects(self):
+    def active_effects(self):
         """
         A list of the currently active effects
         :return: Array of Effects
@@ -85,14 +62,14 @@ class Game(object):
         return self._activeEffects
 
     @property
-    def monsterLibrary(self):
+    def monster_library(self):
         """
         Returns the monster library used by this game.
         """
         return self._monsterLibrary
 
     @property
-    def itemLibrary(self):
+    def item_library(self):
         """
         Returns the item library used by this game.
         """
@@ -101,7 +78,7 @@ class Game(object):
     def __init__(self):
         """
         Constructor to create a new game
-        :rtype : WarrensGame
+        :return : WarrensGame
         """
         # Initialize class variables
         self._player = None
@@ -128,36 +105,36 @@ class Game(object):
         self._currentLevel = debug_level
 
         # Create player
-        self.resetPlayer()
+        self.reset_player()
 
     def setup_new_game(self):
         """
         Resets this Game class to a play a new game.
-        :rtype : None
+        :return: None
         """
         # Clear up
         Utilities.reset_utility_queues()
         self._levels = []
 
         # Generate a town level
-        levelName = "Town"
-        levelDifficulty = 1
-        Utilities.message("Generating level: " + levelName + '(difficulty:' + str(levelDifficulty) + ')', "GENERATION")
-        town = TownLevel(self, levelDifficulty, levelName)
+        level_name = "Town"
+        level_difficulty = 1
+        Utilities.message("Creating level: " + level_name + '(difficulty:' + str(level_difficulty) + ')', "GENERATION")
+        town = TownLevel(self, level_difficulty, level_name)
         self._levels.append(town)
         self._currentLevel = town
 
         # Add some dungeon levels underneath the town
-        prevLevel = None
+        prev_level = None
         for i in range(1, 10):
-            prevLevel = self.levels[i - 1]
-            self.addDungeonLevel(i, [prevLevel])
+            prev_level = self.levels[i - 1]
+            self.add_dungeon_level(i, [prev_level])
 
         # Add a cave level
-        self.addCaveLevel(2, [town, prevLevel])
+        self.add_cave_level(2, [town, prev_level])
 
         # Create player
-        self.resetPlayer()
+        self.reset_player()
 
         # Set the game state
         self._state = Game.PLAYING
@@ -168,79 +145,78 @@ class Game(object):
                           + 'legendary and without doubt heroic expedition into the '
                           + 'unknown. Good luck!', "GAME")
 
-    def addDungeonLevel(self, difficulty, connectedLevels):
+    def add_dungeon_level(self, difficulty, connected_levels):
         """
         Adds a dungeon level to this game.
         Connect the new dungeon level to the connectedLevels
         :param difficulty: Difficulty for the new dungeon level
-        :param connectedLevels: Levels to which the new dungeon level will be connected
-        :rtype : None
+        :param connected_levels: Levels to which the new dungeon level will be connected
+        :return : None
         """
-        levelName = 'Dungeon level ' + str(difficulty)
-        Utilities.message("Generating level: " + levelName + '(difficulty:' + str(difficulty) + ')', "GENERATION")
-        dungeonLevel = DungeonLevel(self, difficulty, levelName)
-        self._levels.append(dungeonLevel)
-        for lvl in connectedLevels:
+        level_name = 'Dungeon level ' + str(difficulty)
+        Utilities.message("Generating level: " + level_name + '(difficulty:' + str(difficulty) + ')', "GENERATION")
+        dungeon_level = DungeonLevel(self, difficulty, level_name)
+        self._levels.append(dungeon_level)
+        for lvl in connected_levels:
             # Add portal in previous level to current level
-            downPortal = Portal('>', 'stairs down', 'You follow the stairs down, looking for more adventure.')
-            downPortal.sprite_id = SPRITES.STAIRS_DOWN
-            downPortal.moveToLevel(lvl, lvl.getRandomEmptyTile())
+            down_portal = Portal('>', 'stairs down', 'You follow the stairs down, looking for more adventure.')
+            down_portal.sprite_id = SPRITES.STAIRS_DOWN
+            down_portal.moveToLevel(lvl, lvl.getRandomEmptyTile())
             # Add portal in current level to previous level
-            upPortal = Portal('<', 'stairs up', 'You follow the stairs up, hoping to find the exit.')
-            upPortal.sprite_id = SPRITES.STAIRS_UP
-            upPortal.moveToLevel(dungeonLevel, dungeonLevel.getRandomEmptyTile())
+            up_portal = Portal('<', 'stairs up', 'You follow the stairs up, hoping to find the exit.')
+            up_portal.sprite_id = SPRITES.STAIRS_UP
+            up_portal.moveToLevel(dungeon_level, dungeon_level.getRandomEmptyTile())
             # Connect the two portals
-            downPortal.connectTo(upPortal)
+            down_portal.connectTo(up_portal)
 
-    def addCaveLevel(self, difficulty, connectedLevels):
+    def add_cave_level(self, difficulty, connected_levels):
         """
         Adds a cave level to this game.
         Connect the new cave level to the connectedLevels
         :param difficulty: Difficulty for the new cave level
-        :param connectedLevels: Levels to which the new cave level will be connected
-        :rtype : None
+        :param connected_levels: Levels to which the new cave level will be connected
+        :return : None
         """
-        levelName = 'Cave of the Cannibal'
-        Utilities.message("Generating level: " + levelName + '(difficulty:' + str(difficulty) + ')', "GENERATION")
-        caveLevel = CaveLevel(self, difficulty, levelName)
-        self._levels.append(caveLevel)
+        level_name = 'Cave of the Cannibal'
+        Utilities.message("Generating level: " + level_name + '(difficulty:' + str(difficulty) + ')', "GENERATION")
+        cave_level = CaveLevel(self, difficulty, level_name)
+        self._levels.append(cave_level)
 
         # For each connected level
-        for lvl in connectedLevels:
+        for lvl in connected_levels:
             # create a portal in the connected level that leads to the new cave
-            message = 'You jump into the pit. As you fall deeper and deeper, you realize you didn\'t ' \
+            pit_message = 'You jump into the pit. As you fall deeper and deeper, you realize you didn\'t ' \
                       'think about how to get back out afterward...'
-            downPortal = Portal('>', 'Pit', message)
-            downPortal.moveToLevel(lvl, lvl.getRandomEmptyTile())
+            down_portal = Portal('>', 'Pit', pit_message)
+            down_portal.moveToLevel(lvl, lvl.getRandomEmptyTile())
             # create a portal in the new cave that leads back
-            upPortal = Portal('<', 'Opening above', 'After great difficulties you manage to get out of the pit.')
-            upPortal.moveToLevel(caveLevel, caveLevel.getRandomEmptyTile())
+            up_portal = Portal('<', 'Opening above', 'After great difficulties you manage to get out of the pit.')
+            up_portal.moveToLevel(cave_level, cave_level.getRandomEmptyTile())
             # connect the two portals
-            # TODO: Ideally it should not be possible to climb back up :)
-            downPortal.connectTo(upPortal)
+            down_portal.connectTo(up_portal)
 
-    def resetPlayer(self):
+    def reset_player(self):
         """
         Reset the player for this game.
-        :rtype : None
+        :return : None
         """
         self._player = Player()
-        firstLevel = self.levels[0]
-        self.player.moveToLevel(firstLevel, firstLevel.getRandomEmptyTile())
+        first_level = self.levels[0]
+        self.player.moveToLevel(first_level, first_level.getRandomEmptyTile())
 
         # Starting gear
-        potion = self.itemLibrary.create_item("healingpotion")
+        potion = self.item_library.create_item("healingpotion")
         self.player.addItem(potion)
-        potion = self.itemLibrary.create_item("healingpotion")
+        potion = self.item_library.create_item("healingpotion")
         self.player.addItem(potion)
 
-        # Quickstart
+        # Quick start
         if CONSTANTS.QUICK_START:
             town = self.levels[0]
             # Group portals together
             i = 1
             for portal in town.portals:
-                if not portal.destinationPortal.level in town.subLevels:
+                if portal.destinationPortal.level not in town.subLevels:
                     tile = town.map.tiles[1][i]
                     i += 1
                     portal.moveToTile(tile)
@@ -248,77 +224,76 @@ class Game(object):
             tile = town.map.tiles[2][1]
             self.player.moveToTile(tile)
             # Provide more starting gear
-            scroll = self.itemLibrary.create_item("firenova", "double")
+            scroll = self.item_library.create_item("firenova", "double")
             self.player.addItem(scroll)
-            scroll = self.itemLibrary.create_item("tremor")
+            scroll = self.item_library.create_item("tremor")
             self.player.addItem(scroll)
-            potion = self.itemLibrary.create_item("healingvial", "exquisite")
+            potion = self.item_library.create_item("healingvial", "exquisite")
             self.player.addItem(potion)
-            cloak = self.itemLibrary.create_item("cloak")
+            cloak = self.item_library.create_item("cloak")
             self.player.addItem(cloak)
-            scroll = self.itemLibrary.create_item("fireball")
+            scroll = self.item_library.create_item("fireball")
             self.player.addItem(scroll)
-            scroll = self.itemLibrary.create_item("confuse")
+            scroll = self.item_library.create_item("confuse")
             self.player.addItem(scroll)
-            scroll = self.itemLibrary.create_item("lightning")
+            scroll = self.item_library.create_item("lightning")
             self.player.addItem(scroll)
             # Add a chest with extra gear
             chest = Chest()
             tile = town.map.tiles[2][2]
             chest.moveToTile(tile)
             for i in range(1, 15):
-                item = self.itemLibrary.get_random_item(i)
+                item = self.item_library.get_random_item(i)
                 chest.inventory.add(item)
 
-        firstLevel.map.updateFieldOfView(
+        first_level.map.updateFieldOfView(
             self._player.tile.x, self._player.tile.y)
 
-    def loadGame(self, fileName):
+    def load_game(self, file_name):
         """
         Loads game state from a file
-        :param fileName:
-        :rtype : None
+        :param file_name: File to load from.
+        :return : None
         """
-        #TODO: Implement saving and loading of gamestate
-        raise NotImplementedError ("Loading not implemented.")
-        pass
+        # TODO: Implement loading of game state
+        raise NotImplementedError("Can't load from " + file_name + ". Loading not implemented.")
 
-    def saveGame(self, fileName):
+    def save_game(self, file_name):
         """
         Saves state of current game to a file.
-        :param fileName:
-        :rtype : None
+        :param file_name: File to save to.
+        :return : None
         """
-        raise NotImplementedError ("Saving not implemented.")
-        pass
+        # TODO: Implement saving of game state
+        raise NotImplementedError("Can't save to " + file_name + ". Saving not implemented.")
 
-    def tryToPlayTurn(self):
+    def try_to_play_turn(self):
         """
         This function should be called regularly by the GUI. It waits for the player
         to take action after which all AI controlled characters also get to act.
         This is what moves the game forward.
-        :rtype : Boolean indicating if a turn was played
+        :return : Boolean indicating if a turn was played
         """
         # Wait for player to take action
         if self.player.actionTaken:
             # Let characters take a turn
-            for c in self.currentLevel.characters:
+            for c in self.current_level.characters:
                 assert isinstance(c, Character)
                 if c.state == Character.ACTIVE:
                     c.takeTurn()
                     c.actionTaken = False
             # Update field of view
-            self.currentLevel.map.updateFieldOfView(self.player.tile.x, self.player.tile.y)
+            self.current_level.map.updateFieldOfView(self.player.tile.x, self.player.tile.y)
             # Let effects tick
-            toRemove = []
-            for effect in self.activeEffects:
+            to_remove = []
+            for effect in self.active_effects:
                 if effect.effectDuration <= 0:
-                    toRemove.append(effect)
+                    to_remove.append(effect)
                 else:
                     effect.tick()
             # Remove effects that are no longer active
-            for effect in toRemove:
-                self.activeEffects.remove(effect)
+            for effect in to_remove:
+                self.active_effects.remove(effect)
             # Broadcast game state
             self.broadcast_game_state()
             return True
@@ -326,34 +301,34 @@ class Game(object):
             return False
 
     def broadcast_game_state(self):
-        Utilities.game_event("Level", self.currentLevel.json)
+        Utilities.game_event("Level", self.current_level.json)
 
-    def getPossibleTargets(self, seeker):
-        '''
+    def get_possible_targets(self, seeker_actor):
+        """
         Returns a list of valid targets for the seeker.
-        :param seeker:
+        :param seeker_actor: Actor object that is looking for a target
         :return: Array of targets
-        '''
-        assert(isinstance(seeker,Item))
-        if seeker.baseItem.effect == "None":
+        """
+        assert(isinstance(seeker_actor, Item))
+        if seeker_actor.baseItem.effect == "None":
             return []
-        elif seeker.baseItem.effect == "DamageEffect":
+        elif seeker_actor.baseItem.effect == "DamageEffect":
             # Target can be an Actor or a Tile
             targets = []
-            for tile in self.currentLevel.map.visible_tiles:
+            for tile in self.current_level.map.visible_tiles:
                 for actor in tile.actors:
                     if isinstance(actor, Actor):
                         targets.append(actor)
-            targets.extend(self.currentLevel.map.visible_tiles)
+            targets.extend(self.current_level.map.visible_tiles)
             return targets
-        elif seeker.baseItem.effect == "HealEffect":
+        elif seeker_actor.baseItem.effect == "HealEffect":
             # Target has to be of type Character
             # Currently on the player should benefit from healing
             return [self.player]
-        elif seeker.baseItem.effect == "ConfuseEffect":
+        elif seeker_actor.baseItem.effect == "ConfuseEffect":
             # Target has to be of type Monster
             targets = []
-            for tile in self.currentLevel.map.visible_tiles:
+            for tile in self.current_level.map.visible_tiles:
                 for actor in tile.actors:
                     if isinstance(actor, Monster):
                         targets.append(actor)
