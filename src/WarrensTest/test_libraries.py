@@ -163,6 +163,7 @@ class TestItemLibrary(unittest.TestCase):
             for i in range(1, 10):
                 self.ilib.get_random_item(difficulty)
 
+        # Ensure item level 0 can't be created
         with self.assertRaises(GameError):
             self.ilib.get_random_item(0)
 
