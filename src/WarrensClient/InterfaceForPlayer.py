@@ -14,6 +14,7 @@ from WarrensClient.CONFIG import INTERFACE, COLORS
 from WarrensClient.Graphics import initialize_sprites, get_tile_surface, get_sprite_surface
 from WarrensClient import Audio
 from WarrensGame.Actors import Player, Character
+from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
 from WarrensGame.Game import Game
 from WarrensGame.GameServer import LocalServer, RemoteServer
@@ -272,17 +273,17 @@ class InterfaceForPlayer(object):
             for event in events:
                 self.handle_pygame_event(event)
 
-            # # TODO: Implement for RemoteServer
+            # # TODO: Implement a proper "death" screen
             # if isinstance(self.game_server, LocalServer):
             #     # handle game events
             #     if self.game.player.state == Character.DEAD:
             #         # zoom in on player corpse
             #         self.event_zoom_on_tile(self.game.player.tile)
-            #
+
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 event_time = time.time() - start_time - render_time
             #
-            # # TODO: Implement for RemoteServer
+            # # TODO: Make the game move forward (effect duration & clean up needs to be handled as well!)
             # if isinstance(self.game_server, LocalServer):
             #     # If the player took a turn: Let the game play a turn
             #     self.game.try_to_play_turn()
@@ -462,25 +463,24 @@ class InterfaceForPlayer(object):
             blit_text = GuiUtilities.FONT_PANEL.render(text, 1, COLORS.PANEL_FONT)
             self.surface_panel.blit(blit_text, (x_offset, y_offset))
 
-        # TODO: fix and uncomment :)
-        # # Right side: render game messages
-        # message_counter = 1
-        # nbr_of_messages = len(self.game_server.messageBuffer)
-        # while height_offset > 0:
-        #     if message_counter > nbr_of_messages: break
-        #     # Get messages from game message buffer, starting from the back
-        #     message = self.game_server.messageBuffer[nbr_of_messages - message_counter]
-        #     # Create text lines for message
-        #     text_lines = GuiUtilities.wrap_multi_line(message, GuiUtilities.FONT_PANEL, self.surface_panel.get_width() - width_offset)
-        #     nbr_of_lines = len(text_lines)
-        #     # Blit the lines
-        #     for l in range(1, nbr_of_lines+1):
-        #         blit_line = GuiUtilities.FONT_PANEL.render(text_lines[nbr_of_lines - l], 1, COLORS.PANEL_FONT)
-        #         height_offset = height_offset - blit_line.get_height()
-        #         # Only blit the line if there is enough remaining space to show it completely
-        #         if height_offset > blit_line.get_height():
-        #             self.surface_panel.blit(blit_line, (width_offset, height_offset))
-        #     message_counter += 1
+        # Right side: render game messages
+        message_counter = 1
+        nbr_of_messages = len(Utilities.messageBuffer)
+        while height_offset > 0:
+            if message_counter > nbr_of_messages: break
+            # Get messages from game message buffer, starting from the back
+            message = Utilities.messageBuffer[nbr_of_messages - message_counter]
+            # Create text lines for message
+            text_lines = GuiUtilities.wrap_multi_line(message, GuiUtilities.FONT_PANEL, self.surface_panel.get_width() - width_offset)
+            nbr_of_lines = len(text_lines)
+            # Blit the lines
+            for l in range(1, nbr_of_lines+1):
+                blit_line = GuiUtilities.FONT_PANEL.render(text_lines[nbr_of_lines - l], 1, COLORS.PANEL_FONT)
+                height_offset = height_offset - blit_line.get_height()
+                # Only blit the line if there is enough remaining space to show it completely
+                if height_offset > blit_line.get_height():
+                    self.surface_panel.blit(blit_line, (width_offset, height_offset))
+            message_counter += 1
             
     def render_viewport(self):
         """
@@ -551,63 +551,59 @@ class InterfaceForPlayer(object):
                         # tile not in view: apply fog of war
                         self.surface_viewport.blit(self.fogOfWarTileSurface, tile_rect)
 
-        # # TODO: Fix and uncomment
-        # if isinstance(self.game_server, LocalServer):
-        #
-        #     # Draw portals on explored tiles (remain visible even when out of view)
-        #     portals = self.game.current_level.portals
-        #     for portal in portals:
-        #         if portal.tile.explored:
-        #             vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-        #             vp_y = (portal.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
-        #             tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        #             text_img = self.viewport_font.render(portal.char, 1, portal.color)
-        #             #Center
-        #             x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() /2)
-        #             y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() /2)
-        #             self.surface_viewport.blit(text_img, (x, y))
-        #
-        #     # Redraw player character (makes sure it is on top of other characters)
-        #     player = self.game.player
-        #     vp_x = (player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-        #     vp_y = (player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
-        #     tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        #     sprite = get_sprite_surface(player.sprite_id)
-        #     if sprite is None:
-        #         sprite = self.viewport_font.render(player.char, 1, player.color)
-        #     # Center on tile
-        #     x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
-        #     y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
-        #     self.surface_viewport.blit(sprite, (x, y))
-        #
-        #     if self.targeting_mode:
-        #         # Indicate we are in targeting mode
-        #         blit_text = GuiUtilities.FONT_PANEL.render("Select target (Escape to cancel)", 1, (255, 0, 0))
-        #         self.surface_viewport.blit(blit_text, (6, 2 + blit_text.get_height()))
-        #         # Highlight selected tile with a cross hair
-        #         if self._renderSelectedTile is not None:
-        #             tile = self._renderSelectedTile
-        #             vp_x = int((tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2)
-        #             vp_y = int((tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2)
-        #             tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        #             pygame.draw.circle(self.surface_viewport, COLORS.SELECTION, (vp_x, vp_y), int(self.tile_size / 2), 2)
-        #     else:
-        #         # Highlight selected tile
-        #         if self._renderSelectedTile is not None:
-        #             tile = self._renderSelectedTile
-        #             vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-        #             vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
-        #             tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        #             pygame.draw.rect(self.surface_viewport, COLORS.SELECTION, tile_rect, 2)
-        #             self.render_popup(tile)
-        #             # Show tile detail pop up
-        #             if self.surface_popup is not None:
-        #                 if tile_rect.x >= int(self.surface_viewport.get_size()[0] / 2):
-        #                     popup_x = tile_rect.x - self.surface_popup.get_width()
-        #                 else:
-        #                     popup_x = tile_rect.x + tile_rect.w
-        #                 popup_y = tile_rect.y
-        #                 self.surface_viewport.blit(self.surface_popup, (popup_x, popup_y))
+        # Draw portals on explored tiles (remain visible even when out of view)
+        portals = self.player.level.portals
+        for portal in portals:
+            if portal.tile.explored:
+                vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+                vp_y = (portal.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+                tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                text_img = self.viewport_font.render(portal.char, 1, portal.color)
+                # Center
+                x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() /2)
+                y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() /2)
+                self.surface_viewport.blit(text_img, (x, y))
+
+        # Redraw player character (makes sure it is on top of other characters)
+        vp_x = (self.player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+        vp_y = (self.player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+        tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+        sprite = get_sprite_surface(self.player.sprite_id)
+        if sprite is None:
+            sprite = self.viewport_font.render(self.player.char, 1, self.player.color)
+        # Center on tile
+        x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
+        y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
+        self.surface_viewport.blit(sprite, (x, y))
+
+        if self.targeting_mode:
+            # Indicate we are in targeting mode
+            blit_text = GuiUtilities.FONT_PANEL.render("Select target (Escape to cancel)", 1, (255, 0, 0))
+            self.surface_viewport.blit(blit_text, (6, 2 + blit_text.get_height()))
+            # Highlight selected tile with a cross hair
+            if self._renderSelectedTile is not None:
+                tile = self._renderSelectedTile
+                vp_x = int((tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2)
+                vp_y = int((tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2)
+                tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                pygame.draw.circle(self.surface_viewport, COLORS.SELECTION, (vp_x, vp_y), int(self.tile_size / 2), 2)
+        else:
+            # Highlight selected tile
+            if self._renderSelectedTile is not None:
+                tile = self._renderSelectedTile
+                vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+                vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+                tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                pygame.draw.rect(self.surface_viewport, COLORS.SELECTION, tile_rect, 2)
+                self.render_popup(tile)
+                # Show tile detail pop up
+                if self.surface_popup is not None:
+                    if tile_rect.x >= int(self.surface_viewport.get_size()[0] / 2):
+                        popup_x = tile_rect.x - self.surface_popup.get_width()
+                    else:
+                        popup_x = tile_rect.x + tile_rect.w
+                    popup_y = tile_rect.y
+                    self.surface_viewport.blit(self.surface_popup, (popup_x, popup_y))
 
         # Show level name in top left hand
         if self.player.level is not None:

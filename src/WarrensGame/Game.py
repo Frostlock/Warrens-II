@@ -202,7 +202,7 @@ class Game(object):
         self.player.addItem(potion)
 
         # Quick start
-        if CONSTANTS.QUICK_START:
+        if CONSTANTS.GAME.QUICK_START:
             town = self.levels[0]
             # Group portals together
             i = 1

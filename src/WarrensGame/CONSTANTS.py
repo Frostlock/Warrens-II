@@ -82,13 +82,14 @@ class EFFECT:
 # Field of view
 TORCH_RADIUS = 10
 DAYLIGHT_RADIUS = 30
-QUICK_START = True
 
 
 class GAME:
     """
-    Game system parameters
+    Gameplay related system parameters
     """
+    QUICK_START = True
+
     # TODO: Move to CONFIG class
     MESSAGE_BUFFER_LENGTH = 5
 

@@ -3,7 +3,7 @@ Created on June 21, 2019
 @author: Frostlock
 """
 
-from WarrensGame.CONSTANTS import WORLD
+from WarrensGame.CONSTANTS import WORLD, GAME
 from WarrensGame.Levels import TownLevel, DungeonLevel, CaveLevel
 from WarrensGame.Libraries import *
 import WarrensGame.Utilities as Utilities
@@ -209,58 +209,43 @@ class World(object):
 
         first_level.map.updateFieldOfView(player.tile.x, player.tile.y)
 
-        return player
-        # # Quick start
-        # if CONSTANTS.QUICK_START:
-        #     town = self.levels[0]
-        #     # Group portals together
-        #     i = 1
-        #     for portal in town.portals:
-        #         if portal.destinationPortal.level not in town.subLevels:
-        #             tile = town.map.tiles[1][i]
-        #             i += 1
-        #             portal.moveToTile(tile)
-        #     # Move player close to portals
-        #     tile = town.map.tiles[2][1]
-        #     self.player.moveToTile(tile)
-        #     # Provide more starting gear
-        #     scroll = self.item_library.create_item("firenova", "double")
-        #     self.player.addItem(scroll)
-        #     scroll = self.item_library.create_item("tremor")
-        #     self.player.addItem(scroll)
-        #     potion = self.item_library.create_item("healingvial", "exquisite")
-        #     self.player.addItem(potion)
-        #     cloak = self.item_library.create_item("cloak")
-        #     self.player.addItem(cloak)
-        #     scroll = self.item_library.create_item("fireball")
-        #     self.player.addItem(scroll)
-        #     scroll = self.item_library.create_item("confuse")
-        #     self.player.addItem(scroll)
-        #     scroll = self.item_library.create_item("lightning")
-        #     self.player.addItem(scroll)
-        #     # Add a chest with extra gear
-        #     chest = Chest()
-        #     tile = town.map.tiles[2][2]
-        #     chest.moveToTile(tile)
-        #     for i in range(1, 15):
-        #         item = self.item_library.get_random_item(i)
-        #         chest.inventory.add(item)
+        # Quick start
+        if GAME.QUICK_START:
+            town = self.levels[0]
+            # Group portals together
+            i = 1
+            for portal in town.portals:
+                if portal.destinationPortal.level not in town.subLevels:
+                    tile = town.map.tiles[1][i]
+                    i += 1
+                    portal.moveToTile(tile)
+            # Move player close to portals
+            tile = town.map.tiles[2][1]
+            player.moveToTile(tile)
+            # Provide more starting gear
+            scroll = self.item_library.create_item("firenova", "double")
+            player.addItem(scroll)
+            scroll = self.item_library.create_item("tremor")
+            player.addItem(scroll)
+            potion = self.item_library.create_item("healingvial", "exquisite")
+            player.addItem(potion)
+            cloak = self.item_library.create_item("cloak")
+            player.addItem(cloak)
+            scroll = self.item_library.create_item("fireball")
+            player.addItem(scroll)
+            scroll = self.item_library.create_item("confuse")
+            player.addItem(scroll)
+            scroll = self.item_library.create_item("lightning")
+            player.addItem(scroll)
+            # Add a chest with extra gear
+            chest = Chest()
+            tile = town.map.tiles[2][2]
+            chest.moveToTile(tile)
+            for i in range(1, 15):
+                item = self.item_library.get_random_item(i)
+                chest.inventory.add(item)
 
-    # def load_game(self, file_name):
-    #     """
-    #     Loads game state from a file
-    #     :param file_name: File to load from.
-    #     :return : None
-    #     """
-    #     raise NotImplementedError("Can't load from " + file_name + ". Loading not implemented.")
-    #
-    # def save_game(self, file_name):
-    #     """
-    #     Saves state of current game to a file.
-    #     :param file_name: File to save to.
-    #     :return : None
-    #     """
-    #     raise NotImplementedError("Can't save to " + file_name + ". Saving not implemented.")
+        return player
 
     def tick(self):
         """
