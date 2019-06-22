@@ -7,7 +7,8 @@ from WarrensGame.CONSTANTS import WORLD
 from WarrensGame.Levels import TownLevel, DungeonLevel, CaveLevel
 from WarrensGame.Libraries import *
 import WarrensGame.Utilities as Utilities
-#from WarrensGame.Maps import *
+from WarrensGame.Actors import Player
+# from WarrensGame.Maps import *
 
 
 class World(object):
@@ -208,7 +209,7 @@ class World(object):
 
         first_level.map.updateFieldOfView(player.tile.x, player.tile.y)
 
-        return Player
+        return player
         # # Quick start
         # if CONSTANTS.QUICK_START:
         #     town = self.levels[0]

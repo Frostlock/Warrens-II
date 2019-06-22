@@ -21,6 +21,7 @@ tiles = None
 # WARNING: Unknown hash 443, can't assign tileset ID.
 # WARNING: Unknown hash 433, can't assign tileset ID.
 # WARNING: Unknown hash 283, can't assign tileset ID.
+# WARNING: Unknown hash 152, can't assign tileset ID.
 # WARNING: Unknown hash 26, can't assign tileset ID.
 
 

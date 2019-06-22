@@ -5,7 +5,7 @@ from WarrensGame.CONSTANTS import WORLD, CONFIG
 from WarrensGame.World import World
 from WarrensGame.Levels import TownLevel, DungeonLevel, CaveLevel
 from WarrensGame.Libraries import MonsterLibrary, ItemLibrary
-from WarrensGame.Actors import Character
+from WarrensGame.Actors import Player
 from WarrensGame.Utilities import GameError
 
 
@@ -66,10 +66,12 @@ class TestWorld(unittest.TestCase):
         # World should not have any players upon initialization
         self.assertEqual(len(self.world.players), 0)
         # Add a first player
-        self.world.new_player()
+        player_1 = self.world.new_player()
+        self.assertIsInstance(player_1, Player)
         self.assertEqual(len(self.world.players), 1)
         # Add a second player
-        self.world.new_player()
+        player_2 = self.world.new_player()
+        self.assertIsInstance(player_2, Player)
         self.assertEqual(len(self.world.players), 2)
 
     def test_save_world(self):
