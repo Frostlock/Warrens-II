@@ -166,6 +166,14 @@ class InterfaceForPlayer(object):
         initialize_sprites(self.tile_size)
 
     @property
+    def frame_rate(self):
+        """
+        Current frame rate of the main loop
+        :return:
+        """
+        return self._frame_rate
+
+    @property
     def player(self):
         """
         The Player that this GUI controls.
@@ -208,6 +216,7 @@ class InterfaceForPlayer(object):
         self._renderViewPortX = 0
         self._renderViewPortY = 0
         self._viewport_placement = (0, 0)
+        self._frame_rate = 0
 
         # Initialize display surface
         display_info = pygame.display.Info()
@@ -291,6 +300,7 @@ class InterfaceForPlayer(object):
             # limit frame rate (kinda optimistic since with current rendering we don't achieve this framerate :) )
             frame_rate_limit = 30
             clock.tick(frame_rate_limit)
+            self._frame_rate = clock.get_fps()
 
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 print("LOOP! FrameRateLimit: " + str(frame_rate_limit) +
@@ -537,16 +547,17 @@ class InterfaceForPlayer(object):
                     if tile.inView:
                         # draw any actors standing on this tile (monsters, portals, items, ...)
                         for myActor in tile.actors:
-                            if myActor.inView:
-                                # Get sprite for Actor
-                                sprite = get_sprite_surface(myActor.sprite_id)
-                                # If not found, fallback to char representation
-                                if sprite is None:
-                                    sprite = self.viewport_font.render(myActor.char, 1, myActor.color)
-                                # Center sprite on tile
-                                x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
-                                y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
-                                self.surface_viewport.blit(sprite, (x, y))
+                            if myActor is not self.player:
+                                if myActor.inView:
+                                    # Get sprite for Actor
+                                    sprite = get_sprite_surface(myActor.sprite_id)
+                                    # If not found, fallback to char representation
+                                    if sprite is None:
+                                        sprite = self.viewport_font.render(myActor.char, 1, myActor.color)
+                                    # Center sprite on tile
+                                    x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
+                                    y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
+                                    self.surface_viewport.blit(sprite, (x, y))
                     else:
                         # tile not in view: apply fog of war
                         self.surface_viewport.blit(self.fogOfWarTileSurface, tile_rect)
@@ -605,11 +616,15 @@ class InterfaceForPlayer(object):
                     popup_y = tile_rect.y
                     self.surface_viewport.blit(self.surface_popup, (popup_x, popup_y))
 
-        # Show level name in top left hand
+        # Show level name in top left hand corner
         if self.player.level is not None:
             blit_text = GuiUtilities.FONT_PANEL.render(self.player.level.name, 1, COLORS.PANEL_FONT)
             self.surface_viewport.blit(blit_text, (6, 2))
-        
+
+        # Show frame rate in top right hand corner
+        blit_text = GuiUtilities.FONT_PANEL.render(str(self.frame_rate) + " fps", 1, COLORS.PANEL_FONT)
+        self.surface_viewport.blit(blit_text, (self.window_size[0] - blit_text.get_width(), 2))
+
     def render_popup(self, tile):
         """
         renders a surface containing info details for the given tile

@@ -52,7 +52,7 @@ def initialize_sprites(tile_size):
     sprite_dict[SPRITES.ZOMBIE] = creatures[1][17]
 
     # Player
-    sprite_dict[SPRITES.PLAYER] = creatures[2][3]
+    sprite_dict[SPRITES.PLAYER] = AnimatedSprite([creatures[2][3], creatures[2][4]])
 
     # Chest
     sprite_dict[SPRITES.CHEST_CLOSED] = tiles[32][4]
@@ -143,6 +143,33 @@ def get_sprite_surface(sprite_id):
     if sprite_id is None:
         return None
     try:
-        return sprite_dict[sprite_id]
+        if isinstance(sprite_dict[sprite_id], pygame.Surface):
+            return sprite_dict[sprite_id]
+        elif isinstance(sprite_dict[sprite_id], AnimatedSprite):
+            return sprite_dict[sprite_id].frame()
+        else:
+            raise ValueError("Unknown object in sprite_dict.")
     except KeyError:
         return None
+
+
+class AnimatedSprite(object):
+
+    def __init__(self, frames):
+        """
+        Create an animated sprite.
+        :param frames: An array of Surfaces representing the frames in the animation.
+        """
+        self._frames = frames
+        self._index = 0
+
+    def frame(self):
+        """
+        Return the next frame of the animation.
+        :return:
+        """
+        frame = self._frames[self._index]
+        self._index += 1
+        if self._index > len(self._frames) - 1:
+            self._index = 0
+        return frame
