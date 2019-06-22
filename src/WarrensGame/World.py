@@ -207,6 +207,7 @@ class World(object):
         potion = self.item_library.create_item("healingpotion")
         player.addItem(potion)
 
+        # TODO: multiplayer - move FOV code into player (it will be different for every player)
         first_level.map.updateFieldOfView(player.tile.x, player.tile.y)
 
         # Quick start
@@ -244,7 +245,6 @@ class World(object):
             for i in range(1, 9):
                 item = self.item_library.get_random_item(i)
                 chest.inventory.add(item)
-
         return player
 
     def tick(self):

@@ -39,6 +39,8 @@ def initialize_sprites(tile_size):
     tiles = load_sprite_sheet(GRAPHICS.TILES, 24, 0, tile_size)
     creatures = load_sprite_sheet(GRAPHICS.CREATURES, 24, 0, tile_size)
     items = load_sprite_sheet(GRAPHICS.ITEMS, 16, 0, int(0.75 * tile_size))
+    effects_24 = load_sprite_sheet(GRAPHICS.EFFECTS_24, 24, 0, tile_size)
+    effects_32 = load_sprite_sheet(GRAPHICS.EFFECTS_32, 32, 0, int(1.25 * tile_size))
 
     # Link loaded sprites to Game sprite ID's
     # Portals
@@ -77,6 +79,11 @@ def initialize_sprites(tile_size):
     sprite_dict[SPRITES.SHIELD] = items[1][11]
     sprite_dict[SPRITES.CLOAK] = items[8][12]
     sprite_dict[SPRITES.RING] = items[10][4]
+
+    # Effects
+    frames = [effects_32[3][0], effects_32[2][0], effects_32[5][0], effects_24[9][5]]
+    # TODO: Issue here, the loop runs once, when the next heal is needed the animation is stuck at the last frame
+    sprite_dict[SPRITES.EFFECT_HEAL] = AnimatedSprite(frames, 10, loop=False)
 
 
 def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
@@ -158,36 +165,40 @@ def get_sprite_surface(sprite_id, elapsed_time=0):
 
 class AnimatedSprite(object):
 
-    def __init__(self, frames, fps):
+    def __init__(self, frames, fps, loop=True):
         """
         Create an animated sprite.
         :param frames: An array of Surfaces representing the frames in the animation.
         :param fps: Frames per second for the animation
+        :param loop: Boolean indicating if the animation should loop.
         """
+        self._frames = frames
+
         self._fps = fps
         self._frame_time = int(1000/fps)
-        self._frames = frames
+        self._loop = loop
         self._index = 0
         self._elapsed_time = 0
-        self._panic = False
+        self._run = True
 
     def frame(self, elapsed_time):
         """
         Return the next frame of the animation.
-        :return:
+        :return: Pygame Surface representing the frame
         """
-        if self._panic:
-            # In panic mode always return a single frame
-            return self._frames[0]
-        else:
+        if self._run:
             self._elapsed_time += elapsed_time
             if self._elapsed_time > self._frame_time:
                 self._elapsed_time -= self._frame_time
-                if self._elapsed_time > self._frame_time:
-                    # We have missed a frame, go to panic mode
-                    self._panic = True
-                    print("Warning: Animation panic, disabling sprite updates for sprite " + str(self))
+                # if self._elapsed_time > 10 * self._frame_time:
+                #     # We have missed 10 frames, go to panic mode
+                #     self._run = False
+                #     print("Warning: Animation panic, disabling sprite updates for sprite " + str(self))
                 self._index += 1
                 if self._index > len(self._frames) - 1:
-                    self._index = 0
-            return self._frames[self._index]
+                    if self._loop:
+                        self._index = 0
+                    else:
+                        self._index = len(self._frames) - 1
+                        self._run = False
+        return self._frames[self._index].copy()

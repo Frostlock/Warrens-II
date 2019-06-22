@@ -6,6 +6,7 @@ This ranges from magical effects to melee effects and healing effectss.
 import WarrensGame.AI
 from WarrensGame.Maps import Tile
 from WarrensGame.Utilities import roll_hit_die, GameError, message
+from WarrensGame.CONSTANTS import SPRITES
 
 
 class TARGET:
@@ -178,6 +179,7 @@ class HealEffect(Effect):
         for target in self.actors:
             heal_amount = roll_hit_die(self.effectHitDie)
             target.takeHeal(heal_amount, self.source)
+            target.sprite_overlay_id = SPRITES.EFFECT_HEAL
 
 
 class ConfuseEffect(Effect):

@@ -165,6 +165,8 @@ class SPRITES:
     T_EAST = 24
     T_NORTH = 25
 
+    EFFECT_HEAL = "effect_heal"
+
 
 class INTERACTION:
     """

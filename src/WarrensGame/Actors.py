@@ -87,6 +87,19 @@ class Actor(object):
         self.json["sprite_id"] = new_id
 
     @property
+    def sprite_overlay_id(self):
+        """
+        Property to keep a sprite overlay ID.
+        This can be used to give additional visualization hits to the GUI.
+        For example this can be used to set a healing overlay.
+        """
+        return self.json["sprite_overlay_id"]
+
+    @sprite_overlay_id.setter
+    def sprite_overlay_id(self, new_id):
+        self.json["sprite_overlay_id"] = new_id
+
+    @property
     def tile(self):
         """
         Returns the Tile on which this Actor is located. Can be None.
@@ -182,6 +195,7 @@ class Actor(object):
         self.json["maxHitPoints"] = 1
         self.json["currentHitPoints"] = self.maxHitPoints
         self.json["sprite_id"] = None
+        self.json["sprite_overlay_id"] = None
         self._tile = None
         self._level = None
         self._sceneObject = None

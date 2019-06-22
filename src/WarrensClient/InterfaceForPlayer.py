@@ -552,15 +552,7 @@ class InterfaceForPlayer(object):
                         for myActor in tile.actors:
                             if myActor is not self.player:
                                 if myActor.inView:
-                                    # Get sprite for Actor
-                                    sprite = get_sprite_surface(myActor.sprite_id)
-                                    # If not found, fallback to char representation
-                                    if sprite is None:
-                                        sprite = self.viewport_font.render(myActor.char, 1, myActor.color)
-                                    # Center sprite on tile
-                                    x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
-                                    y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
-                                    self.surface_viewport.blit(sprite, (x, y))
+                                    self.render_viewport_actor(myActor, tile_rect)
                     else:
                         # tile not in view: apply fog of war
                         self.surface_viewport.blit(self.fogOfWarTileSurface, tile_rect)
@@ -582,13 +574,7 @@ class InterfaceForPlayer(object):
         vp_x = (self.player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
         vp_y = (self.player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
         tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        sprite = get_sprite_surface(self.player.sprite_id, self._frame_elapsed_time)
-        if sprite is None:
-            sprite = self.viewport_font.render(self.player.char, 1, self.player.color)
-        # Center on tile
-        x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
-        y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
-        self.surface_viewport.blit(sprite, (x, y))
+        self.render_viewport_actor(self.player, tile_rect)
 
         if self.targeting_mode:
             # Indicate we are in targeting mode
@@ -627,6 +613,23 @@ class InterfaceForPlayer(object):
         # Show frame rate in top right hand corner
         blit_text = GuiUtilities.FONT_PANEL.render(str(self.frame_rate) + " fps", 1, COLORS.PANEL_FONT)
         self.surface_viewport.blit(blit_text, (self.window_size[0] - blit_text.get_width(), 2))
+
+    def render_viewport_actor(self, my_actor, tile_rect):
+        # Get sprite for Actor
+        sprite = get_sprite_surface(my_actor.sprite_id, self._frame_elapsed_time)
+        # If not found, fallback to char representation
+        if sprite is None:
+            sprite = self.viewport_font.render(my_actor.char, 1, my_actor.color)
+        # Get effect overlay for sprite
+        overlay = get_sprite_surface(my_actor.sprite_overlay_id, self._frame_elapsed_time)
+        if overlay is not None:
+            overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
+            overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
+            sprite.blit(overlay, (overlay_x, overlay_y))
+        # Center sprite on tile
+        x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
+        y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)
+        self.surface_viewport.blit(sprite, (x, y))
 
     def render_popup(self, tile):
         """

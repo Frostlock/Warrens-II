@@ -21,6 +21,8 @@ class GRAPHICS:
     CREATURES = "./WarrensClient/assets/creatures.bin"
     ITEMS = "./WarrensClient/assets/items.bin"
     TILES = "./WarrensClient/assets/tiles.bin"
+    EFFECTS_24 = "./WarrensClient/assets/effects_24.bin"
+    EFFECTS_32 = "./WarrensClient/assets/effects_32.bin"
 
 
 class COLORS:
