@@ -66,6 +66,7 @@ class MainApplication(object):
 
         # Initialize display surface
         display_info = pygame.display.Info()
+        # TODO: Clear up this hack, will like mess up for people with a single screen.
         # Hack for my fullscreen
         # - I have two screens so divide width by two
         # - I have a window manager panel which always takes up 24 pixels on first screen
@@ -102,8 +103,8 @@ class MainApplication(object):
             GuiUtilities.show_splash(self.surface_display)
 
         # Show menu
-        options = ['New game', 'Controls', 'Quit', 'Debug Maps', 'Connect to server']
-        keys = ['n', 'c', 'q', 'd', 's']
+        options = ['New game', 'Controls', 'Quit']
+        keys = ['n', 'c', 'q']
         while True:
             selection = GuiUtilities.show_menu(self.surface_display, 'Main Menu', options, keys)
             if selection is None:
@@ -117,12 +118,6 @@ class MainApplication(object):
             elif selection == 2:
                 print('Main Menu: ' + options[2])
                 sys.exit()
-            elif selection == 3:
-                print('Main Menu: ' + options[3])
-                self.event_debug_maps()
-            elif selection == 4:
-                print('Main Menu: ' + options[4])
-                self.event_connect_to_server()
             else:
                 print('Main menu: unknown selection...?')
 
@@ -137,23 +132,6 @@ class MainApplication(object):
         player = world.new_player()
         # Show interface to control player
         InterfaceForPlayer(player)
-
-    def event_debug_maps(self):
-        GuiUtilities.show_message(self.surface_display, "Sorry!", "This one is not implemented yet :)")
-        # # Stop a potential running game
-        # self.stop_game()
-        # # Setup a local debug game
-        # self._game_server = LocalServer()
-        # self.game_server.new_debug_game()
-        # # Show the Game
-        # self.main_in_game_loop()
-
-    def event_connect_to_server(self):
-        GuiUtilities.show_message(self.surface_display, "Sorry!", "This one is not implemented yet :)")
-        # # Connect to remote server
-        # self._game_server = RemoteServer()
-        # # Show the Game
-        # self.main_in_game_loop()
 
 
 if __name__ == "__main__":

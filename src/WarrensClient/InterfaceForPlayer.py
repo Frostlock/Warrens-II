@@ -151,8 +151,8 @@ class InterfaceForPlayer(object):
         # Determine max coords for view port location
         total_width = self.player.level.map.width * self.tile_size
         total_height = self.player.level.map.height * self.tile_size
-        self._renderViewPortMaxX = total_width - self._render_viewport_w
-        self._renderViewPortMaxY = total_height - self._render_viewport_h
+        self._renderViewPortMaxX = total_width - self.surface_viewport.get_width()
+        self._renderViewPortMaxY = total_height - self.surface_viewport.get_height()
         if self._renderViewPortMaxX < 0:
             self._renderViewPortMaxX = 0
         if self._renderViewPortMaxY < 0:
@@ -196,7 +196,7 @@ class InterfaceForPlayer(object):
         """
         return self._draggingMode
 
-    def __init__(self, player):
+    def __init__(self, my_player):
         """
         Constructor
         """
@@ -204,9 +204,9 @@ class InterfaceForPlayer(object):
         GuiUtilities.init_pygame()
 
         # Initialize properties
-        if not isinstance(player, Player):
+        if not isinstance(my_player, Player):
             raise ValueError("Need Player object to construct PlayerClient.")
-        self._player = player
+        self._player = my_player
         self._draggingMode = False
         self._targetingMode = False
         self._tile_size = 0
@@ -218,6 +218,10 @@ class InterfaceForPlayer(object):
         self._viewport_placement = (0, 0)
         self._frame_rate = 0
         self._frame_elapsed_time = 0
+        self._surface_display = None
+        self._surface_panel = None
+        self._surface_viewport = None
+        self._surface_popup = None
 
         # Initialize display surface
         display_info = pygame.display.Info()
@@ -231,8 +235,11 @@ class InterfaceForPlayer(object):
         self.set_window_size(self.window_size)
         self.zoom_factor = 1
 
-        # Start
+        # Start music
         Audio.start_music()
+
+        # Go into main loop
+        self._run_game_loop = True
         self.main_loop()
 
     def set_window_size(self, display_size):
@@ -259,17 +266,14 @@ class InterfaceForPlayer(object):
         width = display_size[0]
         height = display_size[1] - self.surface_panel.get_height()
         self._surface_viewport = pygame.Surface((width, height))
-        self._render_viewport_w = self.surface_viewport.get_width()
-        self._render_viewport_h  = self.surface_viewport.get_height()
 
         # Clear helper surface for pop up window
         self._surface_popup = None
 
     def main_loop(self):
         clock = pygame.time.Clock()
-        self.run_game_loop = True
-
-        while self.run_game_loop:
+        start_time, render_time, event_time = 0, 0, 0
+        while self._run_game_loop:
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 start_time = time.time()
 
@@ -298,16 +302,14 @@ class InterfaceForPlayer(object):
             #     # If the player took a turn: Let the game play a turn
             #     self.game.try_to_play_turn()
 
-            # limit frame rate (kinda optimistic since with current rendering we don't achieve this framerate :) )
+            # limit frame rate (kinda optimistic since with current rendering we don't achieve this frame rate :) )
             frame_rate_limit = 30
             self._frame_elapsed_time = clock.tick(frame_rate_limit)
             self._frame_rate = clock.get_fps()
 
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                print("LOOP! FrameRateLimit: " + str(frame_rate_limit) +
-                      " Rendering: " + str(render_time) +
-                      "s " + str(len(events)) +
-                      " events: " + str(event_time) + "s")
+                print("LOOP! FPS: " + str(self._frame_rate) + " Rendering: " + str(render_time) + "s " +
+                      str(len(events)) + " events: " + str(event_time) + "s")
 
     def show_game_menu(self):
         options = ['Controls', 'Quit Game']
@@ -331,7 +333,7 @@ class InterfaceForPlayer(object):
         self.surface_display.fill(COLORS.PANEL_BG)
         pygame.display.flip()
         # Interrupt game loop
-        self.run_game_loop = False
+        self._run_game_loop = False
 
     def handle_pygame_event(self, event):
         """
@@ -516,8 +518,8 @@ class InterfaceForPlayer(object):
         # Render tiles that are in the viewport area
         start_x = int(self._renderViewPortX // self.tile_size)
         start_y = int(self._renderViewPortY // self.tile_size)
-        stop_x = start_x + int(self._render_viewport_w // self.tile_size) + 1
-        stop_y = start_y + int(self._render_viewport_h // self.tile_size) + 1
+        stop_x = start_x + int(self.surface_viewport.get_width() // self.tile_size) + 1
+        stop_y = start_y + int(self.surface_viewport.get_height() // self.tile_size) + 1
         if stop_x > self.player.level.map.width:
             stop_x = self.player.level.map.width
         if stop_y > self.player.level.map.height:
@@ -778,17 +780,17 @@ class InterfaceForPlayer(object):
         else:
             pos = pygame.mouse.get_pos()
             # Coords relevant to viewport
-            mouseX = pos[0]
-            mouseY = pos[1]
+            mouse_x = pos[0]
+            mouse_y = pos[1]
             # Coords relevant to entire map
-            mapX = self._renderViewPortX + mouseX
-            mapY = self._renderViewPortY + mouseY
+            map_x = self._renderViewPortX + mouse_x
+            map_y = self._renderViewPortY + mouse_y
             # Determine Tile
-            map = self.player.level.map
-            tileX = int(mapX / self.tile_size)
-            tileY = int(mapY / self.tile_size)
-            if tileX > 0 and tileX < map.width-1 and tileY > 0 and tileY < map.height-1:
-                self._renderSelectedTile = map.tiles[tileX][tileY]
+            tile_x = int(map_x / self.tile_size)
+            tile_y = int(map_y / self.tile_size)
+            current_map = self.player.level.map
+            if 0 < tile_x < current_map.width-1 and 0 < tile_y < current_map.height-1:
+                self._renderSelectedTile = current_map.tiles[tile_x][tile_y]
             else:
                 self._renderSelectedTile = None
 
@@ -811,8 +813,8 @@ class InterfaceForPlayer(object):
         :return: None
         """
         # set new viewport coords
-        self._renderViewPortX = tile.x * self.tile_size - (self._render_viewport_w / 2)
-        self._renderViewPortY = tile.y * self.tile_size - (self._render_viewport_h / 2)
+        self._renderViewPortX = tile.x * self.tile_size - (self.surface_viewport.get_width() / 2)
+        self._renderViewPortY = tile.y * self.tile_size - (self.surface_viewport.get_height() / 2)
 
     def use_inventory(self):
         """
@@ -894,4 +896,5 @@ if __name__ == "__main__":
     # Quickstart code to test out the Player Interface
     world = World()
     player = world.new_player()
+    player2 = world.new_player()
     client = InterfaceForPlayer(player)

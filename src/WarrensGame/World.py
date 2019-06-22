@@ -220,7 +220,7 @@ class World(object):
                     i += 1
                     portal.moveToTile(tile)
             # Move player close to portals
-            tile = town.map.tiles[len(self.players)][1]
+            tile = town.map.tiles[len(self.players)+1][1]
             player.moveToTile(tile)
             # Provide more starting gear
             scroll = self.item_library.create_item("firenova", "double")
@@ -239,7 +239,7 @@ class World(object):
             player.addItem(scroll)
             # Add a chest with extra gear
             chest = Chest()
-            tile = town.map.tiles[len(self.players)][2]
+            tile = town.map.tiles[len(self.players)+1][2]
             chest.moveToTile(tile)
             for i in range(1, 9):
                 item = self.item_library.get_random_item(i)
