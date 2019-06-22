@@ -92,6 +92,14 @@ class Level(object):
         return self._subLevels
 
     @property
+    def active_effects(self):
+        """
+        A list of the currently active effects
+        :return: Array of Effects
+        """
+        return self._activeEffects
+
+    @property
     def json(self):
         """
         Json dictionary representation of the Level.
@@ -117,6 +125,7 @@ class Level(object):
         self._characters = []
         self._items = []
         self._subLevels = []
+        self._activeEffects = []
 
     def removeActor(self, myActor):
         """

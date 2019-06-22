@@ -54,14 +54,6 @@ class Game(object):
         Utilities.game_event("Level", level.json)
 
     @property
-    def active_effects(self):
-        """
-        A list of the currently active effects
-        :return: Array of Effects
-        """
-        return self._activeEffects
-
-    @property
     def monster_library(self):
         """
         Returns the monster library used by this game.
@@ -84,7 +76,6 @@ class Game(object):
         self._player = None
         self._levels = []
         self._currentLevel = None
-        self._activeEffects = []
         # Initialize libraries
         self._monsterLibrary = MonsterLibrary()
         self._itemLibrary = ItemLibrary()
@@ -286,14 +277,14 @@ class Game(object):
             self.current_level.map.updateFieldOfView(self.player.tile.x, self.player.tile.y)
             # Let effects tick
             to_remove = []
-            for effect in self.active_effects:
+            for effect in self.current_level.active_effects:
                 if effect.effectDuration <= 0:
                     to_remove.append(effect)
                 else:
                     effect.tick()
             # Remove effects that are no longer active
             for effect in to_remove:
-                self.active_effects.remove(effect)
+                self.current_level.active_effects.remove(effect)
             # Broadcast game state
             self.broadcast_game_state()
             return True

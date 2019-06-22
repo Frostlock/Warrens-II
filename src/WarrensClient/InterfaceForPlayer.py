@@ -646,7 +646,7 @@ class InterfaceForPlayer(object):
                 self.surface_popup.blit(s, (x, y))
 
     def show_effects(self):
-        for effect in self.game.active_effects:
+        for effect in self.player.level.active_effects:
             # Current implementation looks at effect targetType to decide on a visualization option.
             if effect.targetType == TARGET.SELF:
                 # flash tile on which actor is standing
