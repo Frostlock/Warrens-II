@@ -3,14 +3,16 @@ This module contains all the constants that are used by the application.
 Note that all constants are CAPITAL letters only for clarity.
 """
 
-APPLICATION_NAME = "W@rrens II"
 
-ZOOM_MULTIPLIER = 2  # Increase in zoom for each zooming operation
-MAX_ZOOM_FACTOR = 10
-MIN_ZOOM_FACTOR = 0.1
+class INTERFACE:
+    APPLICATION_NAME = "W@rrens II"
 
-# Config switches
-SHOW_PERFORMANCE_LOGGING = False
+    SHOW_SPLASH_SCREEN = True
+    SHOW_PERFORMANCE_LOGGING = False
+
+    ZOOM_MULTIPLIER = 0.2  # Increase in zoom for each zooming operation
+    MAX_ZOOM_FACTOR = 10
+    MIN_ZOOM_FACTOR = 0.1
 
 
 class GRAPHICS:

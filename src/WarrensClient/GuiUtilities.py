@@ -8,15 +8,42 @@ several of these methods where copied from
 """
 import sys
 import pygame
-from WarrensClient.CONFIG import COLORS, GRAPHICS
-from WarrensClient.Audio import play_sound
-from WarrensGame import CONSTANTS
+from WarrensClient.CONFIG import COLORS, GRAPHICS, INTERFACE
+from WarrensClient.Audio import init_audio, play_sound
+from WarrensGame.CONSTANTS import EFFECT
 from itertools import chain
 
 FONT_PANEL = None
 FONT_HEADER = None
 FONT_NORMAL = None
 
+PYGAME_INIT_DONE = False
+
+
+def init_pygame():
+    """
+    Initialize pygame
+    :return: None
+    """
+    # Ensure this runs only once
+    global PYGAME_INIT_DONE
+    if not PYGAME_INIT_DONE:
+        PYGAME_INIT_DONE = True
+        # Initialize PyGame
+        pygame.mixer.pre_init(44100, -16, 2, 512)
+        pygame.init()
+
+        # Initialize fonts
+        init_fonts()
+
+        # Initialize audio
+        init_audio()
+
+        # Set mouse cursor
+        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+
+        # Initialize window title
+        pygame.display.set_caption(INTERFACE.APPLICATION_NAME)
 
 def init_fonts():
     """
@@ -268,19 +295,19 @@ def get_element_color(element):
     :param element: Element type
     :return: RGB color tuple
     """
-    if element == CONSTANTS.HEAL:
+    if element == EFFECT.HEAL:
         return COLORS.HEAL
-    elif element == CONSTANTS.WATER:
+    elif element == EFFECT.WATER:
         return COLORS.WATER
-    elif element == CONSTANTS.AIR:
+    elif element == EFFECT.AIR:
         return COLORS.AIR
-    elif element == CONSTANTS.FIRE:
+    elif element == EFFECT.FIRE:
         return COLORS.FIRE
-    elif element == CONSTANTS.EARTH:
+    elif element == EFFECT.EARTH:
         return COLORS.EARTH
-    elif element == CONSTANTS.ELEC:
+    elif element == EFFECT.ELEC:
         return COLORS.ELEC
-    elif element == CONSTANTS.MIND:
+    elif element == EFFECT.MIND:
         return COLORS.MIND
     else:
         raise NotImplementedError("Missing element to color mapping.")

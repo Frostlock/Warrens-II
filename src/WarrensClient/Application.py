@@ -8,7 +8,7 @@ import time
 import pygame
 from pygame.locals import *
 from WarrensClient import GuiUtilities
-from WarrensClient.CONFIG import *
+from WarrensClient.CONFIG import INTERFACE, COLORS
 from WarrensClient.Graphics import initialize_sprites, get_tile_surface, get_sprite_surface
 from WarrensClient import Audio
 from WarrensGame.Actors import Character
@@ -197,7 +197,7 @@ class Application(object):
         pygame.mouse.set_cursor(*pygame.cursors.tri_left)
         
         # Initialize window title
-        pygame.display.set_caption(APPLICATION_NAME)
+        pygame.display.set_caption(INTERFACE.APPLICATION_NAME)
 
     def setup_surfaces(self, display_size):
         """
@@ -320,17 +320,17 @@ class Application(object):
         self.run_game_loop = True
         self._gamePlayerTookTurn = False
         while self.run_game_loop:
-            if SHOW_PERFORMANCE_LOGGING:
+            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 start_time = time.time()
 
             # Network communication messages
             self.game_server.process()
-            if SHOW_PERFORMANCE_LOGGING:
+            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 network_time = time.time() - start_time
 
             # Render the screen
             self.render_screen()
-            if SHOW_PERFORMANCE_LOGGING:
+            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 render_time = time.time() - start_time - network_time
 
             # Handle pygame (GUI) events
@@ -345,7 +345,7 @@ class Application(object):
                     #zoom in on player corpse
                     self.event_zoom_on_tile(self.game.player.tile)
 
-            if SHOW_PERFORMANCE_LOGGING:
+            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 event_time = time.time() - start_time - network_time - render_time
 
             # TODO: Implement for RemoteServer
@@ -357,7 +357,7 @@ class Application(object):
             frameRateLimit = 30
             clock.tick(frameRateLimit)
             
-            if SHOW_PERFORMANCE_LOGGING:
+            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 print("LOOP! FrameRateLimit: " + str(frameRateLimit) +
                       " Network: " + str(network_time) +
                       " Rendering: " + str(render_time) +
@@ -887,9 +887,9 @@ class Application(object):
         Zoom in while centering on current mouse position.
         """
         # zoom in limit
-        if self.zoom_factor * ZOOM_MULTIPLIER >= MAX_ZOOM_FACTOR:
+        if self.zoom_factor * INTERFACE.ZOOM_MULTIPLIER >= INTERFACE.MAX_ZOOM_FACTOR:
             return
-        zoom_multiplier = ZOOM_MULTIPLIER
+        zoom_multiplier = INTERFACE.ZOOM_MULTIPLIER
         # change zoom factor
         self._zoomFactor = self.zoom_factor * zoom_multiplier
         # Center viewport on mouse location
@@ -911,9 +911,9 @@ class Application(object):
         Zoom out while centering on current mouse position.
         """
         # zoom out limit
-        if self.zoom_factor / ZOOM_MULTIPLIER < 1:
+        if self.zoom_factor / INTERFACE.ZOOM_MULTIPLIER < 1:
             return
-        zoom_multiplier = ZOOM_MULTIPLIER
+        zoom_multiplier = INTERFACE.ZOOM_MULTIPLIER
         # change zoom factor
         self._zoomFactor = self.zoom_factor / zoom_multiplier
         if self.zoom_factor < 1:
@@ -936,13 +936,13 @@ class Application(object):
         """
         zooms in on provided tile
         """
-        if self.zoom_factor * ZOOM_MULTIPLIER >= MAX_ZOOM_FACTOR:
+        if self.zoom_factor * INTERFACE.ZOOM_MULTIPLIER >= INTERFACE.MAX_ZOOM_FACTOR:
             return
         # change zoom factor
-        self._zoomFactor = self.zoom_factor * ZOOM_MULTIPLIER
+        self._zoomFactor = self.zoom_factor * INTERFACE.ZOOM_MULTIPLIER
         # set new viewport coords
-        self._renderViewPortX = tile.x * self.tile_size * ZOOM_MULTIPLIER - (self._render_viewport_w / 2)
-        self._renderViewPortY = tile.y * self.tile_size * ZOOM_MULTIPLIER - (self._render_viewport_h / 2)
+        self._renderViewPortX = tile.x * self.tile_size * INTERFACE.ZOOM_MULTIPLIER - (self._render_viewport_w / 2)
+        self._renderViewPortY = tile.y * self.tile_size * INTERFACE.ZOOM_MULTIPLIER - (self._render_viewport_h / 2)
         # Reset rendering parameters
         self.render_init()
         
