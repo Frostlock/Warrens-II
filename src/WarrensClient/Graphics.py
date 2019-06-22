@@ -52,7 +52,8 @@ def initialize_sprites(tile_size):
     sprite_dict[SPRITES.ZOMBIE] = creatures[1][17]
 
     # Player
-    sprite_dict[SPRITES.PLAYER] = AnimatedSprite([creatures[2][3], creatures[2][4]])
+    sprite_dict[SPRITES.PLAYER] = AnimatedSprite([creatures[2][3], creatures[2][4]], 6)
+    sprite_dict[SPRITES.PLAYER_RIP] = tiles[29][1]
 
     # Chest
     sprite_dict[SPRITES.CHEST_CLOSED] = tiles[32][4]
@@ -132,12 +133,13 @@ def get_tile_surface(tile_id, tile_set):
         return None
 
 
-def get_sprite_surface(sprite_id):
+def get_sprite_surface(sprite_id, elapsed_time=0):
     """
     Try to match a sprite to the provided sprite id.
     If successful match: Return a pygame surface
     If not: Return None
-    :param sprite_id: numerical ID from the Game CONSTANTS
+    :param sprite_id: numerical sprite ID from the Game CONSTANTS
+    :param elapsed_time: Miliseconds of elapse time to control speed of animation
     :return: Pygame surface containing the sprite or None
     """
     if sprite_id is None:
@@ -146,7 +148,7 @@ def get_sprite_surface(sprite_id):
         if isinstance(sprite_dict[sprite_id], pygame.Surface):
             return sprite_dict[sprite_id]
         elif isinstance(sprite_dict[sprite_id], AnimatedSprite):
-            return sprite_dict[sprite_id].frame()
+            return sprite_dict[sprite_id].frame(elapsed_time)
         else:
             raise ValueError("Unknown object in sprite_dict.")
     except KeyError:
@@ -155,21 +157,36 @@ def get_sprite_surface(sprite_id):
 
 class AnimatedSprite(object):
 
-    def __init__(self, frames):
+    def __init__(self, frames, fps):
         """
         Create an animated sprite.
         :param frames: An array of Surfaces representing the frames in the animation.
+        :param fps: Frames per second for the animation
         """
+        self._fps = fps
+        self._frame_time = int(1000/fps)
         self._frames = frames
         self._index = 0
+        self._elapsed_time = 0
+        self._panic = False
 
-    def frame(self):
+    def frame(self, elapsed_time):
         """
         Return the next frame of the animation.
         :return:
         """
-        frame = self._frames[self._index]
-        self._index += 1
-        if self._index > len(self._frames) - 1:
-            self._index = 0
-        return frame
+        if self._panic:
+            # In panic mode always return a single frame
+            return self._frames[0]
+        else:
+            self._elapsed_time += elapsed_time
+            if self._elapsed_time > self._frame_time:
+                self._elapsed_time -= self._frame_time
+                if self._elapsed_time > self._frame_time:
+                    # We have missed a frame, go to panic mode
+                    self._panic = True
+                    print("Warning: Animation panic, disabling sprite updates for sprite " + str(self))
+                self._index += 1
+                if self._index > len(self._frames) - 1:
+                    self._index = 0
+            return self._frames[self._index]

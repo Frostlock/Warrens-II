@@ -217,6 +217,7 @@ class InterfaceForPlayer(object):
         self._renderViewPortY = 0
         self._viewport_placement = (0, 0)
         self._frame_rate = 0
+        self._frame_elapsed_time = 0
 
         # Initialize display surface
         display_info = pygame.display.Info()
@@ -299,7 +300,7 @@ class InterfaceForPlayer(object):
 
             # limit frame rate (kinda optimistic since with current rendering we don't achieve this framerate :) )
             frame_rate_limit = 30
-            clock.tick(frame_rate_limit)
+            self._frame_elapsed_time = clock.tick(frame_rate_limit)
             self._frame_rate = clock.get_fps()
 
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
@@ -579,7 +580,7 @@ class InterfaceForPlayer(object):
         vp_x = (self.player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
         vp_y = (self.player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
         tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        sprite = get_sprite_surface(self.player.sprite_id)
+        sprite = get_sprite_surface(self.player.sprite_id, self._frame_elapsed_time)
         if sprite is None:
             sprite = self.viewport_font.render(self.player.char, 1, self.player.color)
         # Center on tile
@@ -853,6 +854,9 @@ class InterfaceForPlayer(object):
     def event_targeting_acquire(self):
         # targeted tile is currently selected
         target_tile = self._renderSelectedTile
+        if target_tile is None:
+            # Abort, wait for a properly selected tile"
+            return
         # hack to avoid lingering selection tile
         self._renderSelectedTile = None
         # find target based on targetType

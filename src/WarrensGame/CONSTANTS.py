@@ -125,6 +125,7 @@ class SPRITES:
     ZOMBIE = "zombie"
 
     PLAYER = "player"
+    PLAYER_RIP = "player_rip"
 
     POTION_HEAL_SMALL = "healingvial"
     POTION_HEAL_MEDIUM = "healingpotion"

@@ -784,6 +784,7 @@ class Player(Character):
         #call super class implementation
         super(Player, self)._killedBy(attacker)
         #Player class specific
+        self.sprite_id = SPRITES.PLAYER_RIP
         self.json["char"] = '%'
         self.json["color"] = (255,0,0)
         self.json["name"] = 'The remains of ' + origName
