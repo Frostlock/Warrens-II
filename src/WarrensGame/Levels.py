@@ -14,11 +14,11 @@ class Level(object):
     by the sub classes
     """
     @property
-    def game(self):
+    def owner(self):
         """
-        The game that owns this level.
+        The game or world that owns this level.
         """
-        return self._game
+        return self._owner
 
     @property
     def name(self):
@@ -117,7 +117,7 @@ class Level(object):
             name - a textual name for this level
         """
         self._json = {}
-        self._game = owner
+        self._owner = owner
         self.json["name"] = name
         self.json["difficulty"] = difficulty
         self._map = None
@@ -173,6 +173,8 @@ class Level(object):
         """
         for level in self.subLevels:
             level.tick()
+        for effect in self.active_effects:
+            effect.tick()
         for character in self.characters:
             character.tick()
 
@@ -205,7 +207,7 @@ class DungeonLevel(Level):
         difficulty level and using the MonsterLibrary in the Game
         """
         # Grab the MonsterLibrary
-        lib = self.game.monster_library
+        lib = self.owner.monster_library
         # max number of monsters per room
         max_monsters = lib.max_monsters_per_room(self.difficulty)
 
@@ -232,7 +234,7 @@ class DungeonLevel(Level):
         difficulty level and using the ItemLibrary in the Game
         """
         # Grab the ItemLibrary
-        lib = self.game.item_library
+        lib = self.owner.item_library
         # max number of items per room
         max_items = lib.max_items_per_room(self.difficulty)
 
@@ -299,7 +301,7 @@ class TownLevel(Level):
         doorIn = Portal('>', 'door', 'You enter the house.')
         doorIn.moveToLevel(self, doorTile)
         #Generate the level that represents the interior of the house
-        houseLevel = SingleRoomLevel(self.game, self.difficulty, 'house', house)
+        houseLevel = SingleRoomLevel(self.owner, self.difficulty, 'house', house)
         self.subLevels.append(houseLevel)
         doorTile = houseLevel.map.tiles[doorX][doorY]
         #Cut a hole in the wall for the door (this time in the House map)
@@ -356,7 +358,7 @@ class CaveLevel(Level):
         
     def _placeMonsters(self):
         #Grab the MonsterLibrary
-        lib = self.game.monster_library
+        lib = self.owner.monster_library
         #Randomly determine nbr of monsters
         nbr = random.randrange(0, 4)
         for i in range(0, nbr):

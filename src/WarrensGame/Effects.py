@@ -32,6 +32,14 @@ class Effect(object):
         return self._source
 
     @property
+    def owner(self):
+        """
+        The owner of this effect.
+        The owner is responsible to call the tick() function of the effect.
+        """
+        return self._owner
+
+    @property
     def tiles(self):
         """
         The tiles affected by this effect.
@@ -101,12 +109,14 @@ class Effect(object):
         """
         return self.source.effectElement
 
-    def __init__(self, source):
+    def __init__(self, source, owner):
         """
         Constructor for a new Effect, meant to be used by the Effect subclasses.
         :param source: an object representing the source of the effect
         """
         self._source = source
+        self._owner = owner
+        self.owner.active_effects.append(self)
         self._tiles = []
         self._actors = []
         self._targetType = TARGET.SELF
@@ -126,9 +136,16 @@ class Effect(object):
     def tick(self):
         """
         Applies an additional duration tick for this effect.
-        Supposed to be overridden in subclass.
         """
-        raise NotImplementedError("WARNING: missing effect tick() implementation")
+        self.effectDuration -= 1
+        if self.effectDuration <= 0:
+            self.end()
+
+    def end(self):
+        """
+        Clean up at the end of the effect.
+        """
+        self.owner.active_effects.remove(self)
 
 
 class HealEffect(Effect):
@@ -136,8 +153,8 @@ class HealEffect(Effect):
     This class represents a healing effect
     """
 
-    def __init__(self, source):
-        super(HealEffect, self).__init__(source)
+    def __init__(self, source, owner):
+        super(HealEffect, self).__init__(source, owner)
         self._effectDescription = "Wounds close, bones knit."
         self._targetType = TARGET.SELF
 
@@ -150,18 +167,13 @@ class HealEffect(Effect):
         if not isinstance(target, WarrensGame.Actors.Character):
             raise GameError("Can not apply healing effect to " + str(target))
         self.actors.append(target)
-        target.tile.map.level.active_effects.append(self)
-        self.tick()
 
     def tick(self):
         """
         Apply one tick of healing.
         :return: None
         """
-        # Update effect duration
-        if self.effectDuration == 0:
-            return
-        self.effectDuration -= 1
+        super(HealEffect, self).tick()
         # Apply healing
         for target in self.actors:
             heal_amount = roll_hit_die(self.effectHitDie)
@@ -173,11 +185,11 @@ class ConfuseEffect(Effect):
     This class represents a confuse effect
     """
 
-    def __init__(self, source):
+    def __init__(self, source, owner):
         """
         source is the item that causes the effect
         """
-        super(ConfuseEffect, self).__init__(source)
+        super(ConfuseEffect, self).__init__(source, owner)
         self._effectDescription = "An eerie melodie plays in the distance."
         self._targetType = TARGET.ACTOR
 
@@ -195,24 +207,13 @@ class ConfuseEffect(Effect):
         self.actors.append(target)
         message(target.name + ' is confused for ' + str(confused_turns) + ' turns.', "GAME")
 
-    def tick(self):
-        """
-        Apply a tick of the confuse effect
-        :return: None
-        """
-        if self.effectDuration == 0:
-            return
-        self.effectDuration -= 1
-        if self.effectDuration == 0:
-            for a in self.actors:
-                a.sprite_overlay_id = None
-
 
 class DamageEffect(Effect):
     """
     This class implements a damage effect.
     It can be targeted, in which case it will damage all actors in a circular area.
-    It can be untargeted, in which case it will function as a nova, damaging all actors in a circular area around the source, excluding the tile of the source
+    It can be untargeted, in which case it will function as a nova. A nova will damage all actors in a circular area
+    around the source, excluding the tile of the source.
     """
     
     @property
@@ -222,11 +223,11 @@ class DamageEffect(Effect):
         """
         return self._centerTile
 
-    def __init__(self, source):
+    def __init__(self, source, owner):
         """
         source is the item that causes the effect
         """
-        super(DamageEffect, self).__init__(source)
+        super(DamageEffect, self).__init__(source, owner)
         self._effectDescription = "The area is bombarded by magical energy."
         self._targetType = TARGET.TILE
         self._centerTile = None
@@ -251,8 +252,7 @@ class DamageEffect(Effect):
             elif target.owner is not None:
                 self._centerTile = target.owner.tile
             else:
-                # Unable to find a tile for the target
-                # This is an illegal situation since we expect the target to be either on a tile or in an inventory
+                # Illegal situation since we expect the target to be either on a tile or in an inventory
                 raise GameError("Can't find a tile for Actor " + str(target))
         else:
             raise GameError("Can not apply damage effect to " + str(target))
@@ -267,48 +267,45 @@ class DamageEffect(Effect):
         if not self.targeted:
             # exclude the center of the nova
             self.tiles.remove(self.centerTile)
-        # Tick for damage
-        self.tick()
-        # Register effect with Game
-        self.centerTile.map.level.active_effects.append(self)
 
     def tick(self):
         """
         Apply one tick of damage
         :return: None
         """
-        # Update effect duration
-        if self.effectDuration == 0:
-            return
-        self.effectDuration -= 1
-        # Clean up
+        # Reset actor states (to clear damage effect from previous ticks
         for previous_target in self.actors:
-            if self.effectElement == EFFECT.FIRE:
-                previous_target.state_on_fire = False
-            elif self.effectElement == EFFECT.ELEC:
-                previous_target.state_electrified = False
-            elif self.effectElement == EFFECT.EARTH:
-                previous_target.state_earth_damage = False
-            else:
-                print("Warning: No state change available for " + str(self.effectElement))
+            self._set_actor_state(previous_target, False)
+        if self.effectDuration == 0:
+            self.end()
+        if self.effectDuration > 0:
+            # Reduce the remaining duration with one tick.
+            self.effectDuration -= 1
+            # Find all targets in range
+            self._actors = []
+            for tile in self.tiles:
+                for actor in tile.actors:
+                    self.actors.append(actor)
+            # apply damage to every target
+            for target in self.actors:
+                damage_amount = roll_hit_die(self.effectHitDie)
+                message(self.source.name.capitalize() + ' hits '
+                        + target.name + ' for ' + str(damage_amount) + ' Damage.', "GAME")
+                target.takeDamage(damage_amount, self.source.owner)
+                # Modify actor states
+                self._set_actor_state(target, True)
 
-        # find all targets in range
-        self._actors = []
-        for tile in self.tiles:
-            for actor in tile.actors:
-                self.actors.append(actor)
-        # apply damage to every target
-        damage_amount = roll_hit_die(self.effectHitDie)
-        for target in self.actors:
-            message(self.source.name.capitalize() + ' hits '
-                    + target.name + ' for ' + str(damage_amount) + ' Damage.', "GAME")
-            target.takeDamage(damage_amount, self.source.owner)
-            # Modify target actor states
-            if self.effectElement == EFFECT.FIRE:
-                target.state_on_fire = True
-            elif self.effectElement == EFFECT.ELEC:
-                target.state_electrified = True
-            elif self.effectElement == EFFECT.EARTH:
-                target.state_earth_damage = True
-            else:
-                print("Warning: No state change available for " + str(self.effectElement))
+    def _set_actor_state(self, actor, new_state):
+        """
+        Private helper routine to set the proper state on target actors to True or False.
+        :param new_state: Boolean
+        :return: None
+        """
+        if self.effectElement == EFFECT.FIRE:
+            actor.state_on_fire = new_state
+        elif self.effectElement == EFFECT.ELEC:
+            actor.state_electrified = new_state
+        elif self.effectElement == EFFECT.EARTH:
+            actor.state_earth_damage = new_state
+        else:
+            print("Warning: No state change available for " + str(self.effectElement))

@@ -404,6 +404,10 @@ class InterfaceForPlayer(object):
                 # Interact
                 elif event.key == pygame.K_KP0:
                     self.player.tryInteract()
+                # Tick the clock (make time move forward)
+                elif event.key == pygame.K_t:
+                    print("Manual time tick!")
+                    self.player.level.owner.tick()
 
     def render_screen(self):
         """

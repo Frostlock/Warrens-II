@@ -910,7 +910,7 @@ class Player(Character):
         destinationTile = portal.destinationPortal.tile
         self.moveToLevel(destinationLevel, destinationTile)
         #change the current level of the game to the destinationlevel
-        myGame = destinationLevel.game
+        myGame = destinationLevel.owner
         myGame.current_level = destinationLevel
 
     def tryMoveOrAttack(self, dx, dy):
@@ -986,15 +986,15 @@ class Player(Character):
         This function is meant to be called from the GUI.
         """
         if isinstance(item, Consumable):
-            #try to use the consumable
+            # try to use the consumable
             if not item.isConsumed:
                 if target is None:
-                    #apply to self
+                    # apply to self
                     item.applyTo(self)
                 else:
-                    #apply to target
+                    # apply to target
                     item.applyTo(target)
-            #remove the item it is used up
+            # remove the item it is used up
             if item.isConsumed == True:
                 self.removeItem(item)
 
@@ -1481,7 +1481,7 @@ class Consumable(Item):
         """
         duration = self.baseItem.effectDuration
         for modifier in self.modifiers:
-            duration += modifier.effectDuration
+            duration *= modifier.effectDuration
         return duration
 
     @property
@@ -1524,7 +1524,7 @@ class Consumable(Item):
         if self.stackSize > 0:
             if self.baseItem.effect != '':
                 effect_class = eval("WarrensGame.Effects." + self.baseItem.effect)
-                self._effect = effect_class and effect_class(self) or None
+                self._effect = effect_class and effect_class(self, self.owner.level) or None
                 if self.effect is not None:
                     self.effect.applyTo(target)
             self.stackSize -= 1
