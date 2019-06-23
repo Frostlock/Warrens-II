@@ -119,6 +119,7 @@ class ConfusedMonsterAI(AI):
         self.sourceEffect = source_effect
         self.confusedTurns = confused_turns
         confused_monster.AI = self
+        confused_monster.state_confused = True
     
     def take_turn(self):
         """
@@ -135,6 +136,7 @@ class ConfusedMonsterAI(AI):
         self.confusedTurns -= 1
         if self.confusedTurns == 0:
             self.character.AI = self.originalAI
+            self.character.state_confused = False
             message(self.character.name + ' is no longer confused.', "GAME")
 
     def random_direction(self):

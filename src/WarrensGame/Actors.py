@@ -463,6 +463,22 @@ class Character(Actor):
         return self.json["state_alive"]
 
     @property
+    def state_confused(self):
+        """
+        Boolean state indicating if the character is confused.
+        """
+        return self.json["state_confused"]
+
+    @state_confused.setter
+    def state_confused(self, confused):
+        """
+        Boolean state indicating if the character is confused.
+        :param confused: Boolean
+        :return: None
+        """
+        self.json["state_confused"] = confused
+
+    @property
     def xpValue(self):
         """
         Return xp value
@@ -591,6 +607,7 @@ class Character(Actor):
         self._xpValue = 0
         self._AI = None
         self.json["state_alive"] = True
+        self.json["state_confused"] = False
 
     def __str__(self):
         return self.json["name"] + " (" \

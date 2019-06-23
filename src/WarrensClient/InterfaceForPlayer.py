@@ -527,6 +527,7 @@ class InterfaceForPlayer(object):
         self._renderViewPortXOffSet = start_x * self.tile_size - self._renderViewPortX
         self._renderViewPortYOffSet = start_y * self.tile_size - self._renderViewPortY
 
+        # TODO: optimize performance by drawing the underground tiles only once on zoom level change
         tile_count = 0
         for curX in range(start_x, stop_x):
             for curY in range(start_y, stop_y):
@@ -624,7 +625,7 @@ class InterfaceForPlayer(object):
             overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
             overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
             sprite.blit(overlay, (overlay_x, overlay_y))
-        # Overlay extra animations
+        # Overlay state specific animations
         if my_actor.state_on_fire:
             overlay = get_sprite_surface(SPRITES.EFFECT_FIRE, self._frame_elapsed_time)
             if overlay is not None:
@@ -643,6 +644,13 @@ class InterfaceForPlayer(object):
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
                 sprite.blit(overlay, (overlay_x, overlay_y))
+        if isinstance(my_actor, Character):
+            if my_actor.state_confused:
+                overlay = get_sprite_surface(SPRITES.EFFECT_CONFUSE, self._frame_elapsed_time)
+                if overlay is not None:
+                    overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
+                    overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
+                    sprite.blit(overlay, (overlay_x, overlay_y))
 
         # Center sprite on tile
         x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
