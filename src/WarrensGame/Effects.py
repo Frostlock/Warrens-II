@@ -178,6 +178,15 @@ class HealEffect(Effect):
         for target in self.actors:
             heal_amount = roll_hit_die(self.effectHitDie)
             target.takeHeal(heal_amount, self.source)
+            target.state_healing = True
+
+    def end(self):
+        """
+        Clean up at the end of the effect.
+        """
+        super(HealEffect, self).end()
+        for target in self.actors:
+            target.state_healing = False
 
 
 class ConfuseEffect(Effect):

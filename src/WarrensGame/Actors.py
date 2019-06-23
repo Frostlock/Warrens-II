@@ -148,6 +148,23 @@ class Actor(object):
         self.json["state_earth_damage"] = earth_damage
 
     @property
+    def state_healing(self):
+        """
+        Boolean state indicating if the actor is healing up.
+        """
+        return self.json["state_healing"]
+
+    @state_healing.setter
+    def state_healing(self, healing):
+        """
+        Boolean state indicating if the actor is healing up.
+        :param healing: Boolean
+        :return: None
+        """
+        self.json["state_healing"] = healing
+
+
+    @property
     def tile(self):
         """
         Returns the Tile on which this Actor is located. Can be None.
@@ -247,6 +264,7 @@ class Actor(object):
         self.json["state_on_fire"] = False
         self.json["state_electrified"] = False
         self.json["state_earth_damage"] = False
+        self.json["state_healing"] = False
         self._tile = None
         self._level = None
         self._sceneObject = None
@@ -775,7 +793,6 @@ class Character(Actor):
             message(self.name.capitalize() + ' gains '
                     + str(amount) + ' hitpoints from a ' +  healer.name
                     + '.', "GAME")
-            self.sprite_overlay_id = SPRITES.EFFECT_HEAL
         game_event(self.__class__.__name__, self.json)
 
     def takeTurn(self):

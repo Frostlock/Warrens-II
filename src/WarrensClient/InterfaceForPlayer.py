@@ -624,12 +624,19 @@ class InterfaceForPlayer(object):
         if sprite is None:
             sprite = self.viewport_font.render(my_actor.char, 1, my_actor.color)
         # Get effect overlay for sprite
+        ###################give bob an overlay :)
         overlay = get_sprite_surface(my_actor.sprite_overlay_id, self._frame_elapsed_time)
         if overlay is not None:
             overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
             overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
             sprite.blit(overlay, (overlay_x, overlay_y))
         # Overlay state specific animations
+        if my_actor.state_healing:
+            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self._frame_elapsed_time)
+            if overlay is not None:
+                overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
+                overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
+                sprite.blit(overlay, (overlay_x, overlay_y))
         if my_actor.state_on_fire:
             overlay = get_sprite_surface(SPRITES.EFFECT_FIRE, self._frame_elapsed_time)
             if overlay is not None:

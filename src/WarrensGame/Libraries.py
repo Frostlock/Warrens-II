@@ -203,6 +203,7 @@ class MonsterLibrary:
         # Create monster
         base_monster = BaseMonster(monster_data)
         new_monster = Monster(base_monster)
+        new_monster.sprite_overlay_id = SPRITES.EFFECT_GREEN_DUST
 
         # Register the monster
         self.regular_monsters.append(new_monster)

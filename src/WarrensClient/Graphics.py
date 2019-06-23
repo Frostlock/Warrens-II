@@ -98,6 +98,9 @@ def initialize_sprites(tile_size):
     frames = [effects_24[9][4], effects_24[9][10]]
     sprite_dict[SPRITES.EFFECT_CONFUSE] = AnimatedSprite(frames, 10, loop=True)
 
+    # Overlay effects
+    frames = [effects_32[3][3], effects_32[4][3], effects_32[5][3]]
+    sprite_dict[SPRITES.EFFECT_GREEN_DUST] = AnimatedSprite(frames, 15, loop=True)
 
 def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
     """

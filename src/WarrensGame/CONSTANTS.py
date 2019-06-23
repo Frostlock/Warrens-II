@@ -172,6 +172,8 @@ class SPRITES:
     EFFECT_EARTH = "effect_earth"
     EFFECT_CONFUSE = "effect_confuse"
 
+    EFFECT_GREEN_DUST = "effect_green_dust"
+
 
 class INTERACTION:
     """
