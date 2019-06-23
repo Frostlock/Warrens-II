@@ -682,16 +682,17 @@ class Character(Actor):
         """
         if self.state == Character.ACTIVE:
             if type(attacker) is Player:
-                #yield experience to the player
+                # Yield experience to the player
                 message(attacker.name + ' gains ' + str(self.xpValue) + ' XP.', "GAME")
                 attacker.gainXp(self.xpValue)
             if type(attacker) is Monster:
                 if attacker.killedByText != '':
                     message(attacker.killedByText, "GAME")
-            #transform this character into a corpse and remove AI
-            self.json["char"] = '%'
+            # Transform this character into a corpse and remove AI
+            self.char = '%'
+            self.sprite_id = SPRITES.MONSTER_RIP
             self._AI = None
-            self.json["name"] = self.name + ' corpse'
+            self.name += " corpse"
             self._state = Character.DEAD
 
     def takeHeal(self, amount, healer):

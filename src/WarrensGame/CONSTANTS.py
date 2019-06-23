@@ -123,6 +123,7 @@ class SPRITES:
     RAT = "rat"
     TROLL = "troll"
     ZOMBIE = "zombie"
+    MONSTER_RIP = "monster_rip"
 
     PLAYER = "player"
     PLAYER_RIP = "player_rip"
