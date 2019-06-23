@@ -82,12 +82,19 @@ def initialize_sprites(tile_size):
     sprite_dict[SPRITES.RING] = items[10][4]
 
     # Effects
-    frames = [effects_32[3][0], effects_32[2][0], effects_32[5][0], effects_24[9][5]]
     # TODO: Issue here, the loop runs once, when the next heal is needed the animation is stuck at the last frame
+    frames = [effects_32[3][0], effects_32[2][0], effects_32[5][0], effects_24[9][5]]
     sprite_dict[SPRITES.EFFECT_HEAL] = AnimatedSprite(frames, 10, loop=False)
-    sprite_dict[SPRITES.EFFECT_ELEC] = AnimatedSprite(frames, 10, loop=False)
-    sprite_dict[SPRITES.EFFECT_FIRE] = AnimatedSprite(frames, 10, loop=False)
-    sprite_dict[SPRITES.EFFECT_EARTH] = AnimatedSprite(frames, 10, loop=False)
+
+    frames = [effects_24[0][9], effects_24[1][9], effects_24[2][9], effects_24[3][9]]
+    sprite_dict[SPRITES.EFFECT_ELEC] = AnimatedSprite(frames, 10, loop=True)
+
+    frames = [tiles[39][1], tiles[40][1]]
+    sprite_dict[SPRITES.EFFECT_FIRE] = AnimatedSprite(frames, 12, loop=True)
+
+    frames = [effects_24[0][6], effects_24[1][6], effects_24[2][6]]
+    sprite_dict[SPRITES.EFFECT_EARTH] = AnimatedSprite(frames, 10, loop=True)
+
     frames = [effects_24[9][4], effects_24[9][10]]
     sprite_dict[SPRITES.EFFECT_CONFUSE] = AnimatedSprite(frames, 10, loop=True)
 

@@ -6,7 +6,7 @@ This ranges from magical effects to melee effects and healing effectss.
 import WarrensGame.AI
 from WarrensGame.Maps import Tile
 from WarrensGame.Utilities import roll_hit_die, GameError, message
-from WarrensGame.CONSTANTS import SPRITES
+from WarrensGame.CONSTANTS import SPRITES, EFFECT
 
 
 class TARGET:
@@ -100,19 +100,6 @@ class Effect(object):
         The element of this effect.
         """
         return self.source.effectElement
-
-    # DEPRECATED
-    # @property
-    # def sceneObject(self):
-    #     """
-    #     Property used to store the scene object that represents this actor in the GUI.
-    #     :return: SceneObject
-    #     """
-    #     return self._sceneObject
-    #
-    # @sceneObject.setter
-    # def sceneObject(self, sceneObject):
-    #     self._sceneObject = sceneObject
 
     def __init__(self, source):
         """
@@ -293,7 +280,8 @@ class DamageEffect(Effect):
         :return: None
         """
         # Update effect duration
-        if self.effectDuration == 0: return
+        if self.effectDuration == 0:
+            return
         self.effectDuration -= 1
         # find all targets in range
         self._actors = []
@@ -306,3 +294,11 @@ class DamageEffect(Effect):
             message(self.source.name.capitalize() + ' hits '
                     + target.name + ' for ' + str(damage_amount) + ' Damage.', "GAME")
             target.takeDamage(damage_amount, self.source.owner)
+            if self.effectElement == EFFECT.FIRE:
+                target.sprite_overlay_id = SPRITES.EFFECT_FIRE
+            elif self.effectElement == EFFECT.ELEC:
+                target.sprite_overlay_id = SPRITES.EFFECT_ELEC
+            elif self.effectElement == EFFECT.EARTH:
+                target.sprite_overlay_id = SPRITES.EFFECT_EARTH
+            else:
+                print("Warning: No sprite available for " + str(self.effectElement))
