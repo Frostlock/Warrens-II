@@ -1218,7 +1218,7 @@ class Item(Actor):
         return self.json["stackSize"]
     
     @stackSize.setter
-    def stackSize(self,newStackSize):
+    def stackSize(self, newStackSize):
         """
         Stack size setter
         """
