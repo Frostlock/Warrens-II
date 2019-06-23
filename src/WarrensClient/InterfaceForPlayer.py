@@ -312,7 +312,7 @@ class InterfaceForPlayer(object):
                       str(len(events)) + " events: " + str(event_time) + "s")
 
     def show_game_menu(self):
-        options = ['Controls', 'Quit Game']
+        options = ['Controls', 'Quit']
         keys = ['c', 'q']
         selection = GuiUtilities.show_menu(self.surface_display, 'Game Menu', options, keys)
         if selection is None:
@@ -322,13 +322,11 @@ class InterfaceForPlayer(object):
             GuiUtilities.show_message_controls(self.surface_display)
         elif selection == 1:
             print('Game Menu: ' + options[1])
-            self.stop_game()
+            self.event_quit()
         else:
             print('Game Menu: unknown selection...?')
 
-    def stop_game(self):
-        if self._game_server is not None:
-            self._game_server.stop()
+    def event_quit(self):
         # Clear screen
         self.surface_display.fill(COLORS.PANEL_BG)
         pygame.display.flip()
