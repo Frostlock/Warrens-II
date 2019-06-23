@@ -163,7 +163,6 @@ class Actor(object):
         """
         self.json["state_healing"] = healing
 
-
     @property
     def tile(self):
         """
@@ -265,6 +264,8 @@ class Actor(object):
         self.json["state_electrified"] = False
         self.json["state_earth_damage"] = False
         self.json["state_healing"] = False
+        # TODO: Convert into proper json based property.
+        self.state_healing_animation_id = 0
         self._tile = None
         self._level = None
         self._sceneObject = None

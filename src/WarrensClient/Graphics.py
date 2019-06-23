@@ -161,13 +161,15 @@ def get_tile_surface(tile_id, tile_set):
         raise e
 
 
-def get_sprite_surface(sprite_id, elapsed_time=0):
+def get_sprite_surface(sprite_id, elapsed_time=0, animation_id=0):
     """
     Try to match a sprite to the provided sprite id.
-    If successful match: Return a pygame surface
-    If not: Return None
+    If successful match: Return a pygame surface, if not: Return None
+    For animations, the next frame of the animation will be returned.
+    The animation_id is used to keep track of different animation instances (each animating at its own pace).
     :param sprite_id: numerical sprite ID from the Game CONSTANTS
     :param elapsed_time: Miliseconds of elapse time to control speed of animation
+    :param animation_id: ID of the object that will use the sprite.
     :return: Pygame surface containing the sprite or None
     """
     if sprite_id is None:
@@ -176,7 +178,7 @@ def get_sprite_surface(sprite_id, elapsed_time=0):
         if isinstance(sprite_dict[sprite_id], pygame.Surface):
             return sprite_dict[sprite_id].copy()
         elif isinstance(sprite_dict[sprite_id], AnimatedSprite):
-            return sprite_dict[sprite_id].frame(elapsed_time)
+            return sprite_dict[sprite_id].frame(animation_id, elapsed_time)
         else:
             raise ValueError("Unknown object in sprite_dict.")
     except KeyError:
@@ -197,28 +199,29 @@ class AnimatedSprite(object):
         self._fps = fps
         self._frame_time = int(1000/fps)
         self._loop = loop
-        self._index = 0
+        self._indexes = {}
         self._elapsed_time = 0
-        self._run = True
 
-    def frame(self, elapsed_time):
+    def frame(self, animation_id, elapsed_time):
         """
         Return the next frame of the animation.
+        :param elapsed_time: time since last call to decide on frame progress
+        :param animation_id: Animation ID to keep different instances of the same animation separate
         :return: Pygame Surface representing the frame
         """
-        if self._run:
-            self._elapsed_time += elapsed_time
-            if self._elapsed_time > self._frame_time:
-                self._elapsed_time -= self._frame_time
-                # if self._elapsed_time > 10 * self._frame_time:
-                #     # We have missed 10 frames, go to panic mode
-                #     self._run = False
-                #     print("Warning: Animation panic, disabling sprite updates for sprite " + str(self))
-                self._index += 1
-                if self._index > len(self._frames) - 1:
-                    if self._loop:
-                        self._index = 0
-                    else:
-                        self._index = len(self._frames) - 1
-                        self._run = False
-        return self._frames[self._index].copy()
+        # TODO: minor issue here: first time around the heal animation only plays after the tick, second time around the animation triggers before the tick that triggers the heal.
+        # Initialize index for new object_id
+        if animation_id not in self._indexes.keys():
+            self._indexes[animation_id] = -1
+        # Check if enough time has passed to provide the next frame
+        self._elapsed_time += elapsed_time
+        if self._elapsed_time > self._frame_time:
+            self._elapsed_time -= self._frame_time
+            self._indexes[animation_id] += 1
+            if self._indexes[animation_id] > len(self._frames) - 1:
+                if self._loop:
+                    self._indexes[animation_id] = 0
+                else:
+                    self._indexes[animation_id] = len(self._frames) - 1
+        # Return copy of found frame surface
+        return self._frames[self._indexes[animation_id]].copy()

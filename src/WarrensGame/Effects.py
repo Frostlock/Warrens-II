@@ -167,6 +167,7 @@ class HealEffect(Effect):
         if not isinstance(target, WarrensGame.Actors.Character):
             raise GameError("Can not apply healing effect to " + str(target))
         self.actors.append(target)
+        target.state_healing_animation_id = id(self)
 
     def tick(self):
         """

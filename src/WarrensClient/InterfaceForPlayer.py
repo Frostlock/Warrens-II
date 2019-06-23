@@ -632,7 +632,7 @@ class InterfaceForPlayer(object):
             sprite.blit(overlay, (overlay_x, overlay_y))
         # Overlay state specific animations
         if my_actor.state_healing:
-            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self._frame_elapsed_time)
+            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self._frame_elapsed_time, my_actor.state_healing_animation_id)
             if overlay is not None:
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
