@@ -85,6 +85,11 @@ def initialize_sprites(tile_size):
     frames = [effects_32[3][0], effects_32[2][0], effects_32[5][0], effects_24[9][5]]
     # TODO: Issue here, the loop runs once, when the next heal is needed the animation is stuck at the last frame
     sprite_dict[SPRITES.EFFECT_HEAL] = AnimatedSprite(frames, 10, loop=False)
+    sprite_dict[SPRITES.EFFECT_ELEC] = AnimatedSprite(frames, 10, loop=False)
+    sprite_dict[SPRITES.EFFECT_FIRE] = AnimatedSprite(frames, 10, loop=False)
+    sprite_dict[SPRITES.EFFECT_EARTH] = AnimatedSprite(frames, 10, loop=False)
+    frames = [effects_24[9][4], effects_24[9][10]]
+    sprite_dict[SPRITES.EFFECT_CONFUSE] = AnimatedSprite(frames, 10, loop=True)
 
 
 def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
@@ -140,6 +145,10 @@ def get_tile_surface(tile_id, tile_set):
         return tiles[tile_id][tile_set]
     except KeyError:
         return None
+    except IndexError as e:
+        print("tile_id: " + str(tile_id))
+        print("tile_set: " + str(tile_set))
+        raise e
 
 
 def get_sprite_surface(sprite_id, elapsed_time=0):

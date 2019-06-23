@@ -184,7 +184,7 @@ class HealEffect(Effect):
 
 class ConfuseEffect(Effect):
     """
-    This class represents a damage nova effect
+    This class represents a confuse effect
     """
 
     def __init__(self, source):
@@ -207,6 +207,7 @@ class ConfuseEffect(Effect):
         WarrensGame.AI.ConfusedMonsterAI(self, target, confused_turns)
         target.level.active_effects.append(self)
         self.actors.append(target)
+        target.sprite_overlay_id = SPRITES.EFFECT_CONFUSE
         message(target.name + ' is confused for ' + str(confused_turns) + ' turns.', "GAME")
 
     def tick(self):
@@ -217,6 +218,9 @@ class ConfuseEffect(Effect):
         if self.effectDuration == 0:
             return
         self.effectDuration -= 1
+        if self.effectDuration == 0:
+            for a in self.actors:
+                a.sprite_overlay_id = None
 
 
 class DamageEffect(Effect):

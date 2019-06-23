@@ -167,6 +167,10 @@ class SPRITES:
     T_NORTH = 25
 
     EFFECT_HEAL = "effect_heal"
+    EFFECT_ELEC = "effect_elec"
+    EFFECT_FIRE = "effect_fire"
+    EFFECT_EARTH = "effect_earth"
+    EFFECT_CONFUSE = "effect_confuse"
 
 
 class INTERACTION:

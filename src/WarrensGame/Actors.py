@@ -691,6 +691,7 @@ class Character(Actor):
             # Transform this character into a corpse and remove AI
             self.char = '%'
             self.sprite_id = SPRITES.MONSTER_RIP
+            self.sprite_overlay_id = None
             self._AI = None
             self.name += " corpse"
             self._state = Character.DEAD
