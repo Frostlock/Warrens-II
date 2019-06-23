@@ -149,7 +149,7 @@ class TestGame(unittest.TestCase):
     def test_combat(self):
         player = self.game.player
         a_monster = random.choice(self.game.monster_library.monsters)
-        while not (player.state == Character.DEAD or a_monster.state == Character.DEAD):
+        while not (player.state_alive == Character.DEAD or a_monster.state_alive == Character.DEAD):
             player.attack(a_monster)
             a_monster.attack(player)
 

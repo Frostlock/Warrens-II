@@ -100,6 +100,54 @@ class Actor(object):
         self.json["sprite_overlay_id"] = new_id
 
     @property
+    def state_on_fire(self):
+        """
+        Boolean state indicating if the actor is on fire.
+        """
+        return self.json["state_on_fire"]
+
+    @state_on_fire.setter
+    def state_on_fire(self, on_fire):
+        """
+        Boolean state indicating if the actor is on fire.
+        :param on_fire: Boolean
+        :return: None
+        """
+        self.json["state_on_fire"] = on_fire
+
+    @property
+    def state_electrified(self):
+        """
+        Boolean state indicating if the actor is electrified.
+        """
+        return self.json["state_electrified"]
+
+    @state_electrified.setter
+    def state_electrified(self, electrified):
+        """
+        Boolean state indicating if the actor is electrified.
+        :param electrified: Boolean
+        :return: None
+        """
+        self.json["state_electrified"] = electrified
+
+    @property
+    def state_earth_damage(self):
+        """
+        Boolean state indicating if the actor is taking earth damage.
+        """
+        return self.json["state_earth_damage"]
+
+    @state_earth_damage.setter
+    def state_earth_damage(self, earth_damage):
+        """
+        Boolean state indicating if the actor is taking earth damage.
+        :param earth_damage: Boolean
+        :return: None
+        """
+        self.json["state_earth_damage"] = earth_damage
+
+    @property
     def tile(self):
         """
         Returns the Tile on which this Actor is located. Can be None.
@@ -196,6 +244,9 @@ class Actor(object):
         self.json["currentHitPoints"] = self.maxHitPoints
         self.json["sprite_id"] = None
         self.json["sprite_overlay_id"] = None
+        self.json["state_on_fire"] = False
+        self.json["state_electrified"] = False
+        self.json["state_earth_damage"] = False
         self._tile = None
         self._level = None
         self._sceneObject = None
@@ -402,16 +453,14 @@ class Character(Actor):
     Every character has an AI that governs it
     Every character manages an inventory of items
     """
-
-    ACTIVE = 0
     DEAD = 1
 
     @property
-    def state(self):
+    def state_alive(self):
         """
-        Returns this characters state
+        Boolean state, indicating if this character is alive or dead.
         """
-        return self._state
+        return self.json["state_alive"]
 
     @property
     def xpValue(self):
@@ -541,7 +590,7 @@ class Character(Actor):
         self.json["currentHitPoints"] = self.json["maxHitPoints"]
         self._xpValue = 0
         self._AI = None
-        self._state = Character.ACTIVE
+        self.json["state_alive"] = True
 
     def __str__(self):
         return self.json["name"] + " (" \
@@ -661,12 +710,12 @@ class Character(Actor):
 
     def takeDamage(self, amount, attacker):
         """
-        function to take damage from an attacker
-        arguments
-           damage - the incoming damage
-           attacker - the attacking Actor
+        Function to take damage from an attacker.
+        :param amount: the incoming amount of damage
+        :param attacker: the attacking Actor
+        :return: None
         """
-        if self.state == Character.ACTIVE:
+        if self.state_alive:
             # apply damage if possible
             if amount > 0:
                 self.currentHitPoints -= amount
@@ -680,7 +729,7 @@ class Character(Actor):
         """
         This function handles the death of this Character
         """
-        if self.state == Character.ACTIVE:
+        if self.state_alive:
             if type(attacker) is Player:
                 # Yield experience to the player
                 message(attacker.name + ' gains ' + str(self.xpValue) + ' XP.', "GAME")
@@ -694,7 +743,7 @@ class Character(Actor):
             self.sprite_overlay_id = None
             self._AI = None
             self.name += " corpse"
-            self._state = Character.DEAD
+            self.json["state_alive"] = False
 
     def takeHeal(self, amount, healer):
         """
@@ -703,12 +752,13 @@ class Character(Actor):
            amount - the number of hitpoints to heal
            healer - the source of teh healing
         """
-        #heal by the given amount
+        # Heal by the given amount
         if amount > 0:
             self.currentHitPoints += amount
             message(self.name.capitalize() + ' gains '
                     + str(amount) + ' hitpoints from a ' +  healer.name
                     + '.', "GAME")
+            self.sprite_overlay_id = SPRITES.EFFECT_HEAL
         game_event(self.__class__.__name__, self.json)
 
     def takeTurn(self):
@@ -866,7 +916,7 @@ class Player(Character):
             #only attack monsters
             if type(a) is Monster:
                 #don't attack dead monsters
-                if a.state != Character.DEAD:
+                if a.state_alive:
                     target = a
 
         # Attack if target found, move otherwise

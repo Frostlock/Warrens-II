@@ -16,7 +16,7 @@ from WarrensClient import Audio
 from WarrensGame.Actors import Player, Character
 from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
-from WarrensGame.Game import Game
+from WarrensGame.CONSTANTS import SPRITES
 from WarrensGame.GameServer import LocalServer, RemoteServer
 
 # TODO: ideally this is refactored to pygame.event.unicode to be independent of keyboard layout.
@@ -382,7 +382,7 @@ class InterfaceForPlayer(object):
                 self.fullscreen = not self.fullscreen
 
             # keyboard - keys that are active while player is alive
-            if self.player.state == Character.ACTIVE:
+            if self.player.state_alive:
                 # Movement
                 global MOVEMENT_KEYS
                 if event.key in MOVEMENT_KEYS:
@@ -626,6 +626,26 @@ class InterfaceForPlayer(object):
             overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
             overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
             sprite.blit(overlay, (overlay_x, overlay_y))
+        # Overlay extra animations
+        if my_actor.state_on_fire:
+            overlay = get_sprite_surface(SPRITES.EFFECT_FIRE, self._frame_elapsed_time)
+            if overlay is not None:
+                overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
+                overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
+                sprite.blit(overlay, (overlay_x, overlay_y))
+        if my_actor.state_electrified:
+            overlay = get_sprite_surface(SPRITES.EFFECT_ELEC, self._frame_elapsed_time)
+            if overlay is not None:
+                overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
+                overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
+                sprite.blit(overlay, (overlay_x, overlay_y))
+        if my_actor.state_earth_damage:
+            overlay = get_sprite_surface(SPRITES.EFFECT_EARTH, self._frame_elapsed_time)
+            if overlay is not None:
+                overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
+                overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
+                sprite.blit(overlay, (overlay_x, overlay_y))
+
         # Center sprite on tile
         x = tile_rect.x + (tile_rect.width / 2 - sprite.get_width() / 2)
         y = tile_rect.y + (tile_rect.height / 2 - sprite.get_height() / 2)

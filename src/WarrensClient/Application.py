@@ -341,7 +341,7 @@ class Application(object):
             # TODO: Implement for RemoteServer
             if isinstance(self.game_server, LocalServer):
                 #handle game events
-                if self.game.player.state == Character.DEAD:
+                if not self.game.player.state_alive:
                     #zoom in on player corpse
                     self.event_zoom_on_tile(self.game.player.tile)
 
@@ -417,7 +417,7 @@ class Application(object):
                 # keyboard - keys that are active while playing
                 if self.game.state == Game.PLAYING:
                     player = self.game.player
-                    if player.state == Character.ACTIVE:
+                    if player.state_alive:
                         # Movement
                         global MOVEMENT_KEYS
                         if event.key in MOVEMENT_KEYS:

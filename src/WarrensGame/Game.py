@@ -270,7 +270,7 @@ class Game(object):
             # Let characters take a turn
             for c in self.current_level.characters:
                 assert isinstance(c, Character)
-                if c.state == Character.ACTIVE:
+                if c.state_alive:
                     c.takeTurn()
                     c.actionTaken = False
             # Update field of view

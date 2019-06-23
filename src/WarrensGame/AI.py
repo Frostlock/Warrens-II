@@ -77,7 +77,7 @@ class BasicMonsterAI(AI):
 
         for player in self.character.level.players:
             # Only take action if player is not dead.
-            if player.state == WarrensGame.Actors.Character.DEAD:
+            if not player.state_alive:
                 message("   Player is dead, no action needed", "AI")
                 return
             else:

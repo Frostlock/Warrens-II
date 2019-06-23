@@ -1,6 +1,12 @@
 """
 This module contains all the constants that are used by the dungeonGame package.
 """
+
+# TODO: move into the enumerator configs
+# Field of view
+TORCH_RADIUS = 10
+DAYLIGHT_RADIUS = 30
+
 # Size of the map
 MAP_WIDTH = 80
 MAP_HEIGHT = 50
@@ -76,12 +82,6 @@ class EFFECT:
     EARTH = 4
     ELEC = 5
     MIND = 6
-
-
-# TODO: move into the enumerator configs
-# Field of view
-TORCH_RADIUS = 10
-DAYLIGHT_RADIUS = 30
 
 
 class GAME:

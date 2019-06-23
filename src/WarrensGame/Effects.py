@@ -6,7 +6,7 @@ This ranges from magical effects to melee effects and healing effectss.
 import WarrensGame.AI
 from WarrensGame.Maps import Tile
 from WarrensGame.Utilities import roll_hit_die, GameError, message
-from WarrensGame.CONSTANTS import SPRITES, EFFECT
+from WarrensGame.CONSTANTS import EFFECT
 
 
 class TARGET:
@@ -166,7 +166,6 @@ class HealEffect(Effect):
         for target in self.actors:
             heal_amount = roll_hit_die(self.effectHitDie)
             target.takeHeal(heal_amount, self.source)
-            target.sprite_overlay_id = SPRITES.EFFECT_HEAL
 
 
 class ConfuseEffect(Effect):
@@ -194,7 +193,6 @@ class ConfuseEffect(Effect):
         WarrensGame.AI.ConfusedMonsterAI(self, target, confused_turns)
         target.level.active_effects.append(self)
         self.actors.append(target)
-        target.sprite_overlay_id = SPRITES.EFFECT_CONFUSE
         message(target.name + ' is confused for ' + str(confused_turns) + ' turns.', "GAME")
 
     def tick(self):
@@ -283,6 +281,17 @@ class DamageEffect(Effect):
         if self.effectDuration == 0:
             return
         self.effectDuration -= 1
+        # Clean up
+        for previous_target in self.actors:
+            if self.effectElement == EFFECT.FIRE:
+                previous_target.state_on_fire = False
+            elif self.effectElement == EFFECT.ELEC:
+                previous_target.state_electrified = False
+            elif self.effectElement == EFFECT.EARTH:
+                previous_target.state_earth_damage = False
+            else:
+                print("Warning: No state change available for " + str(self.effectElement))
+
         # find all targets in range
         self._actors = []
         for tile in self.tiles:
@@ -294,11 +303,12 @@ class DamageEffect(Effect):
             message(self.source.name.capitalize() + ' hits '
                     + target.name + ' for ' + str(damage_amount) + ' Damage.', "GAME")
             target.takeDamage(damage_amount, self.source.owner)
+            # Modify target actor states
             if self.effectElement == EFFECT.FIRE:
-                target.sprite_overlay_id = SPRITES.EFFECT_FIRE
+                target.state_on_fire = True
             elif self.effectElement == EFFECT.ELEC:
-                target.sprite_overlay_id = SPRITES.EFFECT_ELEC
+                target.state_electrified = True
             elif self.effectElement == EFFECT.EARTH:
-                target.sprite_overlay_id = SPRITES.EFFECT_EARTH
+                target.state_earth_damage = True
             else:
-                print("Warning: No sprite available for " + str(self.effectElement))
+                print("Warning: No state change available for " + str(self.effectElement))

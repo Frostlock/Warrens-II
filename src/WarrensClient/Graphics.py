@@ -171,7 +171,7 @@ def get_sprite_surface(sprite_id, elapsed_time=0):
         return None
     try:
         if isinstance(sprite_dict[sprite_id], pygame.Surface):
-            return sprite_dict[sprite_id]
+            return sprite_dict[sprite_id].copy()
         elif isinstance(sprite_dict[sprite_id], AnimatedSprite):
             return sprite_dict[sprite_id].frame(elapsed_time)
         else:
