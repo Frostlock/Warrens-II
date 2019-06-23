@@ -49,10 +49,10 @@ def initialize_sprites(tile_size):
     sprite_dict[SPRITES.PORTAL] = tiles[42][3]
 
     # Monsters
-    sprite_dict[SPRITES.KOBOLD] = creatures[1][15]
-    sprite_dict[SPRITES.RAT] = creatures[8][13]
-    sprite_dict[SPRITES.TROLL] = creatures[9][15]
-    sprite_dict[SPRITES.ZOMBIE] = creatures[1][17]
+    sprite_dict[SPRITES.KOBOLD] = AnimatedSprite([creatures[1][15], creatures[1][16]], 5)
+    sprite_dict[SPRITES.RAT] = AnimatedSprite([creatures[8][13], creatures[8][14]], 8)
+    sprite_dict[SPRITES.TROLL] = AnimatedSprite([creatures[9][15], creatures[9][16]], 6)
+    sprite_dict[SPRITES.ZOMBIE] = AnimatedSprite([creatures[1][17], creatures[1][18]], 4)
 
     # Player
     sprite_dict[SPRITES.PLAYER] = AnimatedSprite([creatures[2][3], creatures[2][4]], 6)
