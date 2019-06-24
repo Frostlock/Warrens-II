@@ -17,7 +17,6 @@ from WarrensGame.Actors import Player, Character
 from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
 from WarrensGame.CONSTANTS import SPRITES
-from WarrensGame.GameServer import LocalServer, RemoteServer
 
 # TODO: ideally this is refactored to pygame.event.unicode to be independent of keyboard layout.
 MOVEMENT_KEYS = {
@@ -148,7 +147,7 @@ class InterfaceForPlayer(object):
         # Initialize render font, a size of roughly 1,5 times the tileSize gives good results
         self._viewPortFont = GuiUtilities.viewport_font(self.tile_size)
 
-        # Determine max coords for view port location
+        # Determine max coordinates for view port location
         total_width = self.player.level.map.width * self.tile_size
         total_height = self.player.level.map.height * self.tile_size
         self._renderViewPortMaxX = total_width - self.surface_viewport.get_width()
@@ -221,7 +220,11 @@ class InterfaceForPlayer(object):
         self._surface_display = None
         self._surface_panel = None
         self._surface_viewport = None
+        self._render_viewport_x_offset = 0
+        self._render_viewport_y_offset = 0
         self._surface_popup = None
+        self._targeting_item = None
+        self._target_type = None
 
         # Initialize display surface
         display_info = pygame.display.Info()
@@ -482,11 +485,13 @@ class InterfaceForPlayer(object):
         message_counter = 1
         nbr_of_messages = len(Utilities.messageBuffer)
         while height_offset > 0:
-            if message_counter > nbr_of_messages: break
+            if message_counter > nbr_of_messages:
+                break
             # Get messages from game message buffer, starting from the back
             message = Utilities.messageBuffer[nbr_of_messages - message_counter]
             # Create text lines for message
-            text_lines = GuiUtilities.wrap_multi_line(message, GuiUtilities.FONT_PANEL, self.surface_panel.get_width() - width_offset)
+            line_width = self.surface_panel.get_width() - width_offset
+            text_lines = GuiUtilities.wrap_multi_line(message, GuiUtilities.FONT_PANEL, line_width)
             nbr_of_lines = len(text_lines)
             # Blit the lines
             for l in range(1, nbr_of_lines+1):
@@ -528,16 +533,16 @@ class InterfaceForPlayer(object):
             stop_y = self.player.level.map.height
 
         # The viewport is not aligned perfectly with the tiles, we need to track the offset.
-        self._renderViewPortXOffSet = start_x * self.tile_size - self._renderViewPortX
-        self._renderViewPortYOffSet = start_y * self.tile_size - self._renderViewPortY
+        self._render_viewport_x_offset = start_x * self.tile_size - self._renderViewPortX
+        self._render_viewport_y_offset = start_y * self.tile_size - self._renderViewPortY
 
-        # TODO: optimize performance by drawing the underground tiles only once on zoom level change
+        # TODO: optimize performance by drawing the underground tiles only once (include portals)
         tile_count = 0
         for curX in range(start_x, stop_x):
             for curY in range(start_y, stop_y):
                 tile = self.player.level.map.tiles[curX][curY]
-                vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-                vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+                vp_x = (tile.x - start_x) * self.tile_size + self._render_viewport_x_offset
+                vp_y = (tile.y - start_y) * self.tile_size + self._render_viewport_y_offset
                 tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
                 if tile.explored:
                     # Draw the tile background
@@ -560,22 +565,22 @@ class InterfaceForPlayer(object):
                         # tile not in view: apply fog of war
                         self.surface_viewport.blit(self.fogOfWarTileSurface, tile_rect)
 
-        # Draw portals on explored tiles (remain visible even when out of view)
-        portals = self.player.level.portals
-        for portal in portals:
-            if portal.tile.explored:
-                vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-                vp_y = (portal.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
-                tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-                text_img = self.viewport_font.render(portal.char, 1, portal.color)
-                # Center
-                x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() /2)
-                y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() /2)
-                self.surface_viewport.blit(text_img, (x, y))
+        # # Draw portals on explored tiles (remain visible even when out of view)
+        # portals = self.player.level.portals
+        # for portal in portals:
+        #     if portal.tile.explored:
+        #         vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
+        #         vp_y = (portal.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+        #         tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+        #         text_img = self.viewport_font.render(portal.char, 1, portal.color)
+        #         # Center
+        #         x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() /2)
+        #         y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() /2)
+        #         self.surface_viewport.blit(text_img, (x, y))
 
-        # Redraw player character (makes sure it is on top of other characters)
-        vp_x = (self.player.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-        vp_y = (self.player.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+        # Finally draw player character (this makes sure it is on top of other characters)
+        vp_x = (self.player.tile.x - start_x) * self.tile_size + self._render_viewport_x_offset
+        vp_y = (self.player.tile.y - start_y) * self.tile_size + self._render_viewport_y_offset
         tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
         self.render_viewport_actor(self.player, tile_rect)
 
@@ -586,16 +591,15 @@ class InterfaceForPlayer(object):
             # Highlight selected tile with a cross hair
             if self._renderSelectedTile is not None:
                 tile = self._renderSelectedTile
-                vp_x = int((tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet + self.tile_size / 2)
-                vp_y = int((tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet + self.tile_size / 2)
-                tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
+                vp_x = int((tile.x - start_x) * self.tile_size + self._render_viewport_x_offset + self.tile_size / 2)
+                vp_y = int((tile.y - start_y) * self.tile_size + self._render_viewport_y_offset + self.tile_size / 2)
                 pygame.draw.circle(self.surface_viewport, COLORS.SELECTION, (vp_x, vp_y), int(self.tile_size / 2), 2)
         else:
             # Highlight selected tile
             if self._renderSelectedTile is not None:
                 tile = self._renderSelectedTile
-                vp_x = (tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-                vp_y = (tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
+                vp_x = (tile.x - start_x) * self.tile_size + self._render_viewport_x_offset
+                vp_y = (tile.y - start_y) * self.tile_size + self._render_viewport_y_offset
                 tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
                 pygame.draw.rect(self.surface_viewport, COLORS.SELECTION, tile_rect, 2)
                 self.render_popup(tile)
@@ -624,7 +628,6 @@ class InterfaceForPlayer(object):
         if sprite is None:
             sprite = self.viewport_font.render(my_actor.char, 1, my_actor.color)
         # Get effect overlay for sprite
-        ###################give bob an overlay :)
         overlay = get_sprite_surface(my_actor.sprite_overlay_id, self._frame_elapsed_time)
         if overlay is not None:
             overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
@@ -632,7 +635,8 @@ class InterfaceForPlayer(object):
             sprite.blit(overlay, (overlay_x, overlay_y))
         # Overlay state specific animations
         if my_actor.state_healing:
-            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self._frame_elapsed_time, my_actor.state_healing_animation_id)
+            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self._frame_elapsed_time,
+                                         my_actor.state_healing_animation_id)
             if overlay is not None:
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
@@ -685,7 +689,8 @@ class InterfaceForPlayer(object):
                 height += text_img.get_height()
                 y_off_set = height
                 needed_width = x_off_set + text_img.get_width() + x_off_set
-                if needed_width > width: width = needed_width
+                if needed_width > width:
+                    width = needed_width
         if len(components) == 0:
             # nothing to see here (empty tile)
             self._surface_popup = None
@@ -698,91 +703,6 @@ class InterfaceForPlayer(object):
             # add the components
             for (x, y, s) in components:
                 self.surface_popup.blit(s, (x, y))
-
-    def show_effects(self):
-        for effect in self.player.level.active_effects:
-            # Current implementation looks at effect targetType to decide on a visualization option.
-            if effect.targetType == TARGET.SELF:
-                # flash tile on which actor is standing
-                self.animation_flash_tiles(GuiUtilities.get_element_color(effect.effectElement), effect.tiles)
-            elif effect.targetType == TARGET.ACTOR:
-                # circle around the target character
-                self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.actors[0].tile, effect.effectRadius)
-            elif effect.targetType == TARGET.TILE:
-                # circular blast around centerTile
-                self.animation_nova(GuiUtilities.get_element_color(effect.effectElement), effect.centerTile, effect.effectRadius)
-            else:
-                print('WARNING: Unknown visualization type, skipping.')
-                    
-    def animation_flash_tiles(self, color, tiles):
-        """
-        Animation of a colored flash effect on specified tiles
-        color is an RGB tuple
-        """
-        R, G, B = color
-        flash_on_surface = pygame.Surface((self.tile_size, self.tile_size), pygame.SRCALPHA, 32)
-        flash_on_surface.fill((R, G, B, 125))
-        clock = pygame.time.Clock()
-        # nbr of flashes per second
-        flashes = 2
-        # run an effectLoop
-        for i in range(0, flashes):
-            # flash on
-            dirty_rects = []
-            for tile in tiles:
-                # translate to coordinates in the display
-                display_x, display_y = self.calculate_display_coords(tile)
-                dirty = self.surface_display.blit(flash_on_surface, (display_x, display_y))
-                dirty_rects.append(dirty)
-            # render
-            pygame.display.update(dirty_rects)
-            # limit frame rate
-            frame_rate_limit = 5 * flashes
-            clock.tick(frame_rate_limit)
-            # flash of
-            dirty_rects = []
-            for tile in tiles:
-                # translate to coordinates in the display
-                view_port_x, view_port_y = self.calculate_viewport_coords(tile)
-                display_x, display_y = self.calculate_display_coords(tile)
-                # restore original tile from viewport surface
-                vp_rect = (view_port_x, view_port_y, self.tile_size, self.tile_size)
-                dirty = self.surface_display.blit(self.surface_viewport, (display_x, display_y), vp_rect)
-                dirty_rects.append(dirty)
-            # render
-            pygame.display.update(dirty_rects)
-            # limit frame rate
-            frame_rate_limit = 5 * flashes
-            clock.tick(frame_rate_limit)
-
-    def animation_nova(self, color, center_tile, radius=0):
-        # R, G, B = color
-        if radius == 0: 
-            ripples = 1
-            radius = self.tile_size
-        else: 
-            ripples = radius * 2
-            radius = radius * self.tile_size
-        # origin of Nova will be the middle of centerTile
-        display_x, display_y = self.calculate_display_coords(center_tile)
-        orig_x = int(display_x + self.tile_size / 2)
-        orig_y = int(display_y + self.tile_size / 2)
-        
-        clock = pygame.time.Clock()
-        ripple_radius = 0
-        radius_increment = int(radius/ripples)
-        # run an effectLoop
-        for i in range(0, ripples):
-            ripple_radius += radius_increment
-            # render circle
-            dirty_rects = []
-            dirty_rect = pygame.draw.circle(self.surface_display, color, (orig_x, orig_y), ripple_radius, 3)
-            dirty_rects.append(dirty_rect)
-            # render
-            pygame.display.update(dirty_rects)
-            # limit frame rate
-            frame_rate_limit = 5*ripples
-            clock.tick(frame_rate_limit)
 
     def calculate_viewport_coords(self, tile):
         """
@@ -890,8 +810,8 @@ class InterfaceForPlayer(object):
 
     def event_targeting_start(self, item):
         self._targetingMode = True
-        self._targetingItem = item
-        self._targetType = item.target
+        self._targeting_item = item
+        self._target_type = item.target
     
     def event_targeting_acquire(self):
         # targeted tile is currently selected
@@ -902,9 +822,10 @@ class InterfaceForPlayer(object):
         # hack to avoid lingering selection tile
         self._renderSelectedTile = None
         # find target based on targetType
-        if self._targetType == TARGET.TILE:
+        my_target = None
+        if self._target_type == TARGET.TILE:
             my_target = target_tile
-        elif self._targetType == TARGET.ACTOR:
+        elif self._target_type == TARGET.ACTOR:
             # Currently this finds all ACTORS, not limited to CHARACTERS
             # find target actor on tile
             if len(target_tile.actors) == 0:
@@ -918,12 +839,13 @@ class InterfaceForPlayer(object):
                 for a in target_tile.actors:
                     options.append(a.name + ' (' + str(a.currentHitPoints) + '/' + str(a.maxHitPoints) + ')')
                 selection = GuiUtilities.show_menu(self.surface_display, header, options)
-                if selection is None: return
+                if selection is None:
+                    return
                 else:
                     my_target = target_tile.actors[selection]
 
         # use target item on target
-        self.player.tryUseItem(self._targetingItem, my_target)
+        self.player.tryUseItem(self._targeting_item, my_target)
         # Leave targeting mode
         self.event_targeting_stop()
     

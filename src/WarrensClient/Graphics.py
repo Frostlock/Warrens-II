@@ -210,6 +210,7 @@ class AnimatedSprite(object):
         :return: Pygame Surface representing the frame
         """
         # TODO: minor issue here: first time around the heal animation only plays after the tick, second time around the animation triggers before the tick that triggers the heal.
+        # TODO: minor issue: heal animation triggers again on changing zoom level? :)
         # Initialize index for new object_id
         if animation_id not in self._indexes.keys():
             self._indexes[animation_id] = -1
