@@ -74,8 +74,10 @@ class World(object):
         # Initialize class variables
         self._players = []
         self._levels = []
-        # self._currentLevel = None
-        # self._activeEffects = []
+        self._world_time = 0  # Running total of game time (in milliseconds)
+        self._tick_time = 0  # Time spent in the current tick (in milliseconds)
+        self._tick_speed = GAME.SPEED  # Speed of game ticks in milliseconds (how fast the game moves)
+
         # Initialize libraries
         self._monsterLibrary = MonsterLibrary()
         self._itemLibrary = ItemLibrary()
@@ -85,24 +87,6 @@ class World(object):
 
         # Procedural generation of the world
         self._generate_world()
-
-    # def setup_debug_game(self):
-    #     """
-    #     Similar to setup_new_game() but a utility function to enable debugging of new features.
-    #     :return:
-    #     """
-    #     # Create some maps to debug
-    #     self._levels = []
-    #
-    #     # Debug town level
-    #     level_name = "Debugging Level"
-    #     level_difficulty = 1
-    #     debug_level = CaveLevel(self, level_difficulty, level_name)
-    #     self.levels.append(debug_level)
-    #     self._currentLevel = debug_level
-    #
-    #     # Create player
-    #     self.reset_player()
 
     def _generate_world(self):
         """
@@ -130,18 +114,6 @@ class World(object):
         for i in range(1, WORLD.CAVE_LEVELS + 1):
             random_level = random.choice(self.levels)
             self._add_cave_level(2, [town, random_level])
-
-        # # Create player
-        # self.reset_player()
-        #
-        # # Set the game state
-        # self._state = Game.PLAYING
-        #
-        # # Send welcome message to the player
-        # Utilities.message('You are ' + self.player.name +
-        #                   ', a young and fearless adventurer. It is time to begin your '
-        #                   + 'legendary and without doubt heroic expedition into the '
-        #                   + 'unknown. Good luck!', "GAME")
 
     def _add_dungeon_level(self, difficulty, connected_levels):
         """
@@ -245,11 +217,30 @@ class World(object):
             for i in range(1, 9):
                 item = self.item_library.get_random_item(i)
                 chest.inventory.add(item)
+
+        # Send welcome message to the player
+        Utilities.message('You are ' + player.name +
+                          ', a young and fearless adventurer. It is time to begin your '
+                          + 'legendary and without doubt heroic expedition into the '
+                          + 'unknown. Good luck!', "GAME")
         return player
+
+    def play(self, added_time):
+        """
+        This function moves time forward in the world.
+        :param added_time: amount of time to add to the game clock in milliseconds
+        :return: None
+        """
+        self._tick_time += added_time
+        self._world_time += added_time
+        if self._tick_time > self._tick_speed:
+            self._tick_time -= self._tick_speed
+            self.tick()
 
     def tick(self):
         """
-        This function moves time forward in the world.
+        This function triggers an action tick for the world.n action moves time forward in the world.
+        It will be propagated to all underlying game objects.
         :return : None
         """
         for level in self.levels:

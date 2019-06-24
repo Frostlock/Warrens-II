@@ -274,7 +274,7 @@ class InterfaceForPlayer(object):
 
     def main_loop(self):
         clock = pygame.time.Clock()
-        start_time, render_time, event_time = 0, 0, 0
+        start_time, render_time, event_time, game_time = 0, 0, 0, 0
         while self._run_game_loop:
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 start_time = time.time()
@@ -299,18 +299,20 @@ class InterfaceForPlayer(object):
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 event_time = time.time() - start_time - render_time
 
-            # # DEPRECATED turnbased
-            # # If the player took a turn: Let the game play a turn
-            # self.game.try_to_play_turn()
-            #self.player.level.owner.tick(self._frame_elapsed_time)
+            # Move the game world forward
+            self.player.level.owner.play(self._frame_elapsed_time)
+            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
+                game_time = time.time() - start_time - render_time - event_time
 
             # limit frame rate (kinda optimistic since with current rendering we don't achieve this frame rate :) )
             frame_rate_limit = 30
             self._frame_elapsed_time = clock.tick(frame_rate_limit)
             self._frame_rate = clock.get_fps()
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                print("LOOP! FPS: " + str(self._frame_rate) + " Rendering: " + str(render_time) + "s " +
-                      str(len(events)) + " events: " + str(event_time) + "s")
+                print("LOOP! FPS: " + str(self._frame_rate) +
+                      " Rendering: " + str(render_time) + "s " +
+                      str(len(events)) + " events: " + str(event_time) + "s" +
+                      " Game: " + str(game_time) + "s ")
 
     def show_game_menu(self):
         options = ['Controls', 'Quit']

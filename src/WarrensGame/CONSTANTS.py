@@ -92,6 +92,7 @@ class GAME:
     Gameplay related system parameters
     """
     QUICK_START = True
+    SPEED = 1000  # Game speed in milliseconds
 
     XP_BASE = 300
     XP_FACTOR = 1.3
