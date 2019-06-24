@@ -1,4 +1,5 @@
 from WarrensGame.CONSTANTS import INTERACTION
+from WarrensGame.Actors import Player, Chest, Portal
 
 
 class Interaction(object):
@@ -18,27 +19,22 @@ class Interaction(object):
     def player(self):
         return self._player
 
-    @player.setter
-    def player(self, player_actor):
-        self._player = player_actor
-
     @property
-    def container(self):
-        return self._container
+    def actor(self):
+        return self._actor
 
-    @container.setter
-    def container(self, container_actor):
-        self._container = container_actor
-
-    def __init__(self, interaction_type, player=None, container=None):
+    def __init__(self, interaction_type, player=None, actor=None):
         # Initialize properties
         self._type = interaction_type
         self._player = player
-        self._container = container
+        self._actor = actor
 
         # Ensure required parameters for interaction type are provided
-        if self.type == INTERACTION.CONTAINER:
-            assert self.player is not None
-            assert self.container is not None
+        if self.type == INTERACTION.PORTAL:
+            assert isinstance(self.player, Player)
+            assert isinstance(self.actor, Portal)
+        if self.type == INTERACTION.CHEST:
+            assert isinstance(self.player, Player)
+            assert isinstance(self.actor, Chest)
         else:
-            raise NotImplementedError("Unknown interaction type.")
+            raise NotImplementedError("Unknown interaction type " + str(self.type) + ".")

@@ -180,4 +180,5 @@ class INTERACTION:
     """
     Enumerator to describe available interaction types
     """
-    CONTAINER = 0
+    PORTAL = 0
+    CHEST = 1

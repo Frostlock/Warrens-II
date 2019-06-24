@@ -995,7 +995,10 @@ class Player(Character):
                 self.pickUpItem(a)
                 return None
             if isinstance(a, Chest):
-                interaction = Interaction(INTERACTION.CONTAINER, self, a)
+                interaction = Interaction(INTERACTION.CHEST, self, a)
+                return interaction
+            if isinstance(a, Portal):
+                interaction = Interaction(INTERACTION.PORTAL, self, a)
                 return interaction
 
     def tryUseItem(self, item, target=None):

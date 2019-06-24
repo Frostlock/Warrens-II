@@ -108,7 +108,7 @@ def show_message_controls(target):
     message = "  Movement: numpad or arrowkeys\n" + \
               "  Attack: move towards target\n" + \
               "  Portals: > to go down, < to go up.\n" + \
-              "  Pick up item: numpad 0 \n" + \
+              "  Pick up item: space \n" + \
               "  View and use inventory: i\n" + \
               "  Drop from inventory: d\n" + \
               "  Toggle fullscreen: f\n"
