@@ -18,7 +18,6 @@ from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
 from WarrensGame.CONSTANTS import SPRITES
 
-# TODO: ideally this is refactored to pygame.event.unicode to be independent of keyboard layout.
 MOVEMENT_KEYS = {
         pygame.K_KP4: (-1, +0),     # numerical keypad
         pygame.K_KP6: (+1, +0),
@@ -299,17 +298,16 @@ class InterfaceForPlayer(object):
 
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 event_time = time.time() - start_time - render_time
-            #
-            # # TODO: Make the game move forward (effect duration & clean up needs to be handled as well!)
-            # if isinstance(self.game_server, LocalServer):
-            #     # If the player took a turn: Let the game play a turn
-            #     self.game.try_to_play_turn()
+
+            # # DEPRECATED turnbased
+            # # If the player took a turn: Let the game play a turn
+            # self.game.try_to_play_turn()
+            #self.player.level.owner.tick(self._frame_elapsed_time)
 
             # limit frame rate (kinda optimistic since with current rendering we don't achieve this frame rate :) )
             frame_rate_limit = 30
             self._frame_elapsed_time = clock.tick(frame_rate_limit)
             self._frame_rate = clock.get_fps()
-
             if INTERFACE.SHOW_PERFORMANCE_LOGGING:
                 print("LOOP! FPS: " + str(self._frame_rate) + " Rendering: " + str(render_time) + "s " +
                       str(len(events)) + " events: " + str(event_time) + "s")
@@ -342,35 +340,29 @@ class InterfaceForPlayer(object):
         :param event: Pygame event
         :return: None
         """
-        # TODO: a proper switch might be more efficient
-        # Quit
+        # Pygame Quit
         if event.type == pygame.QUIT:
+            self.event_quit()
             sys.exit()
-            # self.game_server.stop()
         
         # Window resize
-        if event.type == VIDEORESIZE:
+        elif event.type == VIDEORESIZE:
             self.set_window_size(event.dict['size'])
 
         # mouse
-        if event.type == MOUSEBUTTONDOWN:
+        elif event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.targeting_mode:
                     self.event_targeting_acquire()
-            elif event.button == 2:
-                self.event_dragging_start()
             elif event.button == 4:
                 self.event_zoom_in()
             elif event.button == 5:
                 self.event_zoom_out()
         elif event.type == MOUSEMOTION:
             self.event_mouse_movement()
-        elif event.type == MOUSEBUTTONUP:
-            if event.button == 2:
-                self.event_dragging_stop()
 
         # keyboard
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             # Keyboard - keys that are always active in gaming mode
             if event.key == pygame.K_ESCAPE:
                 if self.targeting_mode:
@@ -379,7 +371,8 @@ class InterfaceForPlayer(object):
                 else:
                     # Show Menu
                     self.show_game_menu()
-            elif event.key == pygame.K_f:
+            # Toggle fullscreen mode
+            elif event.unicode == 'f':
                 self.fullscreen = not self.fullscreen
 
             # keyboard - keys that are active while player is alive
@@ -389,26 +382,20 @@ class InterfaceForPlayer(object):
                 if event.key in MOVEMENT_KEYS:
                     self.player.tryMoveOrAttack(*MOVEMENT_KEYS[event.key])
                 # Portal keys
-                elif event.key == pygame.K_PERIOD:
-                    # check for shift modifier to detect ">" key.
-                    mods = pygame.key.get_mods()
-                    if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
-                        self.player.tryFollowPortalDown()
-                elif event.key == pygame.K_COMMA:
-                    # check for shift modifier to detect "<" key.
-                    mods = pygame.key.get_mods()
-                    if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
-                        self.player.tryFollowPortalUp()
+                elif event.unicode == '>':
+                    self.player.tryFollowPortalDown()
+                elif event.unicode == '<':
+                    self.player.tryFollowPortalUp()
                 # Inventory
-                elif event.key == pygame.K_i:
+                elif event.unicode == 'i':
                     self.use_inventory()
-                elif event.key == pygame.K_d:
+                elif event.unicode == 'd':
                     self.drop_inventory()
                 # Interact
-                elif event.key == pygame.K_KP0:
+                elif event.unicode == ' ':
                     self.player.tryInteract()
                 # Tick the clock (make time move forward)
-                elif event.key == pygame.K_t:
+                elif event.unicode == 't':
                     print("Manual time tick!")
                     self.player.level.owner.tick()
 
@@ -565,19 +552,6 @@ class InterfaceForPlayer(object):
                         # tile not in view: apply fog of war
                         self.surface_viewport.blit(self.fogOfWarTileSurface, tile_rect)
 
-        # # Draw portals on explored tiles (remain visible even when out of view)
-        # portals = self.player.level.portals
-        # for portal in portals:
-        #     if portal.tile.explored:
-        #         vp_x = (portal.tile.x - start_x) * self.tile_size + self._renderViewPortXOffSet
-        #         vp_y = (portal.tile.y - start_y) * self.tile_size + self._renderViewPortYOffSet
-        #         tile_rect = pygame.Rect(vp_x, vp_y, self.tile_size, self.tile_size)
-        #         text_img = self.viewport_font.render(portal.char, 1, portal.color)
-        #         # Center
-        #         x = tile_rect.x + (tile_rect.width / 2 - text_img.get_width() /2)
-        #         y = tile_rect.y + (tile_rect.height / 2 - text_img.get_height() /2)
-        #         self.surface_viewport.blit(text_img, (x, y))
-
         # Finally draw player character (this makes sure it is on top of other characters)
         vp_x = (self.player.tile.x - start_x) * self.tile_size + self._render_viewport_x_offset
         vp_y = (self.player.tile.y - start_y) * self.tile_size + self._render_viewport_y_offset
@@ -586,7 +560,8 @@ class InterfaceForPlayer(object):
 
         if self.targeting_mode:
             # Indicate we are in targeting mode
-            blit_text = GuiUtilities.FONT_PANEL.render("Select target (Escape to cancel)", 1, (255, 0, 0))
+            target_message = "Target " + self._targeting_item.name + " (Escape to cancel)"
+            blit_text = GuiUtilities.FONT_PANEL.render(target_message, 1, (255, 0, 0))
             self.surface_viewport.blit(blit_text, (6, 2 + blit_text.get_height()))
             # Highlight selected tile with a cross hair
             if self._renderSelectedTile is not None:
@@ -721,38 +696,22 @@ class InterfaceForPlayer(object):
         y = view_port_y + self.viewport_placement[1]
         return x, y
 
-    def event_dragging_start(self):
-        self._draggingMode = True
-        # call pygame.mouse.get_rel() to make pygame correctly register the starting point of the drag
-        pygame.mouse.get_rel()
-
-    def event_dragging_stop(self):
-        self._draggingMode = False
-
     def event_mouse_movement(self):
-        # check for on going drag
-        if self.dragging_mode:
-            # get relative distance of mouse since last call to get_rel()
-            rel = pygame.mouse.get_rel()
-            # calculate new viewport coords
-            self._renderViewPortX = self._renderViewPortX - rel[0]
-            self._renderViewPortY = self._renderViewPortY - rel[1]
+        pos = pygame.mouse.get_pos()
+        # Coords relevant to viewport
+        mouse_x = pos[0]
+        mouse_y = pos[1]
+        # Coords relevant to entire map
+        map_x = self._renderViewPortX + mouse_x
+        map_y = self._renderViewPortY + mouse_y
+        # Determine Tile
+        tile_x = int(map_x / self.tile_size)
+        tile_y = int(map_y / self.tile_size)
+        current_map = self.player.level.map
+        if 0 < tile_x < current_map.width-1 and 0 < tile_y < current_map.height-1:
+            self._renderSelectedTile = current_map.tiles[tile_x][tile_y]
         else:
-            pos = pygame.mouse.get_pos()
-            # Coords relevant to viewport
-            mouse_x = pos[0]
-            mouse_y = pos[1]
-            # Coords relevant to entire map
-            map_x = self._renderViewPortX + mouse_x
-            map_y = self._renderViewPortY + mouse_y
-            # Determine Tile
-            tile_x = int(map_x / self.tile_size)
-            tile_y = int(map_y / self.tile_size)
-            current_map = self.player.level.map
-            if 0 < tile_x < current_map.width-1 and 0 < tile_y < current_map.height-1:
-                self._renderSelectedTile = current_map.tiles[tile_x][tile_y]
-            else:
-                self._renderSelectedTile = None
+            self._renderSelectedTile = None
 
     def event_zoom_in(self):
         """
