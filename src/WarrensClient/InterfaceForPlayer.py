@@ -135,8 +135,8 @@ class InterfaceForPlayer(object):
     @zoom_factor.setter
     def zoom_factor(self, factor):
         """
-        Set the zoom factor.
-        :param factor:
+        Set the zoom factor. A higher zoom factor results in bigger tile sizes in the viewport.
+        :param factor: Float zoom factor
         :return: None
         """
         self._zoom_factor = max(min(INTERFACE.MAX_ZOOM_FACTOR, factor), INTERFACE.MIN_ZOOM_FACTOR)

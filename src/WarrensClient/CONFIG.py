@@ -10,9 +10,9 @@ class INTERFACE:
     SHOW_SPLASH_SCREEN = True
     SHOW_PERFORMANCE_LOGGING = False
 
-    ZOOM_MULTIPLIER = 0.2  # Increase in zoom for each zooming operation
-    MAX_ZOOM_FACTOR = 10
-    MIN_ZOOM_FACTOR = 0.1
+    ZOOM_MULTIPLIER = 1.1  # Increase in zoom for each zooming operation
+    MAX_ZOOM_FACTOR = 2.5
+    MIN_ZOOM_FACTOR = 0.5
 
 
 class GRAPHICS:
