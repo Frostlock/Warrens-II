@@ -420,6 +420,7 @@ class ItemLibrary:
         if item_level - 2 in self.item_level_index.keys():
             possibilities.extend(self.item_level_index[item_level - 2])
         # Make a random choice
+        print("Choosing out of " + str(len(possibilities)) + " item possibilities.")
         selection = random.choice(possibilities)
         # Create the item
         new_item = self.create_item(selection.key)
@@ -451,6 +452,7 @@ class ItemLibrary:
             if key <= 0:
                 possibilities.extend(self.modifier_level_index[key])
         # Make a random choice
+        print("Choosing out of " + str(len(possibilities)) + " item modifier possibilities.")
         selection = random.choice(possibilities)
         # Create the item
         modifier = ItemModifier(selection)

@@ -24,6 +24,9 @@ tiles = None
 # WARNING: Unknown hash 152, can't assign tileset ID.
 # WARNING: Unknown hash 50, can't assign tileset ID.
 # WARNING: Unknown hash 26, can't assign tileset ID.
+# WARNING: Unknown hash 118, can't assign tileset ID.
+# WARNING: Unknown hash 220, can't assign tileset ID.
+# WARNING: Unknown hash 176, can't assign tileset ID.
 
 
 def initialize_sprites(tile_size):
