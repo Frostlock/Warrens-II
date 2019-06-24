@@ -69,6 +69,9 @@ class CONFIG:
     SHOW_GENERATION_LOGGING = True
     SHOW_NETWORK_LOGGING = True
 
+    # Utility parameters
+    MESSAGE_BUFFER_LENGTH = 5
+
 
 class EFFECT:
     """
@@ -89,9 +92,6 @@ class GAME:
     Gameplay related system parameters
     """
     QUICK_START = True
-
-    # TODO: Move to CONFIG class
-    MESSAGE_BUFFER_LENGTH = 5
 
     XP_BASE = 300
     XP_FACTOR = 1.3
