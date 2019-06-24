@@ -296,7 +296,7 @@ class DungeonMap(Map):
 
     def generate_map(self):
         """
-        generate a randomized dungeon map
+        generate a randomized dungeon map with a minimum of two rooms
         """
         # Clear existing rooms
         self.clear_rooms()
@@ -321,9 +321,9 @@ class DungeonMap(Map):
                 t.color = DUNGEON.COLOR_WALL
                 t.material = MaterialType.STONE
 
-        # Cut out rooms
+        # Cut out rooms (minimum 2)
         num_rooms = 0
-        for r in range(max_rooms):
+        for r in range(2, max_rooms):
             # Random width and height
             w = random.randrange(room_min_size, room_max_size)
             h = random.randrange(room_min_size, room_max_size)
