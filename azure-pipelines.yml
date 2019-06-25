@@ -77,3 +77,12 @@ steps:
     pyinstaller-package.bat
   condition: and(eq(variables['imageName'], 'vs2017-win2016'), eq(variables['python.version'], '3.5'))
   displayName: 'Build distribution binary for Windows (Windows 2016 with python 3.5)'
+
+# Publish binaries
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist'
+    ArtifactName: 'binaries'
+    publishLocation: 'Container'
+  condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
+  displayName: 'Publish binaries'
