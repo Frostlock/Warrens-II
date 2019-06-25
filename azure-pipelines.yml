@@ -65,6 +65,7 @@ steps:
 
 # Package binary for Linux
 - script: |
+    pip install pyinstaller
     cd util/pyinstaller
     ./pyinstaller-package.sh
   condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
@@ -72,6 +73,7 @@ steps:
 
 # Package binary for Windows
 - script: |
+    pip install pyinstaller
     cd util
     cd pyinstaller
     pyinstaller-package.bat
@@ -81,7 +83,7 @@ steps:
 # Publish binaries
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/Warrens-II/dist'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'binaries'
     publishLocation: 'Container'
   condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
