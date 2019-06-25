@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# This script will create a packaged version of the project that can be easily distributed
+# This script will create a packaged version of the project that can be easily distributed.
+# This is the Linux script.
 #
 # The script can package into a directory or into a file.
 # To package into a directory remove the --onefile parameter which can be useful for debugging.
