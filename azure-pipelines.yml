@@ -89,6 +89,8 @@ steps:
   displayName: 'Copy binaries to staging area'
 
 # Publish binary
+# Note: you can download these for inspection through the API, see doc here:
+# https://docs.microsoft.com/en-gb/rest/api/azure/devops/build/artifacts/list?view=azure-devops-rest-5.0
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
