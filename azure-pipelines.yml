@@ -80,7 +80,15 @@ steps:
   condition: and(eq(variables['imageName'], 'vs2017-win2016'), eq(variables['python.version'], '3.5'))
   displayName: 'Build distribution binary for Windows (Windows 2016 with python 3.5)'
 
-# Publish binaries
+# Copy binary to staging area
+- task: CopyFiles@2
+  inputs:
+    Contents: 'dist/*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
+  displayName: 'Copy binaries to staging area'
+
+# Publish binary
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
