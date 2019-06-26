@@ -62,3 +62,39 @@ steps:
     cd src
     python -m unittest discover ./WarrensTest
   displayName: 'unittest discovery and execution'
+
+# Package binary for Linux
+- script: |
+    pip install pyinstaller
+    cd util/pyinstaller
+    ./pyinstaller-package.sh
+  condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
+  displayName: 'Build distribution binary for Linux (Ubuntu 16.04 with python 3.5)'
+
+# Package binary for Windows
+- script: |
+    pip install pyinstaller
+    cd util
+    cd pyinstaller
+    pyinstaller-package.bat
+  condition: and(eq(variables['imageName'], 'vs2017-win2016'), eq(variables['python.version'], '3.5'))
+  displayName: 'Build distribution binary for Windows (Windows 2016 with python 3.5)'
+
+# Copy binary to staging area
+- task: CopyFiles@2
+  inputs:
+    Contents: 'dist/*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
+  displayName: 'Copy binaries to staging area'
+
+# Publish binary
+# Note: you can download these for inspection through the API, see doc here:
+# https://docs.microsoft.com/en-gb/rest/api/azure/devops/build/artifacts/list?view=azure-devops-rest-5.0
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'binaries'
+    publishLocation: 'Container'
+  condition: and(eq(variables['imageName'], 'ubuntu-16.04'), eq(variables['python.version'], '3.5'))
+  displayName: 'Publish binaries'
