@@ -1,5 +1,5 @@
 from WarrensGame.CONSTANTS import INTERACTION
-from WarrensGame.Actors import Player, Chest, Portal
+from WarrensGame.Actors import *
 
 
 class Interaction(object):

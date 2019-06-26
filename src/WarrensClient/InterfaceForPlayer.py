@@ -395,7 +395,8 @@ class InterfaceForPlayer(object):
                     self.drop_inventory()
                 # Interact
                 elif event.unicode == ' ':
-                    self.player.tryInteract()
+                    # TODO: Make this work for chests and portals.
+                    interaction = self.player.tryInteract()
                 # Tick the clock (make time move forward)
                 elif event.unicode == 't':
                     print("Manual time tick!")
