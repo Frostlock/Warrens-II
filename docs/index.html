@@ -5,15 +5,23 @@
     <title>Warrens-II</title>
   </head>
   <body>
+    <h1>Warrens-II</h1>
     <div>
-      Welcome to the Warrens-II build page. You can find the latest build status below and if all is well a
-      copy of the latest binaries. These are built based on the latest committed code so please consider
+      Welcome to the Warrens-II website. You can find the latest build status below and if all is well a download
+      link for the latest binaries. These are built based on the latest committed code so please consider
       as very unstable :)
     </div>
+    <h2>Latest build</h2>
     <div>
       <img src="https://dev.azure.com/pboogaerts/Warrens-II/_apis/build/status/Frostlock.Warrens-II-Testing?branchName=master">
     </div>
     <div id="root">
+    </div>
+    <h2>Documentation</h2>
+    <div>
+      Documentation is generated using Sphinx. It is currently in a very draft state.
+      Basically more of an exercise to make Sphinx work :) <br>
+      <a href="./build/html/index.html">Documentation</a>
     </div>
   </body>
 </html>
@@ -30,10 +38,10 @@ request.onload = function () {
         var data = JSON.parse(this.response)
         // Get base_url for last build
         base_url = data.value[0]["_links"]["self"]["href"]
-        //console.log("base_url: " + base_url)
+        console.log("base_url: " + base_url)
         // append the artifact API endpoint
         artifact_url = base_url + "/artifacts?api-version=5.0"
-        //console.log("artifact_url: " + artifact_url)
+        console.log("artifact_url: " + artifact_url)
 
         var request2 = new XMLHttpRequest()
         request2.open('GET', artifact_url, true)
@@ -42,7 +50,7 @@ request.onload = function () {
         request2.onload = function() {
             var data = JSON.parse(this.response)
             download_url = data.value[0]["resource"]["downloadUrl"]
-            //console.log(download_url)
+            console.log(download_url)
 
             var a = document.createElement('a')
             var t = document.createTextNode("Download latest build")
