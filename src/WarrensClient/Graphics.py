@@ -16,19 +16,6 @@ sprite_dict = {}
 tiles = None
 
 
-# TODO: Fix missing tileset assignments below.
-# WARNING: Unknown hash 446, can't assign tileset ID.
-# WARNING: Unknown hash 443, can't assign tileset ID.
-# WARNING: Unknown hash 433, can't assign tileset ID.
-# WARNING: Unknown hash 283, can't assign tileset ID.
-# WARNING: Unknown hash 152, can't assign tileset ID.
-# WARNING: Unknown hash 50, can't assign tileset ID.
-# WARNING: Unknown hash 26, can't assign tileset ID.
-# WARNING: Unknown hash 118, can't assign tileset ID.
-# WARNING: Unknown hash 220, can't assign tileset ID.
-# WARNING: Unknown hash 176, can't assign tileset ID.
-
-
 def initialize_sprites(tile_size):
     """
     Initialize the sprites. This function will load the sprite sheets and resize them to fit current tile_size
@@ -104,6 +91,7 @@ def initialize_sprites(tile_size):
     # Overlay effects
     frames = [effects_32[3][3], effects_32[4][3], effects_32[5][3]]
     sprite_dict[SPRITES.EFFECT_GREEN_DUST] = AnimatedSprite(frames, 15, loop=True)
+
 
 def load_sprite_sheet(sprite_sheet_path, size, margin, tile_size):
     """
@@ -212,7 +200,8 @@ class AnimatedSprite(object):
         :param animation_id: Animation ID to keep different instances of the same animation separate
         :return: Pygame Surface representing the frame
         """
-        # TODO: minor issue here: first time around the heal animation only plays after the tick, second time around the animation triggers before the tick that triggers the heal.
+        # TODO: minor issue here: first time around the heal animation only plays after the tick,
+        #       second time around the animation triggers before the tick that triggers the heal.
         # TODO: minor issue: heal animation triggers again on changing zoom level? :)
         # Initialize index for new object_id
         if animation_id not in self._indexes.keys():

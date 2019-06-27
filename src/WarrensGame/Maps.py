@@ -372,6 +372,7 @@ class DungeonMap(Map):
         self._exitTile = self._tiles[exitX][exitY]
 
         # Assign texture ID based on texture hash
+        # The assignments below are calculated using a helper spreadsheet
         for x in range(self.width):
             for y in range(self.height):
                 t = self.tiles[x][y]
@@ -389,33 +390,35 @@ class DungeonMap(Map):
                     t.texture_id = SPRITES.PILLAR
                 elif h in [24, 25, 88, 89]:
                     t.texture_id = SPRITES.NS_WALL_W_CAP
-                elif h in [56, 57, 60, 63, 120, 121, 124, 125, 127, 312, 313, 316, 317, 319, 377, 380, 381, 383, 504, 505, 508, 509]:
+                elif h in [56, 57, 60, 63, 120, 121, 124, 125, 127, 312, 313, 316, 317, 319, 377, 380, 381, 383, 504,
+                           505, 508, 509]:
                     t.texture_id = SPRITES.NS_WALL
                 elif h in [48, 52, 304, 308]:
                     t.texture_id = SPRITES.NS_WALL_E_CAP
                 elif h in [18, 19, 22, 23]:
                     t.texture_id = SPRITES.EW_WALL_N_CAP
-                elif h in [146, 147, 150, 151, 210, 214, 215, 219, 223, 402, 403, 407, 438, 439, 466, 467, 470, 471, 475, 479, 502, 503]:
+                elif h in [146, 147, 150, 151, 210, 214, 215, 219, 223, 402, 403, 407, 438, 439, 466, 467, 470, 471,
+                           475, 479, 502, 503]:
                     t.texture_id = SPRITES.EW_WALL
                 elif h in [144, 208, 400, 464]:
                     t.texture_id = SPRITES.EW_WALL_S_CAP
-                elif h in [27, 30, 31, 90, 91, 94, 95, 510]:
+                elif h in [26, 27, 30, 31, 90, 91, 94, 95, 283, 510]:
                     t.texture_id = SPRITES.NW_CORNER
-                elif h in [51, 54, 55, 306, 307, 310, 311, 507]:
+                elif h in [50, 51, 54, 55, 118, 306, 307, 310, 311, 507]:
                     t.texture_id = SPRITES.NE_CORNER
-                elif h in [153, 216, 217, 408, 409, 447, 472, 473]:
+                elif h in [152, 153, 216, 217, 220, 408, 409, 447, 472, 473]:
                     t.texture_id = SPRITES.SW_CORNER
-                elif h in [180, 240, 244, 255, 432, 436, 496, 500]:
+                elif h in [176, 180, 240, 244, 255, 432, 433, 436, 496, 500]:
                     t.texture_id = SPRITES.SE_CORNER
-                elif h in [186]:
+                elif h in [186, 187, 190, 250, 254, 442, 443]:
                     t.texture_id = SPRITES.CROSS
-                elif h in [58, 59, 62, 122, 123, 126, 314, 318, 378, 379, 382]:
+                elif h in [58, 59, 62, 122, 123, 126, 314, 315, 318, 378, 379, 382, 506]:
                     t.texture_id = SPRITES.T_SOUTH
-                elif h in [178, 179, 182, 183, 242, 243, 246, 247, 434, 435, 498]:
+                elif h in [178, 179, 182, 183, 242, 243, 246, 247, 251, 434, 435, 498, 499]:
                     t.texture_id = SPRITES.T_WEST
-                elif h in [154, 155, 158, 159, 218, 222, 410, 411, 414, 415, 474]:
+                elif h in [154, 155, 158, 159, 218, 222, 410, 411, 414, 415, 446, 474, 478]:
                     t.texture_id = SPRITES.T_EAST
-                elif h in [184, 185, 188, 189, 248, 249, 252, 253, 440, 441, 444]:
+                elif h in [184, 185, 188, 189, 191, 248, 249, 252, 253, 440, 441, 444, 445]:
                     t.texture_id = SPRITES.T_NORTH
                 else:
                     print("WARNING: Unknown hash " + str(h) + ", can't assign tileset ID.")
