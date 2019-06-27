@@ -6,7 +6,7 @@ import sys
 import pygame
 from pygame.locals import *
 from WarrensClient import GuiUtilities
-from WarrensClient.CONFIG import INTERFACE
+from WarrensClient.CONFIG import INTERFACE, COLORS
 from WarrensClient.InterfaceForPlayer import InterfaceForPlayer
 from WarrensClient import Audio
 from WarrensGame.World import World
@@ -16,6 +16,14 @@ class MainApplication(object):
     """
     PyGame implementation for dungeonGame GUI
     """
+
+    @property
+    def version_number(self):
+        """
+        Version number, can be used to give a visual indication on the version of the application.
+        :return: String
+        """
+        return self._version_number
 
     @property
     def surface_display(self):
@@ -51,17 +59,20 @@ class MainApplication(object):
     def game_server(self):
         """
         Property to access the game server.
+
         """
         return self._game_server
 
-    def __init__(self):
+    def __init__(self, version_number=None):
         """
         Constructor
+        :param version_number: String, application version identifier
         """
         # Initialize pygame
         GuiUtilities.init_pygame()
 
         # Initialize properties
+        self._version_number = version_number
         self._game_server = None
 
         # Initialize display surface
@@ -71,7 +82,7 @@ class MainApplication(object):
         # - I have two screens so divide width by two
         # - I have a window manager panel which always takes up 24 pixels on first screen
         self.fullscreen_sdl_position = "0, 0"
-        self.fullscreen_size = (int(display_info.current_w // 2), display_info.current_h - 24)
+        self.fullscreen_size = (int(display_info.current_w // 2), display_info.current_h)
         self.window_size = (1000, 750)
         self._fullscreen = False
         self.setup_surfaces(self.window_size)
@@ -102,10 +113,15 @@ class MainApplication(object):
         if INTERFACE.SHOW_SPLASH_SCREEN:
             GuiUtilities.show_splash(self.surface_display)
 
+        # Version Number
+        version_surface = GuiUtilities.FONT_PANEL.render(self.version_number, 1, COLORS.PANEL_FONT)
+        version_position = (10, self.surface_display.get_height() - version_surface.get_height() - 10)
+
         # Show menu
         options = ['New game', 'Controls', 'Quit']
         keys = ['n', 'c', 'q']
         while True:
+            self.surface_display.blit(version_surface, version_position)
             selection = GuiUtilities.show_menu(self.surface_display, 'Main Menu', options, keys)
             if selection is None:
                 return
@@ -136,4 +152,4 @@ class MainApplication(object):
 
 if __name__ == "__main__":
     # Quickstart code to test out the main application
-    MainApplication()
+    MainApplication("V-unknown")

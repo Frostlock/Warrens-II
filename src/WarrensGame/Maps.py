@@ -322,8 +322,8 @@ class DungeonMap(Map):
                 t.material = MaterialType.STONE
 
         # Cut out rooms (minimum 2)
-        num_rooms = 0
-        for r in range(2, max_rooms):
+        rooms_to_generate = random.randint(2, max_rooms)
+        while len(self.rooms) < rooms_to_generate:
             # Random width and height
             w = random.randrange(room_min_size, room_max_size)
             h = random.randrange(room_min_size, room_max_size)
@@ -353,9 +353,9 @@ class DungeonMap(Map):
             # Create corridor towards previous room
             (new_x, new_y) = new_room.center
             # All rooms, after the first room, connect to the previous room
-            if num_rooms > 0:
+            if len(self.rooms) > 0:
                 # Center coordinates of previous room
-                prev_room = self.rooms[num_rooms - 1]
+                prev_room = self.rooms[len(self.rooms) - 1]
                 (prev_x, prev_y) = prev_room.center
                 # Create a corridor: First move horizontally, then vertically
                 self._create_horizontal_tunnel(prev_x, new_x, new_y)
@@ -363,7 +363,6 @@ class DungeonMap(Map):
 
             # Finally, append the new room to the list
             self.rooms.append(new_room)
-            num_rooms += 1
 
         # Set entry and exit tiles
         (entryX, entryY) = self.rooms[0].center
