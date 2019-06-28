@@ -49,12 +49,12 @@ sphinx-apidoc -o source/ ../src
 
 For the above reasons I found it easier to create a bash script that runs sphinx
 
-If things go wrong you can use the make command in the /docs folder 
-make clean 
-make html
+# Integration with Github pages
+On the GitHub website, go to the project settings
+- activate GitHub pages
+- set it to get docs from master branch in /docs folder
 
-# Usage
-delete everyting in the docs/build directory (alternatively use make clean)
-delete the *.rst files except index.rst
-Recreate the rst files: sphinx-apidoc -f -o source/ ../../Warrens-II/
-run the pycharm task for sphinx
+Disable jekyll (we are working with sphinx generated pages) by creating a .nojekyll file in the /docs folder
+
+The Sphinx documentation from the /docs folder will now be used to generate a website:
+https://frostlock.github.io/Warrens-II
