@@ -12,3 +12,6 @@ venv/
 
 # exclude pyinstaller build directory
 util/pyinstaller/build/
+
+# exclude sphinx build directory
+util/sphinx/build/
