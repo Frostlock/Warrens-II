@@ -1,0 +1,15 @@
+@font-face {
+    font-family: "CommodorePixeled";
+    src: url(./CommodorePixeled.ttf);
+}
+
+div.content-wrapper {
+  background-color: black;
+  color: green;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+div.header .headertitle a {
+  color: green;
+}
