@@ -5,7 +5,10 @@ Note that the main goal of this project is not to be a super compelling game :) 
 
 # Download
 Want to have a look at what is going on here? Check out the project pages and grab a copy of the latest build :)
-[https://frostlock.github.io/Warrens-II](https://frostlock.github.io/Warrens-II)
+
+[Documentation](https://frostlock.github.io/Warrens-II)
+
+[Latest build](https://frostlock.github.io/Warrens-II/latest_build.html)
 
 # Requirements
 - Python 3
