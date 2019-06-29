@@ -37,10 +37,11 @@ class TestInteractions(unittest.TestCase):
         # Trigger a player interaction
         interaction = self.player.try_interact()
 
-        # Check results
+        # Check results (We expect an IDLE interaction for an empty tile)
         self.assertIsInstance(interaction, Interaction)
-        # We expect an IDLE interaction for an empty tile
         self.assertEqual(interaction.type, INTERACTION.IDLE)
+        self.assertIs(interaction.player, self.player)
+        self.assertIsNone(interaction.actor)
 
     def test_item_interaction(self):
         """
@@ -93,8 +94,9 @@ class TestInteractions(unittest.TestCase):
 
         # Check results
         self.assertIsInstance(interaction, Interaction)
-        # We expect a CHEST interaction
         self.assertEqual(interaction.type, INTERACTION.CHEST)
+        self.assertIs(interaction.player, self.player)
+        self.assertIs(interaction.actor, chest)
 
 
 if __name__ == "__main__":

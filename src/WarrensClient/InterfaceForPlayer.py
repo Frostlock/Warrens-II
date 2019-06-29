@@ -17,6 +17,7 @@ from WarrensGame.Actors import Player, Character
 from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
 from WarrensGame.CONSTANTS import SPRITES, INTERACTION
+from WarrensClient.InterfaceInventory import InterfaceInventory
 
 MOVEMENT_KEYS = {
         pygame.K_KP4: (-1, +0),     # numerical keypad
@@ -747,7 +748,8 @@ class InterfaceForPlayer(object):
         if interaction.type == INTERACTION.IDLE:
             pass
         elif interaction.type == INTERACTION.CHEST:
-            pass
+            # Present chest inventory to player.
+            InterfaceInventory(self, interaction.player, interaction.actor)
         else:
             raise NotImplementedError("Unknown interaction.type: " + str(interaction.type))
 

@@ -1,4 +1,6 @@
-from WarrensGame.CONSTANTS import INTERACTION
+"""
+Utility class to represent an interaction.
+"""
 
 
 class Interaction(object):
@@ -27,18 +29,3 @@ class Interaction(object):
         self._type = interaction_type
         self._player = player
         self._actor = actor
-
-        # Ensure required parameters for interaction type are provided
-        # TODO: Move this into the testing code
-        from WarrensGame.Actors import Player, Chest, Portal  # Intentionally imported here to avoid circular import
-        if self.type == INTERACTION.IDLE:
-            assert isinstance(self.player, Player)
-            assert self.actor is None
-        elif self.type == INTERACTION.PORTAL:
-            assert isinstance(self.player, Player)
-            assert isinstance(self.actor, Portal)
-        elif self.type == INTERACTION.CHEST:
-            assert isinstance(self.player, Player)
-            assert isinstance(self.actor, Chest)
-        else:
-            raise NotImplementedError("Unknown interaction type " + str(self.type) + ".")
