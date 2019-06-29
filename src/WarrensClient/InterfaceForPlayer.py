@@ -16,7 +16,7 @@ from WarrensClient import Audio
 from WarrensGame.Actors import Player, Character
 from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
-from WarrensGame.CONSTANTS import SPRITES
+from WarrensGame.CONSTANTS import SPRITES, INTERACTION
 
 MOVEMENT_KEYS = {
         pygame.K_KP4: (-1, +0),     # numerical keypad
@@ -385,9 +385,9 @@ class InterfaceForPlayer(object):
                     self.player.tryMoveOrAttack(*MOVEMENT_KEYS[event.key])
                 # Portal keys
                 elif event.unicode == '>':
-                    self.player.tryFollowPortalDown()
+                    self.player.try_interact()
                 elif event.unicode == '<':
-                    self.player.tryFollowPortalUp()
+                    self.player.try_interact()
                 # Inventory
                 elif event.unicode == 'i':
                     self.use_inventory()
@@ -395,8 +395,9 @@ class InterfaceForPlayer(object):
                     self.drop_inventory()
                 # Interact
                 elif event.unicode == ' ':
-                    # TODO: Make this work for chests and portals.
-                    interaction = self.player.tryInteract()
+                    interaction = self.player.try_interact()
+                    if interaction is not None:
+                        self.event_interaction(interaction)
                 # Tick the clock (make time move forward)
                 elif event.unicode == 't':
                     print("Manual time tick!")
@@ -738,6 +739,18 @@ class InterfaceForPlayer(object):
         self._renderViewPortX = tile.x * self.tile_size - (self.surface_viewport.get_width() / 2)
         self._renderViewPortY = tile.y * self.tile_size - (self.surface_viewport.get_height() / 2)
 
+    def event_interaction(self, interaction):
+        """
+        Handle interaction requested by Game server.
+        :return:
+        """
+        if interaction.type == INTERACTION.IDLE:
+            pass
+        elif interaction.type == INTERACTION.CHEST:
+            pass
+        else:
+            raise NotImplementedError("Unknown interaction.type: " + str(interaction.type))
+
     def use_inventory(self):
         """
         Present inventory to player with possibility to use an item.
@@ -755,7 +768,7 @@ class InterfaceForPlayer(object):
                 self.event_targeting_start(use_item)
             else:
                 # try to use the item
-                self.player.tryUseItem(use_item)
+                self.player.try_use_item(use_item)
 
     def drop_inventory(self):
         """
@@ -807,7 +820,7 @@ class InterfaceForPlayer(object):
                     my_target = target_tile.actors[selection]
 
         # use target item on target
-        self.player.tryUseItem(self._targeting_item, my_target)
+        self.player.try_use_item(self._targeting_item, my_target)
         # Leave targeting mode
         self.event_targeting_stop()
     

@@ -427,12 +427,12 @@ class Application(object):
                             # check for shift modifier to detect ">" key.
                             mods = pygame.key.get_mods()
                             if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
-                                player.tryFollowPortalDown()
+                                player.try_interact()
                         elif event.key == pygame.K_COMMA:
                             # check for shift modifier to detect "<" key.
                             mods = pygame.key.get_mods()
                             if (mods & KMOD_LSHIFT) or (mods & KMOD_RSHIFT):
-                                player.tryFollowPortalUp()
+                                player.try_interact()
                         # Inventory
                         elif event.key == pygame.K_i:
                             self.use_inventory()
@@ -440,7 +440,7 @@ class Application(object):
                             self.drop_inventory()
                         # Interact
                         elif event.key == pygame.K_KP0:
-                            player.tryInteract()
+                            player.try_interact()
 
     def render_init(self):
         """
@@ -964,7 +964,7 @@ class Application(object):
                     self.event_targeting_start(use_item)
                 else:
                     # try to use the item
-                    self.game.player.tryUseItem(use_item)
+                    self.game.player.try_use_item(use_item)
 
     def drop_inventory(self):
         """
@@ -1012,7 +1012,7 @@ class Application(object):
                     my_target = target_tile.actors[selection]
 
         # use target item on target
-        self.game.player.tryUseItem(self._targetingItem, my_target)
+        self.game.player.try_use_item(self._targetingItem, my_target)
         # Leave targeting mode
         self.event_targeting_stop()
     

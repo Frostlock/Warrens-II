@@ -960,51 +960,36 @@ class Player(Character):
         else:
             self.moveAlongVector(dx, dy)
 
-    def tryFollowPortalUp(self):
+    def try_interact(self):
         """
-        Player attempts to follow a portal up at the current location.
-        This function is meant to be called from the GUI.
+        Player attempts to interact with actors on the current tile. This function is meant to be called from the GUI.
+        If no further handling is required the function returns None. (for example: picking up an item)
+        If the interaction requires further handling (for example: target selection in the GUI) the function will
+        return an interaction object.
+        :return: Interaction or None
         """
-        #check if there is a portal up on the current tile
         for a in self.tile.actors:
-            if type(a) is Portal and a.char == '<':
-                self.followPortal(a)
-                break
-
-    def tryFollowPortalDown(self):
-        """
-        Player attempts to follow a portal down at the current location.
-        This function is meant to be called from the GUI.
-        """
-        #check if there is a portal up on the current tile
-        for a in self.tile.actors:
-            if type(a) is Portal and a.char == '>':
-                self.followPortal(a)
-                break
-
-    def tryInteract(self):
-        """
-        Player attempts to interact with actors on the current tile.
-        This function is meant to be called from the GUI.
-        If the interaction requires further handling in the GUI and interaction object will be returned.
-        Returns None if the interaction can be completed without further GUI activities.
-        """
-        # check if there are items on the current tile to interact with
-        for a in self.tile.actors:
+            # Pick up item
             if isinstance(a, Item):
                 self.pickUpItem(a)
                 return None
+            # Interact with chest
             if isinstance(a, Chest):
                 interaction = Interaction(INTERACTION.CHEST, self, a)
                 return interaction
+            # Follow portal
             if isinstance(a, Portal):
-                interaction = Interaction(INTERACTION.PORTAL, self, a)
-                return interaction
+                self.followPortal(a)
+                return None
+        return Interaction(INTERACTION.IDLE, self)
 
-    def tryUseItem(self, item, target=None):
+    def try_use_item(self, item, target=None):
         """
         Player attempts to use an item.
         This function is meant to be called from the GUI.
+        :param item: Item object to be used
+        :param target: Target for the item to be used on (can be None)
+        :return: None
         """
         if isinstance(item, Consumable):
             # try to use the consumable
