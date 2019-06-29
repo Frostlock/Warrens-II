@@ -692,13 +692,12 @@ class Character(Actor):
         Arguments
             item - the item to be picked up
         """
-        #remove the item from its tile and level
+        # remove the item from its tile and level
         item.removeFromLevel()
-        #add the item to the inventory of this character
+        # add the item to the inventory of this character
         self.addItem(item)
-        #message
-        message(self.name.capitalize() + ' picks up a '
-                    + item.name + '.', "GAME")
+        # message
+        message(self.name.capitalize() + ' picks up a ' + item.name + '.', "GAME")
 
     def dropItem(self, item):
         """

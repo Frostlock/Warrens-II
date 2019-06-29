@@ -29,7 +29,7 @@ class Interaction(object):
         self._actor = actor
 
         # Ensure required parameters for interaction type are provided
-        # TODO: Move this into the testing code.
+        # TODO: Move this into the testing code
         from WarrensGame.Actors import Player, Chest, Portal  # Intentionally imported here to avoid circular import
         if self.type == INTERACTION.IDLE:
             assert isinstance(self.player, Player)
