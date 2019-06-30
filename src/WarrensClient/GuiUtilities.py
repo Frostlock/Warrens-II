@@ -13,6 +13,7 @@ from WarrensClient.Audio import init_audio, play_sound
 from WarrensGame.CONSTANTS import EFFECT
 from itertools import chain
 
+FONT_SMALL = None
 FONT_PANEL = None
 FONT_HEADER = None
 FONT_NORMAL = None
@@ -34,7 +35,7 @@ def init_pygame():
         pygame.init()
 
         # Initialize fonts
-        init_fonts()
+        DEPRECATED_init_fonts()
 
         # Initialize audio
         init_audio()
@@ -45,9 +46,17 @@ def init_pygame():
         # Initialize window title
         pygame.display.set_caption(INTERFACE.APPLICATION_NAME)
 
-def init_fonts():
+        global FONT_SMALL, FONT_PANEL, FONT_HEADER, FONT_NORMAL
+        FONT_SMALL = pygame.font.Font(GRAPHICS.FONT, 10)
+        FONT_PANEL = pygame.font.Font(GRAPHICS.FONT, 14)
+        FONT_HEADER = pygame.font.Font(GRAPHICS.FONT, 28)
+        FONT_NORMAL = pygame.font.Font(GRAPHICS.FONT, 14)
+
+
+def DEPRECATED_init_fonts():
     """
-    This function will initialize the fonts
+    This function will initialize the fonts.
+    This is used by the old Application and can be removed once that is gone.
     """
     global FONT_PANEL, FONT_HEADER, FONT_NORMAL
     FONT_PANEL = pygame.font.Font(GRAPHICS.FONT, 14)

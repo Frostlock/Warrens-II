@@ -6,6 +6,7 @@ Note that all constants are CAPITAL letters only for clarity.
 
 class INTERFACE:
     APPLICATION_NAME = "W@rrens II"
+    WINDOW_SIZE = (1280, 800)
 
     SHOW_SPLASH_SCREEN = True
     SHOW_PERFORMANCE_LOGGING = False

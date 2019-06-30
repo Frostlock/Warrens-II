@@ -85,6 +85,7 @@ class InventoryInterface(Interface):
         """
         # Call super class constructor
         super(InventoryInterface, self).__init__(parent)
+        self.original_background = self.parent.surface_display.copy()
 
         # Set class specific variables
         self._left_owner = left_inventory_owner
@@ -110,7 +111,7 @@ class InventoryInterface(Interface):
         # Initialize background
         if self._surface_background is None:
             # Start from the parent surface
-            self._surface_background = self.parent.surface_display.copy()
+            self._surface_background = self.original_background
             # Add transparent column backgrounds
             column = pygame.Surface((self.column_width, self.column_height), pygame.SRCALPHA)
             column.fill(COLORS.MENU_BG)
@@ -148,9 +149,6 @@ class InventoryInterface(Interface):
                 banner = self.surface_item_banner(item, selected=False)
             self.surface_display.blit(banner, (self.border + self.column_width + self.between, y))
             y += banner.get_height()
-
-        # Update screen
-        pygame.display.flip()
 
     def _handle_event(self, event):
         """

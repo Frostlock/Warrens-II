@@ -165,7 +165,7 @@ class Application(object):
         pygame.init()
         
         # Initialize fonts
-        GuiUtilities.init_fonts()
+        GuiUtilities.DEPRECATED_init_fonts()
 
         # Initialize audio
         Audio.init_audio()

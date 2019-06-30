@@ -62,28 +62,6 @@ class PlayerInterface(Interface):
         return self._surface_popup
 
     @property
-    def fullscreen(self):
-        """
-        Boolean indicating whether or not we are in fullscreen mode.
-        :return: Boolean
-        """
-        return self._fullscreen
-
-    @fullscreen.setter
-    def fullscreen(self, boolean):
-        """
-        Setter for fullscreen property.
-        :param boolean: value indicating if application should run in fullscreen.
-        :return: None
-        """
-        if boolean != self._fullscreen:
-            self._fullscreen = boolean
-            if self.fullscreen:
-                self.set_window_size(self.window_size)
-            else:
-                self.set_window_size(self.fullscreen_size)
-
-    @property
     def tile_size(self):
         """
         Tile size in pixels
@@ -157,14 +135,6 @@ class PlayerInterface(Interface):
         initialize_sprites(self.tile_size)
 
     @property
-    def frame_rate(self):
-        """
-        Current frame rate of the main loop
-        :return:
-        """
-        return self._frame_rate
-
-    @property
     def player(self):
         """
         The Player that this GUI controls.
@@ -212,49 +182,32 @@ class PlayerInterface(Interface):
         self._surface_popup = None
         self._targeting_item = None
         self._target_type = None
+        self._zoom_factor = 0
 
-        # Initialize display surface
-        display_info = pygame.display.Info()
-        # Hack for my fullscreen
-        # - I have two screens so divide width by two
-        # - I have a window manager panel which always takes up 24 pixels on first screen
-        self.fullscreen_sdl_position = "0, 0"
-        self.fullscreen_size = (int(display_info.current_w // 2), display_info.current_h - 24)
-        self.window_size = (1000, 750)
-        self._fullscreen = False
-        self.set_window_size(self.window_size)
+    def _initialize(self):
+        super(PlayerInterface, self)._initialize()
         self.zoom_factor = 1
 
         # Start music
         Audio.start_music()
 
-        # # Go into main loop
-        # self._run_game_loop = True
-        # self.main_loop()
-
-    def set_window_size(self, display_size):
+    def event_window_resize(self, display_size):
         """
         Initialize the pygame display and creates properly sized surfaces for the interface
         :param display_size: (width, height)
         :return: None
         """
-        # Pygame display initialization
-        if self.fullscreen:
-            display_size = self.fullscreen_size
-            self._surface_display = pygame.display.set_mode(self.fullscreen_size, NOFRAME)
-        else:
-            os.environ['SDL_VIDEO_WINDOW_POS'] = self.fullscreen_sdl_position
-            self._surface_display = pygame.display.set_mode(display_size, RESIZABLE)
-        
+        super(PlayerInterface, self).event_window_resize(display_size)
+
         # Panel at the bottom of the screen
-        width = display_size[0]
-        height = int(display_size[1] / 6)
+        width = self.current_resolution[0]
+        height = int(self.current_resolution[1] / 6)
         self._surface_panel = pygame.Surface((width, height))
         self.surface_panel.fill(COLORS.PANEL_BG)
         
         # Viewport for the map gets remaining space above the panel
-        width = display_size[0]
-        height = display_size[1] - self.surface_panel.get_height()
+        width = self.current_resolution[0]
+        height = self.current_resolution[1] - self.surface_panel.get_height()
         self._surface_viewport = pygame.Surface((width, height))
 
         # Clear helper surface for pop up window
@@ -262,7 +215,7 @@ class PlayerInterface(Interface):
 
     def _frame_processing(self):
         # Move the game world forward
-        self.player.level.owner.play(self._frame_elapsed_time)
+        self.player.level.owner.play(self.frame_elapsed_time)
         # TODO: during inventory the game appears to be paused but in fact the elapse time is loading up.
         # Once it is unpaused it catches up making all monster move very quick
         # this messes up the animations (also too quick)
@@ -297,12 +250,8 @@ class PlayerInterface(Interface):
         """
         super(PlayerInterface, self)._handle_event(event)
 
-        # Window resize
-        if event.type == VIDEORESIZE:
-            self.set_window_size(event.dict['size'])
-
         # mouse
-        elif event.type == MOUSEBUTTONDOWN:
+        if event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.targeting_mode:
                     self.event_targeting_acquire()
@@ -323,9 +272,6 @@ class PlayerInterface(Interface):
                 else:
                     # Show Menu
                     self.show_game_menu()
-            # Toggle fullscreen mode
-            elif event.unicode == 'f':
-                self.fullscreen = not self.fullscreen
 
             # keyboard - keys that are active while player is alive
             if self.player.state_alive:
@@ -369,9 +315,6 @@ class PlayerInterface(Interface):
         
         # Blit the panel to the main display
         self.surface_display.blit(self.surface_panel, (0, self.surface_viewport.get_height() - 1))
-        
-        # Refresh display
-        pygame.display.flip()
 
     def _finalize(self):
         # Clear screen
@@ -551,51 +494,47 @@ class PlayerInterface(Interface):
             blit_text = GuiUtilities.FONT_PANEL.render(self.player.level.name, 1, COLORS.PANEL_FONT)
             self.surface_viewport.blit(blit_text, (6, 2))
 
-        # Show frame rate in top right hand corner
-        blit_text = GuiUtilities.FONT_PANEL.render(str(self.frame_rate) + " fps", 1, COLORS.PANEL_FONT)
-        self.surface_viewport.blit(blit_text, (self.window_size[0] - blit_text.get_width(), 2))
-
     def render_viewport_actor(self, my_actor, tile_rect):
         # Get sprite for Actor
-        sprite = get_sprite_surface(my_actor.sprite_id, self._frame_elapsed_time)
+        sprite = get_sprite_surface(my_actor.sprite_id, self.frame_elapsed_time)
         # If not found, fallback to char representation
         if sprite is None:
             sprite = self.viewport_font.render(my_actor.char, 1, my_actor.color)
         # Get effect overlay for sprite
-        overlay = get_sprite_surface(my_actor.sprite_overlay_id, self._frame_elapsed_time)
+        overlay = get_sprite_surface(my_actor.sprite_overlay_id, self.frame_elapsed_time)
         if overlay is not None:
             overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
             overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
             sprite.blit(overlay, (overlay_x, overlay_y))
         # Overlay state specific animations
         if my_actor.state_healing:
-            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self._frame_elapsed_time,
+            overlay = get_sprite_surface(SPRITES.EFFECT_HEAL, self.frame_elapsed_time,
                                          my_actor.state_healing_animation_id)
             if overlay is not None:
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
                 sprite.blit(overlay, (overlay_x, overlay_y))
         if my_actor.state_on_fire:
-            overlay = get_sprite_surface(SPRITES.EFFECT_FIRE, self._frame_elapsed_time)
+            overlay = get_sprite_surface(SPRITES.EFFECT_FIRE, self.frame_elapsed_time)
             if overlay is not None:
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
                 sprite.blit(overlay, (overlay_x, overlay_y))
         if my_actor.state_electrified:
-            overlay = get_sprite_surface(SPRITES.EFFECT_ELEC, self._frame_elapsed_time)
+            overlay = get_sprite_surface(SPRITES.EFFECT_ELEC, self.frame_elapsed_time)
             if overlay is not None:
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
                 sprite.blit(overlay, (overlay_x, overlay_y))
         if my_actor.state_earth_damage:
-            overlay = get_sprite_surface(SPRITES.EFFECT_EARTH, self._frame_elapsed_time)
+            overlay = get_sprite_surface(SPRITES.EFFECT_EARTH, self.frame_elapsed_time)
             if overlay is not None:
                 overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                 overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
                 sprite.blit(overlay, (overlay_x, overlay_y))
         if isinstance(my_actor, Character):
             if my_actor.state_confused:
-                overlay = get_sprite_surface(SPRITES.EFFECT_CONFUSE, self._frame_elapsed_time)
+                overlay = get_sprite_surface(SPRITES.EFFECT_CONFUSE, self.frame_elapsed_time)
                 if overlay is not None:
                     overlay_x = sprite.get_width() / 2 - overlay.get_width() / 2
                     overlay_y = sprite.get_height() / 2 - overlay.get_height() / 2
