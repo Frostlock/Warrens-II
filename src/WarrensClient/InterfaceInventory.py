@@ -1,5 +1,5 @@
 """
-This module contains interface screens for inventory operations.
+This module contains an interface screen to show two inventories side by side.
 """
 import pygame
 import sys
@@ -9,7 +9,86 @@ import WarrensClient.GuiUtilities as GuiUtilities
 from WarrensClient.CONFIG import COLORS
 
 
-class InterfaceInventory(object):
+class Interface(object):
+
+    @property
+    def surface_display(self):
+        """
+        Main PyGame surface, the actual surface of the window that is visible to the user.
+        Found via the parent surface.
+        """
+        return self.parent.surface_display
+
+    @property
+    def parent(self):
+        """
+        The Interace object owning this interface.
+        :return: Interface
+        """
+        return self._parent
+
+    @property
+    def surface_background(self):
+        """
+        Background surface for this interface.
+        :return: Surface
+        """
+        return self._surface_background
+
+    def __init__(self, parent):
+        """
+        :param parent: Parent interface on top of which this will be displayed.
+        """
+        self._parent = parent
+        self._surface_background = None
+        self._run = False
+
+    def run(self):
+        """
+        Hands over control to this interface. This interface will initialize and loop until it is finished.
+        :return: None
+        """
+        self._initialize()
+        self._run = True
+        while self._run:
+            self._update_screen()
+            for event in pygame.event.get():
+                self._handle_event(event)
+        self._finalize()
+
+    def _initialize(self):
+        """
+        Initialization of the interface. This is called after construction at the start of the main run loop.
+        It is used to prepare reusable interface assets like for example the background image.
+        :return: None
+        """
+        raise NotImplementedError("This needs to be implemented in the subclasses.")
+
+    def _update_screen(self):
+        """
+        Main render function, this is called once for every frame in the main run loop.
+        :return: None
+        """
+        raise NotImplementedError("This needs to be implemented in the subclasses.")
+
+    def _handle_event(self, event):
+        """
+        Main event handler, this is called once for every pending event during the main run loop.
+        :param event: Pygame event
+        :return: None
+        """
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+    def _finalize(self):
+        """
+        Finalization of the interface. This is called at the end of the main run loop.
+        :return: None
+        """
+        pass
+
+
+class InterfaceInventory(Interface):
 
     @property
     def left_owner(self):
@@ -38,7 +117,7 @@ class InterfaceInventory(object):
     @property
     def banner_height(self):
         """
-        VVertical size of one item banner in the inventory
+        Vertical size of one item banner in the inventory
         :return: Integer
         """
         return self._banner_height
@@ -82,117 +161,130 @@ class InterfaceInventory(object):
         :param parent: Parent interface on top of which this will be displayed
         :param left_inventory_owner: Owner of the inventory to be shown on the left hand side
         :param right_inventory_owner: Owner of the inventory to be shown on the right hand side
-        :return: None
         """
+        # Call super class constructor
+        super(InterfaceInventory, self).__init__(parent)
+
+        # Set class specific variables
         self._left_owner = left_inventory_owner
         self._right_owner = right_inventory_owner
         self._select_on_left = True
         self._selected_index = 0
 
-        # Take copy of current screen
-        original_surface = parent.surface_display.copy()
-        display_surface = parent.surface_display
-
-
-        # Calculate where the inventories should be shown
-        border = 50
-        between = 150
-        width = ((display_surface.get_width() - between) / 2) - border
-        height = display_surface.get_height() - border - border
-        self._banner_width = width
+        # Calculate inventory size parameters
+        self.border = 100
+        self.between = 50
+        self.column_width = ((self.surface_display.get_width() - self.between) / 2) - self.border
+        self.column_height = self.surface_display.get_height() - self.border - self.border
+        self._banner_width = self.column_width
         self._banner_height = 45
 
-        loop = True
-        while loop:
-            left_background = pygame.Surface((width, height), pygame.SRCALPHA)
-            left_background.fill(COLORS.MENU_BG)
-            y = 0
-            for i in range(0, len(self.left_owner.inventory.items)):
-                item = self.left_owner.inventory.items[i]
-                if self.select_on_left and i == self.selected_index:
-                    banner = self.surface_item_banner(item, selected=True)
-                else:
-                    banner = self.surface_item_banner(item, selected=False)
-                left_background.blit(banner, (0, y))
-                y += banner.get_height()
-            left_x = border
-            left_y = border
-            display_surface.blit(left_background, (left_x, left_y))
+    def _initialize(self):
+        """
+        Initialization of the interface. This is called after construction at the start of the main run loop.
+        It is used to prepare reusable interface assets like for example the background image.
+        :return: None
+        """
+        # Initialize background
+        if self._surface_background is None:
+            # Start from the parent surface
+            self._surface_background = self.parent.surface_display.copy()
+            # Add transparent column backgrounds
+            column = pygame.Surface((self.column_width, self.column_height), pygame.SRCALPHA)
+            column.fill(COLORS.MENU_BG)
+            left_coordinate = (self.border, self.border)
+            self._surface_background.blit(column, left_coordinate)
+            right_coordinate = (self.border + self.column_width + self.between, self.border)
+            self._surface_background.blit(column, right_coordinate)
 
-            right_background = pygame.Surface((width, height), pygame.SRCALPHA)
-            right_background.fill(COLORS.MENU_BG)
-            y = 0
-            for j in range(0, len(self.right_owner.inventory.items)):
-                item = self.right_owner.inventory.items[j]
-                if (not self.select_on_left) and j == self.selected_index:
-                    banner = self.surface_item_banner(item, selected=True)
-                else:
-                    banner = self.surface_item_banner(item, selected=False)
-                right_background.blit(banner, (0, y))
-                y += banner.get_height()
-            right_x = left_x + width + between
-            right_y = border
-            display_surface.blit(right_background, (right_x, right_y))
+    def _update_screen(self):
+        """
+        Main render function, this is called once for every frame in the main run loop.
+        :return: None
+        """
+        # Draw background for the inventory
+        self.surface_display.blit(self.surface_background, (0, 0))
 
-            # Update screen
-            pygame.display.flip()
+        # Draw left inventory
+        y = self.border
+        for i in range(0, len(self.left_owner.inventory.items)):
+            item = self.left_owner.inventory.items[i]
+            if self.select_on_left and i == self.selected_index:
+                banner = self.surface_item_banner(item, selected=True)
+            else:
+                banner = self.surface_item_banner(item, selected=False)
+            self.surface_display.blit(banner, (self.border, y))
+            y += banner.get_height()
 
-            for event in pygame.event.get():
-                # pygame
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                # keyboard
-                elif event.type == pygame.KEYDOWN:
-                    play_sound("click")
-                    if event.key == pygame.K_ESCAPE:
-                        loop = False
-                    elif event.key == pygame.K_DOWN:
-                        self.event_select_down()
-                    elif event.key == pygame.K_UP:
-                        self.event_select_up()
-                    elif event.key == pygame.K_LEFT:
-                        self.event_select_left()
-                    elif event.key == pygame.K_RIGHT:
-                        self.event_select_right()
-                    elif event.key == pygame.K_SPACE:
-                        self.event_select_move()
-                # # mouse
-                # elif event.type == MOUSEBUTTONDOWN:
-                #     if event.button == 1:
-                #         if self.targeting_mode:
-                #             self.event_targeting_acquire()
-                #     elif event.button == 4:
-                #         self.event_zoom_in()
-                #     elif event.button == 5:
-                #         self.event_zoom_out()
-                # elif event.type == MOUSEMOTION:
-                #     self.event_mouse_movement()
+        # Draw right inventory
+        y = self.border
+        for j in range(0, len(self.right_owner.inventory.items)):
+            item = self.right_owner.inventory.items[j]
+            if (not self.select_on_left) and j == self.selected_index:
+                banner = self.surface_item_banner(item, selected=True)
+            else:
+                banner = self.surface_item_banner(item, selected=False)
+            self.surface_display.blit(banner, (self.border + self.column_width + self.between, y))
+            y += banner.get_height()
 
-        # Restore original screen
-        display_surface.blit(original_surface, (0, 0))
+        # Update screen
         pygame.display.flip()
+
+    def _handle_event(self, event):
+        """
+        Main event handler, this is called once for every pending event during the main run loop.
+        :param event: Pygame event
+        :return: None
+        """
+        super(InterfaceInventory, self)._handle_event(event)
+        # keyboard
+        if event.type == pygame.KEYDOWN:
+            play_sound("click")
+            if event.key == pygame.K_ESCAPE:
+                self._run = False
+            elif event.key == pygame.K_DOWN:
+                self.event_select_down()
+            elif event.key == pygame.K_UP:
+                self.event_select_up()
+            elif event.key == pygame.K_LEFT:
+                self.event_select_left()
+            elif event.key == pygame.K_RIGHT:
+                self.event_select_right()
+            elif event.key == pygame.K_SPACE:
+                self.event_select_move()
+        # # mouse
+        # elif event.type == MOUSEBUTTONDOWN:
+        #     if event.button == 1:
+        #         if self.targeting_mode:
+        #             self.event_targeting_acquire()
+        #     elif event.button == 4:
+        #         self.event_zoom_in()
+        #     elif event.button == 5:
+        #         self.event_zoom_out()
+        # elif event.type == MOUSEMOTION:
+        #     self.event_mouse_movement()
 
     def surface_item_banner(self, item, selected=False):
         """
-        render a banner for an item. The banner has an icon on the left side and text on the right side.
+        Render a banner for an item. The banner has an icon on the left side and text on the right side.
+        The banner is transparent.
         :param item: Item object
         :param selected: Boolean to indicate if the banner is currently selected.
         :return: pygame Surface
         """
         width = self.banner_width
         height = self.banner_height
-        banner = pygame.Surface((width, height))
-        banner.set_colorkey((0, 0, 0))
+        banner = pygame.Surface((width, height), pygame.SRCALPHA)
 
         icon = get_sprite_surface(item.sprite_id)
         if selected:
-            pygame.transform.scale(icon, (50, 50))
+            icon = pygame.transform.scale(icon, (60, 60))
             pygame.draw.rect(banner, COLORS.SELECTION, banner.get_rect(), 4)
         else:
-            pygame.transform.scale(icon, (40, 40))
+            icon = pygame.transform.scale(icon, (40, 40))
             pygame.draw.rect(banner, COLORS.PANEL_FONT, banner.get_rect(), 2)
         text = GuiUtilities.FONT_NORMAL.render(item.name, 1, COLORS.MENU_FONT)
-        banner.blit(icon, (0, 0))
+        banner.blit(icon, (0, int(height / 2 - icon.get_height() / 2)))
         banner.blit(text, (icon.get_width() + 10, int(height / 2 - text.get_height() / 2)))
         return banner
 

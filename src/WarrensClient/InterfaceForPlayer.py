@@ -35,6 +35,7 @@ MOVEMENT_KEYS = {
         }
 
 
+# TODO: make Interface subclass
 class InterfaceForPlayer(object):
     """
     This class provides a PyGame based user interface for a player.
@@ -749,7 +750,8 @@ class InterfaceForPlayer(object):
             pass
         elif interaction.type == INTERACTION.CHEST:
             # Present chest inventory to player.
-            InterfaceInventory(self, interaction.player, interaction.actor)
+            interface = InterfaceInventory(self, interaction.player, interaction.actor)
+            interface.run()
         else:
             raise NotImplementedError("Unknown interaction.type: " + str(interaction.type))
 
