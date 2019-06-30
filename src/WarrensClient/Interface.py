@@ -39,6 +39,8 @@ class Interface(object):
 
     def __init__(self, parent):
         """
+        Constructor
+        After construction the interface the run() method should be called.
         :param parent: Parent interface on top of which this will be displayed.
         """
         self._parent = parent
@@ -121,7 +123,7 @@ class Interface(object):
         Main processing function, this is called once for every frame in the main run loop.
         :return: None
         """
-        raise NotImplementedError("This needs to be implemented in the subclasses.")
+        pass
 
     def _finalize(self):
         """
@@ -129,3 +131,7 @@ class Interface(object):
         :return: None
         """
         pass
+
+    def event_quit(self):
+        # Interrupt game loop
+        self._run = False

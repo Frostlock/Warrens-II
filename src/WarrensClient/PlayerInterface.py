@@ -289,10 +289,6 @@ class PlayerInterface(Interface):
         else:
             print('Game Menu: unknown selection...?')
 
-    def event_quit(self):
-        # Interrupt game loop
-        self._run = False
-
     def _handle_event(self, event):
         """
         Handle a single Pygame event.

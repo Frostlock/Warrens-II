@@ -2,17 +2,17 @@
 This module contains the main Pygame application of the WarrensClient module.
 """
 import os
-import sys
 import pygame
 from pygame.locals import *
 from WarrensClient import GuiUtilities
 from WarrensClient.CONFIG import INTERFACE, COLORS
-from WarrensClient.InterfaceForPlayer import PlayerInterface
+from WarrensClient.Interface import Interface
+from WarrensClient.PlayerInterface import PlayerInterface
 from WarrensClient import Audio
 from WarrensGame.World import World
 
 
-class MainApplication(object):
+class MainMenuInterface(Interface):
     """
     PyGame implementation for dungeonGame GUI
     """
@@ -24,14 +24,6 @@ class MainApplication(object):
         :return: String
         """
         return self._version_number
-
-    @property
-    def surface_display(self):
-        """
-        Main PyGame surface, the actual surface of the window that is visible to the user.
-        This is the main surface, the other surfaces are helper surfaces which are blitted on top of this one.
-        """
-        return self._surface_display
 
     @property
     def fullscreen(self):
@@ -68,8 +60,8 @@ class MainApplication(object):
         Constructor
         :param version_number: String, application version identifier
         """
-        # Initialize pygame
-        GuiUtilities.init_pygame()
+        # Super class constructor
+        super(MainMenuInterface, self).__init__(None)
 
         # Initialize properties
         self._version_number = version_number
@@ -87,9 +79,6 @@ class MainApplication(object):
         self._fullscreen = False
         self.setup_surfaces(self.window_size)
 
-        # Start the main loop
-        self._main_loop()
-
     def setup_surfaces(self, display_size):
         """
         Initialize the pygame display
@@ -104,38 +93,29 @@ class MainApplication(object):
             os.environ['SDL_VIDEO_WINDOW_POS'] = self.fullscreen_sdl_position
             self._surface_display = pygame.display.set_mode(display_size, RESIZABLE)
 
-    def _main_loop(self):
-        """
-        Private function that contains the main loop of the application.
-        :return: None
-        """
+    def _initialize(self):
+        super(MainMenuInterface, self)._initialize()
         Audio.start_music()
         if INTERFACE.SHOW_SPLASH_SCREEN:
             GuiUtilities.show_splash(self.surface_display)
 
         # Version Number
-        version_surface = GuiUtilities.FONT_PANEL.render(self.version_number, 1, COLORS.PANEL_FONT)
-        version_position = (10, self.surface_display.get_height() - version_surface.get_height() - 10)
+        self.surface_version = GuiUtilities.FONT_PANEL.render(self.version_number, 1, COLORS.PANEL_FONT)
+        self.version_position = (10, self.surface_display.get_height() - self.surface_version.get_height() - 10)
 
-        # Show menu
-        options = ['New game', 'Controls', 'Quit']
-        keys = ['n', 'c', 'q']
-        while True:
-            self.surface_display.blit(version_surface, version_position)
-            selection = GuiUtilities.show_menu(self.surface_display, 'Main Menu', options, keys)
-            if selection is None:
-                return
-            elif selection == 0:
-                print('Main Menu: ' + options[0])
-                self.event_new_game()
-            elif selection == 1:
-                print('Main Menu: ' + options[1])
-                GuiUtilities.show_message_controls(self.surface_display)
-            elif selection == 2:
-                print('Main Menu: ' + options[2])
-                sys.exit()
-            else:
-                print('Main menu: unknown selection...?')
+        # Menu
+        self.options = ['New game', 'Controls', 'Quit']
+        self.keys = ['n', 'c', 'q']
+        self.handlers = [self.event_new_game, self.event_show_controls, self.event_quit]
+
+    def _update_screen(self):
+        self.surface_display.blit(self.surface_version, self.version_position)
+        self.selection = GuiUtilities.show_menu(self.surface_display, 'Main Menu', self.options, self.keys)
+        if self.selection is None:
+            return
+        else:
+            print('Main Menu: ' + self.options[self.selection])
+            self.handlers[self.selection]()
 
     def event_new_game(self):
         """
@@ -147,9 +127,18 @@ class MainApplication(object):
         # Add a player character
         player = world.new_player()
         # Show interface to control player
-        PlayerInterface(player)
+        pi = PlayerInterface(self, player)
+        pi.run()
+
+    def event_show_controls(self):
+        """
+        Event handler to show game controls.
+        :return: None
+        """
+        GuiUtilities.show_message_controls(self.surface_display)
 
 
 if __name__ == "__main__":
     # Quickstart code to test out the main application
-    MainApplication("V-unknown")
+    interface = MainMenuInterface("V-unknown")
+    interface.run()
