@@ -1,9 +1,7 @@
 """
-This module contains a Pygame interface implementation to control a player.
+This module contains an Interface implementation to control a player.
 """
 import os
-import sys
-import time
 import pygame
 from pygame.locals import *
 
@@ -17,7 +15,9 @@ from WarrensGame.Actors import Player, Character
 from WarrensGame import Utilities
 from WarrensGame.Effects import TARGET
 from WarrensGame.CONSTANTS import SPRITES, INTERACTION
-from WarrensClient.InterfaceInventory import InterfaceInventory
+from WarrensClient.Interface import Interface
+from WarrensClient.InventoryInterface import InventoryInterface
+
 
 MOVEMENT_KEYS = {
         pygame.K_KP4: (-1, +0),     # numerical keypad
@@ -35,19 +35,10 @@ MOVEMENT_KEYS = {
         }
 
 
-# TODO: make Interface subclass
-class InterfaceForPlayer(object):
+class PlayerInterface(Interface):
     """
     This class provides a PyGame based user interface for a player.
     """
-   
-    @property
-    def surface_display(self):
-        """
-        Main PyGame surface, the actual surface of the window that is visible to the user.
-        This is the main surface, the other surfaces are helper surfaces which are blitted on top of this one.
-        """
-        return self._surface_display
 
     @property
     def surface_viewport(self):
@@ -196,14 +187,11 @@ class InterfaceForPlayer(object):
         """
         return self._draggingMode
 
-    def __init__(self, my_player):
-        """
-        Constructor
-        """
-        # Initialize pygame
-        GuiUtilities.init_pygame()
+    def __init__(self, parent, my_player):
+        # Super class constructor
+        super(PlayerInterface, self).__init__(parent)
 
-        # Initialize properties
+        # Initialize class variables
         if not isinstance(my_player, Player):
             raise ValueError("Need Player object to construct PlayerClient.")
         self._player = my_player
@@ -216,8 +204,6 @@ class InterfaceForPlayer(object):
         self._renderViewPortX = 0
         self._renderViewPortY = 0
         self._viewport_placement = (0, 0)
-        self._frame_rate = 0
-        self._frame_elapsed_time = 0
         self._surface_display = None
         self._surface_panel = None
         self._surface_viewport = None
@@ -242,9 +228,9 @@ class InterfaceForPlayer(object):
         # Start music
         Audio.start_music()
 
-        # Go into main loop
-        self._run_game_loop = True
-        self.main_loop()
+        # # Go into main loop
+        # self._run_game_loop = True
+        # self.main_loop()
 
     def set_window_size(self, display_size):
         """
@@ -274,47 +260,19 @@ class InterfaceForPlayer(object):
         # Clear helper surface for pop up window
         self._surface_popup = None
 
-    def main_loop(self):
-        clock = pygame.time.Clock()
-        start_time, render_time, event_time, game_time = 0, 0, 0, 0
-        while self._run_game_loop:
-            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                start_time = time.time()
+    def _frame_processing(self):
+        # Move the game world forward
+        self.player.level.owner.play(self._frame_elapsed_time)
+        # TODO: during inventory the game appears to be paused but in fact the elapse time is loading up.
+        # Once it is unpaused it catches up making all monster move very quick
+        # this messes up the animations (also too quick)
 
-            # Render the screen
-            self.render_screen()
-            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                render_time = time.time() - start_time
-
-            # Handle pygame (GUI) events
-            events = pygame.event.get()
-            for event in events:
-                self.handle_pygame_event(event)
-
-            # # TODO: Implement a proper "death" screen
-            # if isinstance(self.game_server, LocalServer):
-            #     # handle game events
-            #     if self.game.player.state == Character.DEAD:
-            #         # zoom in on player corpse
-            #         self.event_zoom_on_tile(self.game.player.tile)
-
-            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                event_time = time.time() - start_time - render_time
-
-            # Move the game world forward
-            self.player.level.owner.play(self._frame_elapsed_time)
-            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                game_time = time.time() - start_time - render_time - event_time
-
-            # limit frame rate (kinda optimistic since with current rendering we don't achieve this frame rate :) )
-            frame_rate_limit = 30
-            self._frame_elapsed_time = clock.tick(frame_rate_limit)
-            self._frame_rate = clock.get_fps()
-            if INTERFACE.SHOW_PERFORMANCE_LOGGING:
-                print("LOOP! FPS: " + str(self._frame_rate) +
-                      " Rendering: " + str(render_time) + "s " +
-                      str(len(events)) + " events: " + str(event_time) + "s" +
-                      " Game: " + str(game_time) + "s ")
+        # TODO: Check for player death and implement a proper "death" screen
+        # if isinstance(self.game_server, LocalServer):
+        #     # handle game events
+        #     if self.game.player.state == Character.DEAD:
+        #         # zoom in on player corpse
+        #         self.event_zoom_on_tile(self.game.player.tile)
 
     def show_game_menu(self):
         options = ['Controls', 'Quit']
@@ -332,25 +290,19 @@ class InterfaceForPlayer(object):
             print('Game Menu: unknown selection...?')
 
     def event_quit(self):
-        # Clear screen
-        self.surface_display.fill(COLORS.PANEL_BG)
-        pygame.display.flip()
         # Interrupt game loop
-        self._run_game_loop = False
+        self._run = False
 
-    def handle_pygame_event(self, event):
+    def _handle_event(self, event):
         """
         Handle a single Pygame event.
         :param event: Pygame event
         :return: None
         """
-        # Pygame Quit
-        if event.type == pygame.QUIT:
-            self.event_quit()
-            sys.exit()
-        
+        super(PlayerInterface, self)._handle_event(event)
+
         # Window resize
-        elif event.type == VIDEORESIZE:
+        if event.type == VIDEORESIZE:
             self.set_window_size(event.dict['size'])
 
         # mouse
@@ -405,7 +357,7 @@ class InterfaceForPlayer(object):
                     print("Manual time tick!")
                     self.player.level.owner.tick()
 
-    def render_screen(self):
+    def _update_screen(self):
         """
         Main render function
         """
@@ -423,6 +375,11 @@ class InterfaceForPlayer(object):
         self.surface_display.blit(self.surface_panel, (0, self.surface_viewport.get_height() - 1))
         
         # Refresh display
+        pygame.display.flip()
+
+    def _finalize(self):
+        # Clear screen
+        self.surface_display.fill(COLORS.PANEL_BG)
         pygame.display.flip()
 
     def render_panel(self):
@@ -750,7 +707,7 @@ class InterfaceForPlayer(object):
             pass
         elif interaction.type == INTERACTION.CHEST:
             # Present chest inventory to player.
-            interface = InterfaceInventory(self, interaction.player, interaction.actor)
+            interface = InventoryInterface(self, interaction.player, interaction.actor)
             interface.run()
         else:
             raise NotImplementedError("Unknown interaction.type: " + str(interaction.type))
@@ -838,4 +795,5 @@ if __name__ == "__main__":
     world = World()
     player = world.new_player()
     player2 = world.new_player()
-    client = InterfaceForPlayer(player)
+    client = PlayerInterface(None, player)
+    client.run()

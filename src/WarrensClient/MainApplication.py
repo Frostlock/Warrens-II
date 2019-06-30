@@ -7,7 +7,7 @@ import pygame
 from pygame.locals import *
 from WarrensClient import GuiUtilities
 from WarrensClient.CONFIG import INTERFACE, COLORS
-from WarrensClient.InterfaceForPlayer import InterfaceForPlayer
+from WarrensClient.InterfaceForPlayer import PlayerInterface
 from WarrensClient import Audio
 from WarrensGame.World import World
 
@@ -147,7 +147,7 @@ class MainApplication(object):
         # Add a player character
         player = world.new_player()
         # Show interface to control player
-        InterfaceForPlayer(player)
+        PlayerInterface(player)
 
 
 if __name__ == "__main__":

@@ -2,93 +2,14 @@
 This module contains an interface screen to show two inventories side by side.
 """
 import pygame
-import sys
 from WarrensClient.Graphics import get_sprite_surface
 from WarrensClient.Audio import play_sound
 import WarrensClient.GuiUtilities as GuiUtilities
 from WarrensClient.CONFIG import COLORS
+from WarrensClient.Interface import Interface
 
 
-class Interface(object):
-
-    @property
-    def surface_display(self):
-        """
-        Main PyGame surface, the actual surface of the window that is visible to the user.
-        Found via the parent surface.
-        """
-        return self.parent.surface_display
-
-    @property
-    def parent(self):
-        """
-        The Interace object owning this interface.
-        :return: Interface
-        """
-        return self._parent
-
-    @property
-    def surface_background(self):
-        """
-        Background surface for this interface.
-        :return: Surface
-        """
-        return self._surface_background
-
-    def __init__(self, parent):
-        """
-        :param parent: Parent interface on top of which this will be displayed.
-        """
-        self._parent = parent
-        self._surface_background = None
-        self._run = False
-
-    def run(self):
-        """
-        Hands over control to this interface. This interface will initialize and loop until it is finished.
-        :return: None
-        """
-        self._initialize()
-        self._run = True
-        while self._run:
-            self._update_screen()
-            for event in pygame.event.get():
-                self._handle_event(event)
-        self._finalize()
-
-    def _initialize(self):
-        """
-        Initialization of the interface. This is called after construction at the start of the main run loop.
-        It is used to prepare reusable interface assets like for example the background image.
-        :return: None
-        """
-        raise NotImplementedError("This needs to be implemented in the subclasses.")
-
-    def _update_screen(self):
-        """
-        Main render function, this is called once for every frame in the main run loop.
-        :return: None
-        """
-        raise NotImplementedError("This needs to be implemented in the subclasses.")
-
-    def _handle_event(self, event):
-        """
-        Main event handler, this is called once for every pending event during the main run loop.
-        :param event: Pygame event
-        :return: None
-        """
-        if event.type == pygame.QUIT:
-            sys.exit()
-
-    def _finalize(self):
-        """
-        Finalization of the interface. This is called at the end of the main run loop.
-        :return: None
-        """
-        pass
-
-
-class InterfaceInventory(Interface):
+class InventoryInterface(Interface):
 
     @property
     def left_owner(self):
@@ -163,7 +84,7 @@ class InterfaceInventory(Interface):
         :param right_inventory_owner: Owner of the inventory to be shown on the right hand side
         """
         # Call super class constructor
-        super(InterfaceInventory, self).__init__(parent)
+        super(InventoryInterface, self).__init__(parent)
 
         # Set class specific variables
         self._left_owner = left_inventory_owner
@@ -185,6 +106,7 @@ class InterfaceInventory(Interface):
         It is used to prepare reusable interface assets like for example the background image.
         :return: None
         """
+        super(InventoryInterface, self)._initialize()
         # Initialize background
         if self._surface_background is None:
             # Start from the parent surface
@@ -236,7 +158,7 @@ class InterfaceInventory(Interface):
         :param event: Pygame event
         :return: None
         """
-        super(InterfaceInventory, self)._handle_event(event)
+        super(InventoryInterface, self)._handle_event(event)
         # keyboard
         if event.type == pygame.KEYDOWN:
             play_sound("click")
@@ -263,6 +185,10 @@ class InterfaceInventory(Interface):
         #         self.event_zoom_out()
         # elif event.type == MOUSEMOTION:
         #     self.event_mouse_movement()
+
+    def _frame_processing(self):
+        # Inventory needs no extra processing
+        pass
 
     def surface_item_banner(self, item, selected=False):
         """
