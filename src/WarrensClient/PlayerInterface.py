@@ -193,7 +193,7 @@ class PlayerInterface(Interface):
 
     def event_window_resize(self, display_size):
         """
-        Initialize the pygame display and creates properly sized surfaces for the interface
+        Create properly sized surfaces for the interface
         :param display_size: (width, height)
         :return: None
         """

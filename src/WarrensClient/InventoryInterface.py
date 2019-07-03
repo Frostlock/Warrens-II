@@ -93,13 +93,13 @@ class InventoryInterface(Interface):
         self._select_on_left = True
         self._selected_index = 0
 
-        # Calculate inventory size parameters
-        self.border = 100
-        self.between = 50
-        self.column_width = ((self.surface_display.get_width() - self.between) / 2) - self.border
-        self.column_height = self.surface_display.get_height() - self.border - self.border
-        self._banner_width = self.column_width
-        self._banner_height = 45
+        # # Calculate inventory size parameters
+        # self.border = 100
+        # self.between = 50
+        # self.column_width = ((self.surface_display.get_width() - self.between) / 2) - self.border
+        # self.column_height = self.surface_display.get_height() - self.border - self.border
+        # self._banner_width = self.column_width
+        # self._banner_height = 45
 
     def _initialize(self):
         """
@@ -108,17 +108,17 @@ class InventoryInterface(Interface):
         :return: None
         """
         super(InventoryInterface, self)._initialize()
-        # Initialize background
-        if self._surface_background is None:
-            # Start from the parent surface
-            self._surface_background = self.original_background
-            # Add transparent column backgrounds
-            column = pygame.Surface((self.column_width, self.column_height), pygame.SRCALPHA)
-            column.fill(COLORS.MENU_BG)
-            left_coordinate = (self.border, self.border)
-            self._surface_background.blit(column, left_coordinate)
-            right_coordinate = (self.border + self.column_width + self.between, self.border)
-            self._surface_background.blit(column, right_coordinate)
+        # # Initialize background
+        # if self._surface_background is None:
+        #     # Start from the parent surface
+        #     self._surface_background = self.original_background
+        #     # Add transparent column backgrounds
+        #     column = pygame.Surface((self.column_width, self.column_height), pygame.SRCALPHA)
+        #     column.fill(COLORS.MENU_BG)
+        #     left_coordinate = (self.border, self.border)
+        #     self._surface_background.blit(column, left_coordinate)
+        #     right_coordinate = (self.border + self.column_width + self.between, self.border)
+        #     self._surface_background.blit(column, right_coordinate)
 
     def _update_screen(self):
         """
@@ -211,6 +211,35 @@ class InventoryInterface(Interface):
         banner.blit(icon, (0, int(height / 2 - icon.get_height() / 2)))
         banner.blit(text, (icon.get_width() + 10, int(height / 2 - text.get_height() / 2)))
         return banner
+
+    def event_window_resize(self, display_size):
+        """
+        Create properly sized surfaces for the interface
+        :param display_size: (width, height)
+        :return: None
+        """
+        super(InventoryInterface, self).event_window_resize(display_size)
+
+        # Calculate screen size parameters
+        self.border = 100
+        self.between = 50
+        self.column_width = ((self.surface_display.get_width() - self.between) / 2) - self.border
+        self.column_height = self.surface_display.get_height() - self.border - self.border
+        self._banner_width = self.column_width
+        self._banner_height = 45
+
+        # Initialize background
+
+        # Start from the parent surface
+        self._surface_background = pygame.Surface(display_size, pygame.SRCALPHA)
+        self._surface_background.blit(self.original_background, (0, 0))
+        # Add transparent column backgrounds
+        column = pygame.Surface((self.column_width, self.column_height), pygame.SRCALPHA)
+        column.fill(COLORS.MENU_BG)
+        left_coordinate = (self.border, self.border)
+        self._surface_background.blit(column, left_coordinate)
+        right_coordinate = (self.border + self.column_width + self.between, self.border)
+        self._surface_background.blit(column, right_coordinate)
 
     def event_select_down(self):
         """

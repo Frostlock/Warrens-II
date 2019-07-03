@@ -8,6 +8,8 @@ several of these methods where copied from
 """
 import sys
 import pygame
+from pygame.locals import *
+
 from WarrensClient.CONFIG import COLORS, GRAPHICS, INTERFACE
 from WarrensClient.Audio import init_audio, play_sound
 from WarrensGame.CONSTANTS import EFFECT
@@ -19,6 +21,10 @@ FONT_HEADER = None
 FONT_NORMAL = None
 
 PYGAME_INIT_DONE = False
+FULLSCREEN_STATUS = False
+FULLSCREEN_RESOLUTION = (0, 0)
+WINDOWED_RESOLUTION = INTERFACE.WINDOW_SIZE
+CURRENT_RESOLUTION = INTERFACE.WINDOW_SIZE
 
 
 def init_pygame():
@@ -27,18 +33,44 @@ def init_pygame():
     :return: None
     """
     # Ensure this runs only once
-    global PYGAME_INIT_DONE
+    global PYGAME_INIT_DONE, FULLSCREEN_RESOLUTION, FULLSCREEN_STATUS
     if not PYGAME_INIT_DONE:
         PYGAME_INIT_DONE = True
+
         # Initialize PyGame
         pygame.mixer.pre_init(44100, -16, 2, 512)
         pygame.init()
 
         # Initialize fonts
-        DEPRECATED_init_fonts()
+        global FONT_SMALL, FONT_PANEL, FONT_HEADER, FONT_NORMAL
+        FONT_SMALL = pygame.font.Font(GRAPHICS.FONT, 10)
+        FONT_PANEL = pygame.font.Font(GRAPHICS.FONT, 14)
+        FONT_HEADER = pygame.font.Font(GRAPHICS.FONT, 28)
+        FONT_NORMAL = pygame.font.Font(GRAPHICS.FONT, 14)
 
         # Initialize audio
         init_audio()
+
+        # Initialize display surface
+        display_info = pygame.display.Info()
+        ratio = display_info.current_w / display_info.current_h
+        # SDL will detect dual monitors as one big screen area.
+        # Regular screen resolutions are either ratio 4:3 or ratio 16:9 so we attempt to predict
+        # the number of screens based on the ratio between width and height.
+        if 2.5 < ratio < 3.8:
+            # Suspect 2 displays side by side
+            FULLSCREEN_RESOLUTION = (int(display_info.current_w // 2), display_info.current_h)
+        elif 3.8 <= ratio:
+            # Suspect 3 displays side by side
+            FULLSCREEN_RESOLUTION = (int(display_info.current_w // 3), display_info.current_h)
+        elif ratio < 1:
+            # Suspect 2 displays on top of each other
+            FULLSCREEN_RESOLUTION = (display_info.current_w, int(display_info.current_h // 2))
+        else:
+            # Suspect single display
+            FULLSCREEN_RESOLUTION = (display_info.current_w, display_info.current_h)
+
+        FULLSCREEN_STATUS = False
 
         # Set mouse cursor
         pygame.mouse.set_cursor(*pygame.cursors.tri_left)
@@ -46,11 +78,34 @@ def init_pygame():
         # Initialize window title
         pygame.display.set_caption(INTERFACE.APPLICATION_NAME)
 
-        global FONT_SMALL, FONT_PANEL, FONT_HEADER, FONT_NORMAL
-        FONT_SMALL = pygame.font.Font(GRAPHICS.FONT, 10)
-        FONT_PANEL = pygame.font.Font(GRAPHICS.FONT, 14)
-        FONT_HEADER = pygame.font.Font(GRAPHICS.FONT, 28)
-        FONT_NORMAL = pygame.font.Font(GRAPHICS.FONT, 14)
+
+def toggle_fullscreen():
+    """
+    Switch between fullscreen and windowed mode
+    :return:
+    """
+    global FULLSCREEN_STATUS, WINDOWED_RESOLUTION
+    FULLSCREEN_STATUS = not FULLSCREEN_STATUS
+    if FULLSCREEN_STATUS:
+        set_display_size(FULLSCREEN_RESOLUTION)
+    else:
+        set_display_size(WINDOWED_RESOLUTION)
+
+
+def set_display_size(display_size):
+    """
+    Set the pygame display size
+    :param display_size: resolution in (int, int) format
+    :return: None
+    """
+    global FULLSCREEN_STATUS, FULLSCREEN_RESOLUTION, CURRENT_RESOLUTION
+    # Pygame display initialization
+    if FULLSCREEN_STATUS:
+        CURRENT_RESOLUTION = FULLSCREEN_RESOLUTION
+        pygame.display.set_mode(FULLSCREEN_RESOLUTION, NOFRAME)
+    else:
+        CURRENT_RESOLUTION = display_size
+        pygame.display.set_mode(display_size, RESIZABLE)
 
 
 def DEPRECATED_init_fonts():

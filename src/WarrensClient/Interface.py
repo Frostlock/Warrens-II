@@ -17,15 +17,12 @@ class Interface(object):
         Main PyGame surface, the actual surface of the window that is visible to the user.
         Found via the parent surface.
         """
-        # if self.parent is None:
         return pygame.display.get_surface()
-        # else:
-        #     return self.parent.surface_display
 
     @property
     def parent(self):
         """
-        The Interace object owning this interface.
+        The Interface object owning this interface.
         :return: Interface
         """
         return self._parent
@@ -38,25 +35,13 @@ class Interface(object):
         """
         return self._surface_background
 
-    def get_fullscreen(self):
-        """
-        Boolean indicating whether or not we are in fullscreen mode.
-        :return: Boolean
-        """
-        return self.__class__._fullscreen
+    @property
+    def current_resolution(self):
+        return GuiUtilities.CURRENT_RESOLUTION
 
-    def set_fullscreen(self, boolean):
-        """
-        Setter for fullscreen property.
-        :param boolean: value indicating if application should run in fullscreen.
-        :return: None
-        """
-        if boolean != self.__class__._fullscreen:
-            self.__class__._fullscreen = boolean
-            if self.__class__._fullscreen:
-                self.__class__.event_window_resize(self, self.__class__.fullscreen_resolution)
-            else:
-                self.__class__.event_window_resize(self, self.__class__.window_resolution)
+    @current_resolution.setter
+    def current_resolution(self, resolution):
+        GuiUtilities.CURRENT_RESOLUTION = resolution
 
     @property
     def frame_rate(self):
@@ -88,49 +73,7 @@ class Interface(object):
         self._frame_elapsed_time = 0
 
         # Initialize pygame
-        # TODO: Move this from GuiUtilities into Interface class?
         GuiUtilities.init_pygame()
-
-        self.class_initialization()
-
-    @classmethod
-    def class_initialization(cls):
-        # Initialize display surface
-        display_info = pygame.display.Info()
-        ratio = display_info.current_w / display_info.current_h
-        # SDL will detect dual monitors as one big screen area.
-        # Regular screen resolutions are either ratio 4:3 or ratio 16:9 so we attempt to predict
-        # the number of screens based on the ratio between width and height.
-        if 2.5 < ratio < 3.8:
-            # Suspect 2 displays side by side
-            cls.fullscreen_resolution = (int(display_info.current_w // 2), display_info.current_h)
-        elif 3.8 <= ratio:
-            # Suspect 3 displays side by side
-            cls.fullscreen_resolution = (int(display_info.current_w // 3), display_info.current_h)
-        elif ratio < 1:
-            # Suspect 2 displays on top of each other
-            cls.fullscreen_resolution = (display_info.current_w, int(display_info.current_h // 2))
-        else:
-            # Suspect single display
-            cls.fullscreen_resolution = (display_info.current_w, display_info.current_h)
-
-        cls.window_resolution = INTERFACE.WINDOW_SIZE
-        cls._fullscreen = False
-        cls.current_resolution = (0, 0)
-
-    def event_window_resize(self, display_size):
-        """
-        Initialize the pygame display and creates properly sized surfaces for the interface
-        :param display_size: (width, height)
-        :return: None
-        """
-        # Pygame display initialization
-        if self.get_fullscreen():
-            self.__class__.current_resolution = self.__class__.fullscreen_resolution
-            pygame.display.set_mode(self.__class__.fullscreen_resolution, NOFRAME)
-        else:
-            self.__class__.current_resolution = display_size
-            pygame.display.set_mode(display_size, RESIZABLE)
 
     def run(self):
         """
@@ -184,7 +127,7 @@ class Interface(object):
         It is used to prepare reusable interface assets like for example the background image.
         :return: None
         """
-        self.event_window_resize(self.window_resolution)
+        self.event_window_resize(GuiUtilities.CURRENT_RESOLUTION)
         self.clock = pygame.time.Clock()
 
     def _update_screen(self):
@@ -210,7 +153,8 @@ class Interface(object):
         elif event.type == pygame.KEYDOWN:
             # Toggle fullscreen mode
             if event.unicode == 'f':
-                self.set_fullscreen(not self.get_fullscreen())
+                GuiUtilities.toggle_fullscreen()
+                self.event_window_resize(GuiUtilities.CURRENT_RESOLUTION)
 
     def _frame_processing(self):
         """
@@ -229,3 +173,15 @@ class Interface(object):
     def event_quit(self):
         # Interrupt game loop
         self._run = False
+
+    def event_window_resize(self, display_size):
+        """
+        Event handler for window resize event. This function will reinitialize the pygame display and
+        create properly sized surfaces for the interface.
+        :param display_size: (width, height)
+        :return: None
+        """
+        if self.parent is None:
+            GuiUtilities.set_display_size(display_size)
+        else:
+            self.parent.event_window_resize(display_size)
