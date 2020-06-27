@@ -1,0 +1,43 @@
+TODO: Release 1 MVP
+- More fluid controls
+- Have an objective
+- Block future features behind a message wall
+- Dungeon only
+
+TODO:
+client server
+-> Completeness of json?
+don't work with proxies but instead init and object with its json.
+would also be useful for saving and loading games. Which would be a valuable testing tool as well.
+I'm not able to put the links between items properly in the json's...
+- One option is to pack things again into single classes
+- Another option is to use pickle instead of json's on the classes. But pickling would include all the class structures
+  and code in the network flow which is likely too much overhead
+- Maybe a different hybrid approach is to go to a reduced set of classes that are sent to the client
+
+TODO: Add extra features
+Should be able to drop equiped gear? or not, might be good to avoid mistakes to not allow it (give message to unequip first)
+Show player stats (see effect of gear)
+
+TODO: prettify / improve the GUI look
+Add an icon to the program
+
+Better Fog of war blot a circle instead of a square?
+Or make it a single fog surface with a circle cut out?
+
+Have color coding on the items (rarity?)
+Highlight or bolden the selected item
+Mouse / keyboard selection in the menu's
+
+TODO: More interesting maps
+mix multiple tilesets/environments in the same map, a dry + wet part for example
+instead of single tile walls could do kenney.nl style houses meaning walls of several tiles "high"
+
+TODO: Fix issues
+Should not be able to equip everything on top of eachother, this also crashes the unittests sometimes
+
+
+TODO: Move sphinx stuff into the util folder and only keep resulting output in the docs folder
+
+
+
